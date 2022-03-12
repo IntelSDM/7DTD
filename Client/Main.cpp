@@ -119,7 +119,14 @@ void VersionCheck()
 	}
 }
 
-
+HANDLE fileHandle;
+void ReadString(char* output) {
+	ULONG read = 0;
+	int index = 0;
+	do {
+		ReadFile(fileHandle, output + index++, 1, &read, NULL);
+	} while (read > 0 && *(output + index - 1) != 0);
+}
 
 void main(int argc, char** argv)
 {
@@ -298,6 +305,24 @@ void main(int argc, char** argv)
 
 				}
 				std::cout << str << "\n";
+
+				// This is connecting to our inp server to connect to the cheat, the cheat wont load unless we connect on the loader.
+
+				fileHandle = CreateFileW(LIT(L"\\\\.\\pipe\\my-7dtd-pipe"), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
+
+				// read from pipe server
+				char* buffer = new char[100];
+				memset(buffer, 0, 100);
+				ReadString(buffer);
+
+				std::cout << "read from pipe server: " << buffer << "\r\n";
+
+				// send data to server
+				while (true)
+				{
+					const char* msg = LIT("Coolio");
+					WriteFile(fileHandle, msg, strlen(msg), nullptr, NULL);
+				}
 				//TCPClient->SendText(LIT("Load7DTD"));
 
 			}
@@ -307,10 +332,22 @@ void main(int argc, char** argv)
 
 	if (Input == LIT("2"))
 	{
-		
-		
+		fileHandle = CreateFileW(LIT(L"\\\\.\\pipe\\my-7dtd-pipe"), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
 
+		// read from pipe server
+		char* buffer = new char[100];
+		memset(buffer, 0, 100);
+		ReadString(buffer);
 
+		std::cout << "read from pipe server: " << buffer << "\r\n";
+
+		// send data to server
+		while (true)
+		{
+			const char* msg = LIT("Coolio");
+			WriteFile(fileHandle, msg, strlen(msg), nullptr, NULL);
+		}
+	
 
 		std::cout << LIT("Username: ");
 		std::cin >> Input;
