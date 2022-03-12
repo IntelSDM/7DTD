@@ -7,7 +7,7 @@
     <ProjectGuid>{EAACF9E7-F7AC-42EA-BBED-8CC14A9D8F81}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>_7DTD</RootNamespace>
+    <RootNamespace>Cheat</RootNamespace>
     <AssemblyName>7DTD</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -76,6 +76,9 @@
   <ItemGroup>
     <Compile Include="Auth.cs" />
     <Compile Include="Drawing.cs" />
+    <Compile Include="Esp\Animal.cs" />
+    <Compile Include="Esp\Zombie.cs" />
+    <Compile Include="Globals.cs" />
     <Compile Include="Loader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

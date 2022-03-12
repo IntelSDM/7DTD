@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-namespace _7DTD
+namespace Cheat
 {
     class Loader : MonoBehaviour
     {
@@ -13,7 +13,7 @@ namespace _7DTD
 
 
 		//	Loader.hackObject.AddComponent<Globals>();
-			Loader.hackObject.AddComponent<Drawing>();
+			Loader.hackObject.AddComponent<Cheat.Esp.Zombie>();
 			UnityEngine.Object.DontDestroyOnLoad(hackObject);
 
 		}
