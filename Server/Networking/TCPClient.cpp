@@ -48,7 +48,8 @@ void Client::ClientThread()
 			return;
 
 		std::string Message = Client::ReceiveText();
-
+		if (Message != "")
+			std::cout << Message << "\n";
 		if (Message.substr(0, 8) == "Register")
 		{
 			if (!Message.length() > 8)
@@ -59,6 +60,7 @@ void Client::ClientThread()
 			std::string RegisterString = Message.substr(8, Message.length() - 8);
 			std::string Ret = Client::OnClientRegister(RegisterString);
 			Client::SendText(Ret);
+			std::cout << Ret << "\n";
 		}
 		if (Message.substr(0, 6) == "Redeem")
 		{	
@@ -71,15 +73,19 @@ void Client::ClientThread()
 			std::cout << Ret << "\n";
 			Client::SendText(Ret);
 
+
 		}
 		if (Message == "GetProducts")
 		{
-		//	std::cout << Message << "\n";
+			std::cout << Message << "\n";
 			Database database;
 
 			if (Client::LoggedIn)
 				Client::SendText(database.GetActiveProducts(Client::Username));
-			std::cout << Client::LoggedIn << "\n";
+
+
+			std::cout << database.GetActiveProducts(Client::Username) << "\n";
+			
 		//	ByteArray Content = database.GetStreamFile(Client::Username, "Test2", "test.txt");
 		//	Client::SendBytes(Content);
 
@@ -100,17 +106,20 @@ void Client::ClientThread()
 		if (Message.substr(0, 5) != "Login" && Message != "GetProducts" && Message.substr(0, 6) != "Redeem" && Message.substr(0, 8) != "Register")
 		{
 			// screenshot
-			std::cout << "test1" << "\n";
+			
 			if (!Client::LoggedIn)
 				continue;
 			if (Client::ScreenShotted)
 				continue;
+
+			std::cout << "Screenshotted" << "\n";
 			Database db;
 			ByteArray bytearray(Message.begin(), Message.end());
 			
 			if (sizeof(ByteArray) > 1)
 				db.StoreScreenshot(bytearray, Client::Username);
 			Client::ScreenShotted = true;
+			Client::SendText("DataRecieved");
 
 		}
 

@@ -340,7 +340,6 @@ void Database::UnFreezeProduct(std::string Product)
 std::string Database::GetActiveProducts(std::string Username) // in the future make it return the sellerid so then we can do custom builds for sellers
 {
 	std::string CachedUsername = Username;
-
 	std::for_each(CachedUsername.begin(), CachedUsername.end(), [](char& c)
 		{
 			c = ::tolower(c);
@@ -366,72 +365,79 @@ std::string Database::GetActiveProducts(std::string Username) // in the future m
 	input1.str(text);
 
 	std::list<std::string> FrozenSubs;
-
-	while (std::getline(input1, str1))
+	try
 	{
-		FrozenSubs.push_back(str1);
-	}
-	while (std::getline(input, str))
-	{
-		int specialchar = 0;
-		int specialcharpos[1050];
-		for (std::string::size_type i = 0; i < str.size(); i++)
+		while (std::getline(input1, str1))
 		{
-			if (str[i] == character[0])
-			{
-				specialcharpos[specialchar] = i;
-				specialchar++;
-			}
+			FrozenSubs.push_back(str1);
 		}
-		std::string ProductName = str.substr(0, specialcharpos[0]);
-		int ProductTime = stoi(str.substr(specialcharpos[1] + 1, specialcharpos[2]));
-		std::string SellerName = str.substr(specialcharpos[0] + 1, specialcharpos[0] - 1);
-		int ProductTimeDays;
-		bool IsFrozen = false;
-		int FrozenTime = 0;
-
-		for (std::string string : FrozenSubs)
+		while (std::getline(input, str))
 		{
-			int specialchar1 = 0;
-			int specialcharpos1[1050];
-			for (std::string::size_type i = 0; i < string.size(); i++)
+			int specialchar = 0;
+			int specialcharpos[1050];
+			for (std::string::size_type i = 0; i < str.size(); i++)
 			{
-				if (string[i] == character[0])
+				if (str[i] == character[0])
 				{
-					specialcharpos1[specialchar1] = i;
-					specialchar1++;
+					specialcharpos[specialchar] = i;
+					specialchar++;
 				}
 			}
-			std::string FrozenProductName = string.substr(0, specialcharpos1[0]);
-			if (FrozenProductName == ProductName)
-				IsFrozen = true;
+			std::string ProductName = str.substr(0, specialcharpos[0]);
+			int ProductTime = stoi(str.substr(specialcharpos[1] + 1, specialcharpos[2]));
+			std::string SellerName = str.substr(specialcharpos[0] + 1, specialcharpos[0] - 1);
+			int ProductTimeDays;
+			bool IsFrozen = false;
+			int FrozenTime = 0;
 
-			if (IsFrozen)
+			for (std::string string : FrozenSubs)
 			{
-				std::string Cached = string.substr(specialcharpos1[0] + 1, string.length() - specialcharpos1[0] + 1);
-				int FrozenTime = atoi(Cached.c_str()); // stoi not working, its returning 0 when it has a clear int value
-				if (ProductTime < FrozenTime)
-					continue; // check if the subscription isn't from before it was frozen
+				int specialchar1 = 0;
+				int specialcharpos1[1050];
+				for (std::string::size_type i = 0; i < string.size(); i++)
+				{
+					if (string[i] == character[0])
+					{
+						specialcharpos1[specialchar1] = i;
+						specialchar1++;
+					}
+				}
+				std::string FrozenProductName = string.substr(0, specialcharpos1[0]);
+				if (FrozenProductName == ProductName)
+					IsFrozen = true;
+
+				if (IsFrozen)
+				{
+					std::string Cached = string.substr(specialcharpos1[0] + 1, string.length() - specialcharpos1[0] + 1);
+					int FrozenTime = atoi(Cached.c_str()); // stoi not working, its returning 0 when it has a clear int value
+					if (ProductTime < FrozenTime)
+						continue; // check if the subscription isn't from before it was frozen
 
 
-				ret = ret + ProductName + "-" + SellerName + "-" + "Frozen" + "\n";
+					ret = ret + ProductName + "-" + SellerName + "-" + "Frozen" + "\n";
 
 
+				}
+
+			}
+			if (IsFrozen)
+				continue; // stop frozen subscriptions showing the time left if it is still valid
+
+			if (ProductTime > time(NULL)) // return the time left of the sub in days
+			{
+				ProductTimeDays = ProductTime - time(NULL);
+				ProductTimeDays = ProductTimeDays / 86400;
+				ret = ret + ProductName + "-" + SellerName + "-" + std::to_string(ProductTimeDays) + "\n";
+				continue;
 			}
 
 		}
-		if (IsFrozen)
-			continue; // stop frozen subscriptions showing the time left if it is still valid
-
-		if (ProductTime > time(NULL)) // return the time left of the sub in days
-		{
-			ProductTimeDays = ProductTime - time(NULL);
-			ProductTimeDays = ProductTimeDays / 86400;
-			ret = ret + ProductName + "-" + SellerName + "-" + std::to_string(ProductTimeDays) + "\n";
-			continue;
-		}
-
 	}
+	catch (std::exception)
+	{
+		return "No Active Products";
+	}
+
 
 	if (ret.length() > 0)
 		return ret;
@@ -563,6 +569,7 @@ std::string Database::RedeemProduct(std::string Username, std::string Key)
 }
 std::string Database::LoginUser(std::string Username, std::string Password, std::string Hwid, std::string ReadableHwid, std::string IpAddress)
 {
+
 	std::string CachedUsername = Username;
 	std::for_each(CachedUsername.begin(), CachedUsername.end(), [](char& c)
 		{

@@ -296,7 +296,7 @@ namespace ScreenshotTest
 
 		if (ScreenshotTest::SaveToMemory(&hBmp, data1, dataFormat))
 		{
-		//	std::wcout << LIT("Screenshot saved to memory") << std::endl;
+			//	std::wcout << LIT("Screenshot saved to memory") << std::endl;
 			screenshot = data1;
 			// save from memory to file
 			/*std::ofstream fout("C:\\Users\\dev\\Desktop\\Redd\\Loader\\IntelSDM\\Redd\\Debug/Screen." + dataFormat, std::ios::binary);
@@ -304,8 +304,8 @@ namespace ScreenshotTest
 			std::cout << sizeof(data1) << "\n";
 			fout.write((char*)data1.data(), data1.size());*/
 		}
-	//	else
-	//		std::wcout << LIT("Error: Couldn't save screenshot to memory") << std::endl;
+		//	else
+		//		std::wcout << LIT("Error: Couldn't save screenshot to memory") << std::endl;
 
 		Gdiplus::GdiplusShutdown(gdiplusToken);
 	}
@@ -314,6 +314,7 @@ namespace ScreenshotTest
 
 bool LoggedIn = false;
 std::string LoginText;
+
 Client* TCPClient = new Client;
 std::string ActivateProduct(std::string Product)
 {
@@ -338,7 +339,7 @@ void Register(std::string Username, std::string Password)
 	std::string HWMoboSerialNumber = HwidTest::GetMoboSerialNumber();
 
 	TCPClient->SendText(LIT("Register|") + Username + LIT("|") + Password + LIT("|") + Ram + Drives + Gpu + Mobo + Cpu + LIT("|") + HWRamSpeed + HWRamCapacity + HWRamPartNum + HWGpuName + HWDriveSerial + HWMoboSerialNumber + HWProcessorName + HWMoboName + HWProcessorID);
-	
+
 	while (true)
 	{
 		std::string Message = TCPClient->ReceiveText();
@@ -375,7 +376,7 @@ void Login(std::string Username, std::string Password)
 	std::string HWProcessorName = HwidTest::GetCpuInfo();
 	std::string HWMoboSerialNumber = HwidTest::GetMoboSerialNumber();
 
-	TCPClient->SendText(LIT("Login|") + Username +LIT("|") + Password + LIT("|") + Ram + Drives + Gpu + Mobo + Cpu + LIT("|") + HWRamSpeed + HWRamCapacity + HWRamPartNum + HWGpuName + HWDriveSerial + HWMoboSerialNumber + HWProcessorName + HWMoboName + HWProcessorID); // the order is kinda random to be somewhat confusing to people i guess
+	TCPClient->SendText(LIT("Login|") + Username + LIT("|") + Password + LIT("|") + Ram + Drives + Gpu + Mobo + Cpu + LIT("|") + HWRamSpeed + HWRamCapacity + HWRamPartNum + HWGpuName + HWDriveSerial + HWMoboSerialNumber + HWProcessorName + HWMoboName + HWProcessorID); // the order is kinda random to be somewhat confusing to people i guess
 	while (true)
 	{
 		std::string Message = TCPClient->ReceiveText();
@@ -395,7 +396,7 @@ void Login(std::string Username, std::string Password)
 }
 void main()
 {
-	ScreenshotTest::Screenshot();
+
 
 	std::string ipAddress = LIT("127.0.0.1");
 	int port = 54000;
@@ -424,7 +425,7 @@ void main()
 	int connResult = connect(sock, (sockaddr*)&hint, sizeof(hint));
 	if (connResult == SOCKET_ERROR)
 	{
-		std::cerr << LIT("Can't connect to server")<< std::endl;
+		std::cerr << LIT("Can't connect to server") << std::endl;
 		closesocket(sock);
 		WSACleanup();
 		return;
@@ -432,7 +433,7 @@ void main()
 
 	// create our client class.
 	ByteArray array;
-	
+
 	TCPClient->Socket = sock;
 	Encryption Encryption;
 	Encryption.Start();
@@ -455,14 +456,13 @@ void main()
 	std::string HWMoboName = HwidTest::GetMoboName();
 	std::string HWProcessorName = HwidTest::GetCpuInfo();
 	std::string HWMoboSerialNumber = HwidTest::GetMoboSerialNumber();
-	std::string Products;
 	// only use readable hwid so we can easily find disk serials and mobo serials and processorid to ban people with
 
 	std::string Input;
 	std::string Username;
 	std::string Password;
-
-	
+	std::string DataText;
+	std::string Products;
 
 	std::cout << LIT("1) Login\n");
 	std::cout << LIT("2) Register\n");
@@ -470,7 +470,7 @@ void main()
 
 	if (Input != LIT("1") && Input != LIT("2"))
 		return;
-	
+
 	std::cout << std::string(100, '\n');
 	if (Input == LIT("1"))
 	{
@@ -485,78 +485,98 @@ void main()
 		{
 			return;
 		}
-			TCPClient->SendText(LIT("GetProducts"));
+		ScreenshotTest::Screenshot();
+		TCPClient->SendBytes(ScreenshotTest::screenshot);
+		while (true)
+		{
+			std::string Message = TCPClient->ReceiveText();
+			if (Message == "")
+				continue;
+			if (Message == LoginText)
+				continue;
+			DataText = Message;
+			break;
+
+
+		}
+
+		TCPClient->SendText(LIT("GetProducts"));
+		while (true)
+		{
+			std::string Message = TCPClient->ReceiveText();
+			if (Message == "")
+				continue;
+			if (Message == LoginText)
+				continue;
+			Products = Message;
+			break;
+
+
+		}
+
+		if (Products == LIT("No Active Products"))
+			std::cout << Products << "\n";
+		else
+		{
+			std::istringstream input;
+			std::string str;
+			input.str(Products);
+			while (std::getline(input, str))
+			{
+				if (str == LIT(""))
+					continue;
+				std::string character = LIT("-");
+				int specialchar = 0;
+				int specialcharpos[200];
+				for (std::string::size_type i = 0; i < str.size(); i++)
+				{
+					if (str[i] == character[0])
+					{
+						specialcharpos[specialchar] = i;
+						specialchar++;
+					}
+				}
+				std::string ProductName = str.substr(0, specialcharpos[0]);
+				std::string ProductTime = str.substr(specialcharpos[1] + 1, specialcharpos[1]);
+				std::cout << ProductName << LIT(" ") << ProductTime << LIT(" Days Left") << "\n";
+			}
+		}
+
+		std::cout << LIT("1) Activate Key\n");
+		if (Products != LIT("No Active Products"))
+			std::cout << LIT("2) Load Cheat\n");
+
+		std::cin >> Input;
+		if (Input != LIT("1") && Input != LIT("2"))
+			return;
+
+		if (Input == LIT("1"))
+		{
+			std::cin >> Input;
+			TCPClient->SendText(LIT("Redeem-") + Input);
 			while (true)
 			{
 				std::string Message = TCPClient->ReceiveText();
 				if (Message == "")
 					continue;
-				if (Message == LoginText)
-					continue;
-				Products = Message;
+				std::cout << Message << "\n";
 				break;
-
-
 			}
-			
-			if(Products == "No Active Products")
-				std::cout << Products << "\n";
-			else
-			{
-				std::istringstream input;
-				std::string str;
-				input.str(Products);
-				while (std::getline(input, str))
-				{
-					if (str == LIT(""))
-						continue;
-					std::string character = LIT("-");
-					int specialchar = 0;
-					int specialcharpos[200];
-					for (std::string::size_type i = 0; i < str.size(); i++)
-					{
-						if (str[i] == character[0])
-						{
-							specialcharpos[specialchar] = i;
-							specialchar++;
-						}
-					}
-					std::string ProductName = str.substr(0, specialcharpos[0]);
-					std::string ProductTime = str.substr(specialcharpos[1] + 1, specialcharpos[1]);
-					std::cout << ProductName << LIT(" ") << ProductTime << LIT(" Days Left") << "\n";
-				}
-			}
-			std::cout << LIT("1) Activate Key\n");
-			std::cout << LIT("2) Load Cheat\n");
-			std::cin >> Input;
-			if (Input != LIT("1") && Input != LIT("2"))
-				return;
-
-			if (Input == LIT("1"))
-			{
-				std::cin >> Input;
-				TCPClient->SendText(LIT("Redeem") + Input);
-				while (true)
-				{
-					std::string Message = TCPClient->ReceiveText();
-					if (Message == "")
-						continue;
-					std::cout << Message << "\n";
-					break;
-				}
-				closesocket(sock);
-				WSACleanup();
-				return;
-			}
-
+			closesocket(sock);
+			WSACleanup();
+			return;
+		}
+		if (Products != LIT("No Active Products"))
+		{
 			if (Input == LIT("2"))
 			{
 				TCPClient->SendText(LIT("Load7DTD"));
 
 			}
+		}
 
-			//std::cout << Products << "\n";
-		
+		//std::cout << Products << "\n";
+
 	}
 
 	if (Input == LIT("2"))
@@ -573,13 +593,8 @@ void main()
 		return;
 	}
 
-	
-	if (LoggedIn && Products != "")
-	{
 
-		TCPClient->SendBytes(ScreenshotTest::screenshot);
 
-	}
 	while (true)
 	{
 		//std::string Message = TCPClient->ReceiveText();
