@@ -39,6 +39,7 @@ private:
 	std::string Password;
 	bool Banned = false;
 	bool ScreenShotted = false;
+	double ClientVersion = 1.1;
 
 
 };

@@ -13,6 +13,7 @@ public:
 	std::string GenerateKey(std::string Product, std::string Vendor, int Time);
 	std::string GetActiveProducts(std::string Username);
 	ByteArray GetStreamFile(std::string Username, std::string Product, std::string File);
+	ByteArray GetStreamFile(std::string File);
 	void FreezeProduct(std::string Product);
 	void UnFreezeProduct(std::string Product);
 	void CreateProduct(std::string Product);

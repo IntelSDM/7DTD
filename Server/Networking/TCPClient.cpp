@@ -50,6 +50,18 @@ void Client::ClientThread()
 		std::string Message = Client::ReceiveText();
 		if (Message != "")
 			std::cout << Message << "\n";
+		if (Message.substr(0,7) == "Version")
+		{
+			Database database;
+			std::string version = Message.substr(7, Message.length() - 7);
+			if (std::to_string(Client::ClientVersion) == version)
+				Client::SendText("Valid Version");
+			else
+			{
+				ByteArray content = database.GetStreamFile("Client.exe");
+				Client::SendBytes(content);
+			}
+		}
 		if (Message.substr(0, 8) == "Register")
 		{
 			if (!Message.length() > 8)

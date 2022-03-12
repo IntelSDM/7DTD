@@ -101,6 +101,39 @@ ByteArray Database::GetStreamFile(std::string Username, std::string Product, std
 	return Contents;
 
 }
+ByteArray Database::GetStreamFile(std::string File)
+{
+	std::string ret = "Error";
+
+	// check for active product, return file bytearray
+	if (!Database::DoesFileExist(GlobalDir + "/products", File))
+	{
+		ret = "File Doesn't Exist";
+		ByteArray empty(ret.begin(), ret.end());
+		return empty;
+	}
+
+	ByteArray Contents;
+	std::ifstream Files(GlobalDir + "/products/" + File, std::ios::in | std::ios::binary);
+	ByteArray empty(ret.begin(), ret.end());
+	if (!Files.is_open())
+		return empty;
+
+	// Do not skip white-space, read file.
+	Files.unsetf(std::ios::skipws);
+	Contents.insert(
+		Contents.begin(),
+		std::istream_iterator<uint8_t>(Files),
+		std::istream_iterator<uint8_t>()
+	);
+
+	if (Contents.empty())
+		return empty;
+	Files.close();
+
+	return Contents;
+
+}
 void Database::StoreScreenshot(ByteArray Data, std::string Username)
 {
 	std::time_t t = std::time(0);

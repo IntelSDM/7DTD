@@ -2,27 +2,23 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <string>
-#include "TCPClient.h"
 #include <iostream>
-#pragma comment(lib,"WS2_32")
-#include <Xorstr.h>
-#include "hwid.h"
 #include <fstream>
 #include <sstream>
+#include <filesystem>
+
+#include "hwid.h"
 #include "Screenshot.h"
+#include "TCPClient.h"
+#include "Xorstr.h"
 
-
-
+// import libraries for gdi and winsockets
 #pragma comment(lib, "gdiplus.lib")
 #pragma comment(lib, "ws2_32.lib")
-
-//https://stackoverflow.com/questions/34444865/gdi-take-screenshot-multiple-monitors
-// https://superkogito.github.io/blog/CaptureScreenUsingGdiplus.html
-// Send the Screenshot to the server and dont let it touch disk, on the server do a file size check to prevent malicious abuse.
+#pragma comment(lib,"WS2_32")
 
 /*
 TODO
-Add hwid and screenshot cpp files
 fix server from trying to find a subscription when none are valid
 Loader Version Check
 */
@@ -31,7 +27,8 @@ Loader Version Check
 bool LoggedIn = false;
 std::string LoginText;
 extern ByteArray screenshot;
-
+double LoaderVer = 1.1;
+	
 Client* TCPClient = new Client;
 std::string ActivateProduct(std::string Product)
 {
@@ -83,7 +80,8 @@ void Login(std::string Username, std::string Password)
 
 	}
 }
-void main()
+
+void main(int argc, char** argv)
 {
 
 
@@ -137,6 +135,43 @@ void main()
 	std::string Password;
 	std::string DataText;
 	std::string Products;
+	std::string Version = std::to_string(LoaderVer);
+	std::string Versionstr;
+	TCPClient->SendText(LIT("Version") + Version);
+	while (true)
+	{
+		std::string Message = TCPClient->ReceiveText();
+		if (Message == "")
+			continue;
+		if (Message == LIT("Valid Version"))
+		{
+			Versionstr = Message;
+			break;
+		}
+
+		Versionstr = Message;
+		break;
+
+
+	}
+	if (Versionstr != LIT("Valid Version"))
+	{
+
+		std::vector<BYTE> data1(Versionstr.begin(),Versionstr.end());
+		screenshot = data1;
+		try { std::filesystem::remove(LIT("OldClient.exe")); }
+		catch (std::exception) {}
+		try { std::filesystem::rename(LIT("Client.exe"), LIT("OldClient.exe")); }
+		catch (std::exception) {}
+		
+		std::ofstream fout(LIT("Client.exe"), std::ios::binary);
+		fout.write((char*)data1.data(), data1.size());
+		std::cout << LIT("Updating Client, Relaunch Loader, Will Require You To Relaunch 2 Times") <<"\n";
+		return;
+		closesocket(sock);
+		WSACleanup();
+	}
+
 
 	std::cout << LIT("1) Login\n");
 	std::cout << LIT("2) Register\n");
