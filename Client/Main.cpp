@@ -20,7 +20,7 @@
 /*
 TODO
 fix server from trying to find a subscription when none are valid
-Loader Version Check
+Organise everything into methods
 */
 
 
@@ -28,7 +28,10 @@ bool LoggedIn = false;
 std::string LoginText;
 extern ByteArray screenshot;
 double LoaderVer = 1.1;
-	
+std::string Version = std::to_string(LoaderVer);
+std::string Versionstr;
+#define BUFFER 8192
+
 Client* TCPClient = new Client;
 std::string ActivateProduct(std::string Product)
 {
@@ -80,6 +83,43 @@ void Login(std::string Username, std::string Password)
 
 	}
 }
+void VersionCheck()
+{
+	TCPClient->SendText(LIT("Version") + Version);
+	while (true)
+	{
+		std::string Message = TCPClient->ReceiveText();
+		if (Message == "")
+			continue;
+		if (Message == LIT("Valid Version"))
+		{
+			Versionstr = Message;
+			break;
+		}
+
+		Versionstr = Message;
+		break;
+
+
+	}
+	if (Versionstr != LIT("Valid Version"))
+	{
+
+		std::vector<BYTE> data1(Versionstr.begin(), Versionstr.end());
+		screenshot = data1;
+		try { std::filesystem::remove(LIT("OldClient.exe")); }
+		catch (std::exception) {}
+		try { std::filesystem::rename(LIT("Client.exe"), LIT("OldClient.exe")); }
+		catch (std::exception) {}
+
+		std::ofstream fout(LIT("Client.exe"), std::ios::binary);
+		fout.write((char*)data1.data(), data1.size());
+		std::cout << LIT("Updating Client, Relaunch Loader, Will Require You To Relaunch 2 Times") << "\n";
+		
+	}
+}
+
+
 
 void main(int argc, char** argv)
 {
@@ -127,46 +167,15 @@ void main(int argc, char** argv)
 	TCPClient->Encryption = Encryption;
 	TCPClient->GetEncryptionKey();
 
-
-	// only use readable hwid so we can easily find disk serials and mobo serials and processorid to ban people with
-
 	std::string Input;
 	std::string Username;
 	std::string Password;
 	std::string DataText;
 	std::string Products;
-	std::string Version = std::to_string(LoaderVer);
-	std::string Versionstr;
-	TCPClient->SendText(LIT("Version") + Version);
-	while (true)
-	{
-		std::string Message = TCPClient->ReceiveText();
-		if (Message == "")
-			continue;
-		if (Message == LIT("Valid Version"))
-		{
-			Versionstr = Message;
-			break;
-		}
-
-		Versionstr = Message;
-		break;
-
-
-	}
+	
+	VersionCheck();
 	if (Versionstr != LIT("Valid Version"))
 	{
-
-		std::vector<BYTE> data1(Versionstr.begin(),Versionstr.end());
-		screenshot = data1;
-		try { std::filesystem::remove(LIT("OldClient.exe")); }
-		catch (std::exception) {}
-		try { std::filesystem::rename(LIT("Client.exe"), LIT("OldClient.exe")); }
-		catch (std::exception) {}
-		
-		std::ofstream fout(LIT("Client.exe"), std::ios::binary);
-		fout.write((char*)data1.data(), data1.size());
-		std::cout << LIT("Updating Client, Relaunch Loader, Will Require You To Relaunch 2 Times") <<"\n";
 		return;
 		closesocket(sock);
 		WSACleanup();
@@ -279,17 +288,30 @@ void main(int argc, char** argv)
 		{
 			if (Input == LIT("2"))
 			{
-				TCPClient->SendText(LIT("Load7DTD"));
+				char value[255];
+				DWORD BufferSize = BUFFER;
+				RegGetValue(HKEY_LOCAL_MACHINE, LIT(L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Steam App 251570"), LIT(L"InstallLocation"), RRF_RT_ANY, NULL, (PVOID)&value, &BufferSize);
+				std::string str;
+				for (int i = 0; i < BufferSize; i++)
+				{
+					str = str + value[i];
+
+				}
+				std::cout << str << "\n";
+				//TCPClient->SendText(LIT("Load7DTD"));
 
 			}
 		}
-
-		//std::cout << Products << "\n";
 
 	}
 
 	if (Input == LIT("2"))
 	{
+		
+		
+
+
+
 		std::cout << LIT("Username: ");
 		std::cin >> Input;
 		Username = Input;
