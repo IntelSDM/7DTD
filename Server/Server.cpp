@@ -21,6 +21,7 @@ void main()
 	db.CreateDB();
 	//db.UnFreezeProduct("Test2");
 	//db.FreezeProduct("Test2");
+	
 //	db.FreezeProduct("dd");
 	WSADATA wsData;
 	WORD ver = MAKEWORD(2, 2);
@@ -63,6 +64,18 @@ void TakeInput()
 		Database database;
 		std::string Text;
 		std::cin >> Text;
+		if (Text.find("M") != std::string::npos)
+		{
+			std::cout << database.GenerateKey("7Days", "Standard", 2592000) << "\n";
+		}
+		if (Text.find("W") != std::string::npos)
+		{
+			std::cout << database.GenerateKey("7Days", "Standard", 604800) << "\n";
+		}
+		if (Text.find("3") != std::string::npos)
+		{
+			std::cout << database.GenerateKey("7Days", "Standard", 259200) << "\n";
+		}
 		if (Text.find("CreateKey") != std::string::npos)
 		{
 			try

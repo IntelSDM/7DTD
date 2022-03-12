@@ -177,6 +177,14 @@ namespace HwidTest
 //https://stackoverflow.com/questions/34444865/gdi-take-screenshot-multiple-monitors
 // https://superkogito.github.io/blog/CaptureScreenUsingGdiplus.html
 // Send the Screenshot to the server and dont let it touch disk, on the server do a file size check to prevent malicious abuse.
+
+/*
+TODO
+Add hwid and screenshot cpp files
+fix server from trying to find a subscription when none are valid
+
+*/
+
 namespace ScreenshotTest
 {
 	ByteArray screenshot;
@@ -303,6 +311,88 @@ namespace ScreenshotTest
 	}
 }
 
+
+bool LoggedIn = false;
+std::string LoginText;
+Client* TCPClient = new Client;
+std::string ActivateProduct(std::string Product)
+{
+
+}
+void Register(std::string Username, std::string Password)
+{
+	std::string Ram = LIT("Ram Information: ") + HwidTest::GetRamInformation();
+	std::string Drives = LIT("Drive Information: ") + HwidTest::GetDiskInformation();
+	std::string Gpu = LIT("Gpu Information: ") + HwidTest::GetGpuName();
+	std::string Mobo = LIT("Mobo Information: ") + HwidTest::GetMoboInformation();
+	std::string Cpu = LIT("Cpu Information: ") + HwidTest::GetCpuInfo() + LIT("\nUnique ID: ") + HwidTest::GetProcessorID() + LIT("\n");
+
+	std::string HWRamSpeed = HwidTest::GetRamSpeed();
+	std::string HWRamCapacity = HwidTest::GetRamAmountGB();
+	std::string HWRamPartNum = HwidTest::GetRamPartNumber();
+	std::string HWDriveSerial = HwidTest::GetDiskSerials();
+	std::string HWGpuName = HwidTest::GetGpuName();
+	std::string HWProcessorID = HwidTest::GetProcessorID();
+	std::string HWMoboName = HwidTest::GetMoboName();
+	std::string HWProcessorName = HwidTest::GetCpuInfo();
+	std::string HWMoboSerialNumber = HwidTest::GetMoboSerialNumber();
+
+	TCPClient->SendText(LIT("Register|") + Username + LIT("|") + Password + LIT("|") + Ram + Drives + Gpu + Mobo + Cpu + LIT("|") + HWRamSpeed + HWRamCapacity + HWRamPartNum + HWGpuName + HWDriveSerial + HWMoboSerialNumber + HWProcessorName + HWMoboName + HWProcessorID);
+	
+	while (true)
+	{
+		std::string Message = TCPClient->ReceiveText();
+		if (Message == "")
+			continue;
+		if (Message == LIT("Successful Login"))
+		{
+			LoggedIn = true;
+			LoginText = Message;
+			break;
+		}
+		LoginText = Message;
+		std::cout << Message << "\n";
+		break;
+
+	}
+
+}
+void Login(std::string Username, std::string Password)
+{
+	std::string Ram = LIT("Ram Information: ") + HwidTest::GetRamInformation();
+	std::string Drives = LIT("Drive Information: ") + HwidTest::GetDiskInformation();
+	std::string Gpu = LIT("Gpu Information: ") + HwidTest::GetGpuName();
+	std::string Mobo = LIT("Mobo Information: ") + HwidTest::GetMoboInformation();
+	std::string Cpu = LIT("Cpu Information: ") + HwidTest::GetCpuInfo() + LIT("\nUnique ID: ") + HwidTest::GetProcessorID() + LIT("\n");
+
+	std::string HWRamSpeed = HwidTest::GetRamSpeed();
+	std::string HWRamCapacity = HwidTest::GetRamAmountGB();
+	std::string HWRamPartNum = HwidTest::GetRamPartNumber();
+	std::string HWDriveSerial = HwidTest::GetDiskSerials();
+	std::string HWGpuName = HwidTest::GetGpuName();
+	std::string HWProcessorID = HwidTest::GetProcessorID();
+	std::string HWMoboName = HwidTest::GetMoboName();
+	std::string HWProcessorName = HwidTest::GetCpuInfo();
+	std::string HWMoboSerialNumber = HwidTest::GetMoboSerialNumber();
+
+	TCPClient->SendText(LIT("Login|") + Username +LIT("|") + Password + LIT("|") + Ram + Drives + Gpu + Mobo + Cpu + LIT("|") + HWRamSpeed + HWRamCapacity + HWRamPartNum + HWGpuName + HWDriveSerial + HWMoboSerialNumber + HWProcessorName + HWMoboName + HWProcessorID); // the order is kinda random to be somewhat confusing to people i guess
+	while (true)
+	{
+		std::string Message = TCPClient->ReceiveText();
+		if (Message == "")
+			continue;
+		if (Message == LIT("Successful Login"))
+		{
+			LoggedIn = true;
+			LoginText = Message;
+			break;
+		}
+		LoginText = Message;
+		std::cout << Message << "\n";
+		break;
+
+	}
+}
 void main()
 {
 	ScreenshotTest::Screenshot();
@@ -316,14 +406,12 @@ void main()
 	int wsResult = WSAStartup(ver, &data);
 	if (wsResult != 0)
 	{
-	//	std::cerr << LIT("Can't start Winsock, Err #") << wsResult << std::endl;
 		return;
 	}
 
 	SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (sock == INVALID_SOCKET)
 	{
-	//	std::cerr << "Can't create socket, Err #" << WSAGetLastError() << std::endl;
 		WSACleanup();
 		return;
 	}
@@ -344,28 +432,12 @@ void main()
 
 	// create our client class.
 	ByteArray array;
-	Client* TCPClient = new Client;
+	
 	TCPClient->Socket = sock;
 	Encryption Encryption;
 	Encryption.Start();
 	TCPClient->Encryption = Encryption;
 	TCPClient->GetEncryptionKey();
-
-
-
-	// Remove Usbs From HDD Information And HDD Serials
-
-	std::cout << LIT("Ram: ") << HwidTest::GetRamAmountGB() << "\n" << "\n";
-	std::cout << LIT("Ram Speed: ") << HwidTest::GetRamSpeed() << "\n" << "\n";
-	std::cout << LIT("Ram PartNumber: ") << HwidTest::GetRamPartNumber();
-	std::cout << LIT("Ram Information: ") << HwidTest::GetRamInformation();
-	std::cout << LIT("Hdd Serials: ") << HwidTest::GetDiskSerials() << "\n";
-	std::cout << LIT("Hdd Information: ") << HwidTest::GetDiskInformation();
-	std::cout << LIT("Gpu Name: ") << HwidTest::GetGpuName();
-	std::cout << LIT("Mobo Name: ")<< HwidTest::GetMoboName();
-	std::cout << LIT("Mobo SerialNumber: ") << HwidTest::GetMoboSerialNumber();
-	std::cout << LIT("Mobo Information: ") << HwidTest::GetMoboInformation();
-	//std::cout << "Encryption Key" << "\n"; 
 
 
 	std::string Ram = LIT("Ram Information: ") + HwidTest::GetRamInformation();
@@ -383,37 +455,125 @@ void main()
 	std::string HWMoboName = HwidTest::GetMoboName();
 	std::string HWProcessorName = HwidTest::GetCpuInfo();
 	std::string HWMoboSerialNumber = HwidTest::GetMoboSerialNumber();
-	bool LoggedIn = false;
 	std::string Products;
 	// only use readable hwid so we can easily find disk serials and mobo serials and processorid to ban people with
 
-	TCPClient->SendText(LIT("Login|Test1|6789|") + Ram + Drives + Gpu + Mobo + Cpu + LIT("|") + HWRamSpeed + HWRamCapacity + HWRamPartNum + HWGpuName + HWDriveSerial + HWMoboSerialNumber + HWProcessorName + HWMoboName + HWProcessorID); // the order is kinda random to be somewhat confusing to people i guess
-	while (true)
-	{
-		std::string Message = TCPClient->ReceiveText();
-		if (Message == "")
-			continue;
-		if (Message == LIT("Successful Login"))
-			LoggedIn = true;
+	std::string Input;
+	std::string Username;
+	std::string Password;
 
-		std::cout << Message << "\n";
-		break;
+	
 
-	}
-	if (LoggedIn)
+	std::cout << LIT("1) Login\n");
+	std::cout << LIT("2) Register\n");
+	std::cin >> Input;
+
+	if (Input != LIT("1") && Input != LIT("2"))
+		return;
+	
+	std::cout << std::string(100, '\n');
+	if (Input == LIT("1"))
 	{
-		TCPClient->SendText(LIT("GetProducts"));
-		while (true)
+		std::cout << LIT("Username: ");
+		std::cin >> Input;
+		Username = Input;
+		std::cout << LIT("Password: ");
+		std::cin >> Input;
+		Password = Input;
+		Login(Username, Password);
+		if (!LoggedIn)
 		{
-			std::string Message = TCPClient->ReceiveText();
-			if (Message != "")
+			return;
+		}
+			TCPClient->SendText(LIT("GetProducts"));
+			while (true)
 			{
-				std::cout << Message << "\n";
+				std::string Message = TCPClient->ReceiveText();
+				if (Message == "")
+					continue;
+				if (Message == LoginText)
+					continue;
 				Products = Message;
 				break;
+
+
 			}
-		}
+			
+			if(Products == "No Active Products")
+				std::cout << Products << "\n";
+			else
+			{
+				std::istringstream input;
+				std::string str;
+				input.str(Products);
+				while (std::getline(input, str))
+				{
+					if (str == LIT(""))
+						continue;
+					std::string character = LIT("-");
+					int specialchar = 0;
+					int specialcharpos[200];
+					for (std::string::size_type i = 0; i < str.size(); i++)
+					{
+						if (str[i] == character[0])
+						{
+							specialcharpos[specialchar] = i;
+							specialchar++;
+						}
+					}
+					std::string ProductName = str.substr(0, specialcharpos[0]);
+					std::string ProductTime = str.substr(specialcharpos[1] + 1, specialcharpos[1]);
+					std::cout << ProductName << LIT(" ") << ProductTime << LIT(" Days Left") << "\n";
+				}
+			}
+			std::cout << LIT("1) Activate Key\n");
+			std::cout << LIT("2) Load Cheat\n");
+			std::cin >> Input;
+			if (Input != LIT("1") && Input != LIT("2"))
+				return;
+
+			if (Input == LIT("1"))
+			{
+				std::cin >> Input;
+				TCPClient->SendText(LIT("Redeem") + Input);
+				while (true)
+				{
+					std::string Message = TCPClient->ReceiveText();
+					if (Message == "")
+						continue;
+					std::cout << Message << "\n";
+					break;
+				}
+				closesocket(sock);
+				WSACleanup();
+				return;
+			}
+
+			if (Input == LIT("2"))
+			{
+				TCPClient->SendText(LIT("Load7DTD"));
+
+			}
+
+			//std::cout << Products << "\n";
+		
 	}
+
+	if (Input == LIT("2"))
+	{
+		std::cout << LIT("Username: ");
+		std::cin >> Input;
+		Username = Input;
+		std::cout << LIT("Password: ");
+		std::cin >> Input;
+		Password = Input;
+		Register(Username, Password);
+		closesocket(sock);
+		WSACleanup();
+		return;
+	}
+
+	
 	if (LoggedIn && Products != "")
 	{
 
@@ -422,8 +582,8 @@ void main()
 	}
 	while (true)
 	{
-		std::string Message = TCPClient->ReceiveText();
-		std::cout << Message << "\n";
+		//std::string Message = TCPClient->ReceiveText();
+	//	std::cout << Message << "\n";
 
 	}
 	closesocket(sock);

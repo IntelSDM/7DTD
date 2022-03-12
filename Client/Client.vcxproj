@@ -148,7 +148,7 @@
   <ItemGroup>
     <ClCompile Include="Networking\TCPClient.cpp" />
     <ClCompile Include="Util\Encryption.cpp" />
-    <ClCompile Include="Util\Main.cpp" />
+    <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Networking\TCPClient.h" />

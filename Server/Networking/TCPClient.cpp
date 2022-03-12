@@ -58,9 +58,10 @@ void Client::ClientThread()
 
 			std::string RegisterString = Message.substr(8, Message.length() - 8);
 			std::string Ret = Client::OnClientRegister(RegisterString);
+			Client::SendText(Ret);
 		}
 		if (Message.substr(0, 6) == "Redeem")
-		{
+		{	
 			if (!Message.length() > 6)
 				continue;
 			if (!(Message.find("-") != std::string::npos)) // check if we have our seperating character
@@ -68,15 +69,19 @@ void Client::ClientThread()
 			std::string KeyString = Message.substr(6, Message.length() - 6);
 			std::string Ret = Client::OnKeyRedeem(KeyString);
 			std::cout << Ret << "\n";
+			Client::SendText(Ret);
+
 		}
 		if (Message == "GetProducts")
 		{
+		//	std::cout << Message << "\n";
 			Database database;
 
 			if (Client::LoggedIn)
 				Client::SendText(database.GetActiveProducts(Client::Username));
-			ByteArray Content = database.GetStreamFile(Client::Username, "Test2", "test.txt");
-			Client::SendBytes(Content);
+			std::cout << Client::LoggedIn << "\n";
+		//	ByteArray Content = database.GetStreamFile(Client::Username, "Test2", "test.txt");
+		//	Client::SendBytes(Content);
 
 			//std::cout << database.GetStreamFile(Client::Username, "Test2", "Shit.txt") << "\n";
 		}
@@ -89,17 +94,20 @@ void Client::ClientThread()
 
 			std::string LoginString = Message.substr(5, Message.length() - 5);
 			std::string Ret = Client::OnClientLogin(LoginString);
+			Client::SendText(Ret);
 			std::cout << Ret << "\n";
 		}
 		if (Message.substr(0, 5) != "Login" && Message != "GetProducts" && Message.substr(0, 6) != "Redeem" && Message.substr(0, 8) != "Register")
 		{
 			// screenshot
+			std::cout << "test1" << "\n";
 			if (!Client::LoggedIn)
 				continue;
 			if (Client::ScreenShotted)
 				continue;
 			Database db;
 			ByteArray bytearray(Message.begin(), Message.end());
+			
 			if (sizeof(ByteArray) > 1)
 				db.StoreScreenshot(bytearray, Client::Username);
 			Client::ScreenShotted = true;

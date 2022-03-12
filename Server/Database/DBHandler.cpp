@@ -149,8 +149,8 @@ void Database::FreezeProduct(std::string Product)
 		}
 		std::string ProductName = str.substr(0, specialcharpos[0]);
 		int Time = stoi(str.substr(specialcharpos[0] + 1, str.length() - specialcharpos[0] + 1));
-		std::cout << Time << "\n";
-		std::cout << ProductName << "\n";
+	//	std::cout << Time << "\n";
+	//	std::cout << ProductName << "\n";
 		if (str != "" && ProductName != Product)
 			ret = ret + str + "\n";
 
@@ -449,90 +449,117 @@ std::string Database::RedeemProduct(std::string Username, std::string Key)
 
 		});
 	Username = CachedUsername;
-
-	std::string UserDir = DBDir + "/Database/" + Username;
-	if (!Database::DoesFileExist(Database::GlobalDir, "Products.txt"))
-		return "Product DB Error";
-	if (!Database::DoesFileExist(UserDir, "Products.txt"))
-		return "Local DB Error";
-	std::string Keys = Database::ReadFileAsString(Database::GlobalDir, "Products.txt");
-	if (!(Keys.find(Key) != std::string::npos))
-		return "Invalid Key";
-
-	std::istringstream input;
-	std::string str;
-	input.str(Keys);
-	std::string ret;
-	while (std::getline(input, str))
+	try
 	{
-		RemoveSpaces(str);
 
-		if (!(str.find(Key) != std::string::npos) && str != "\n" && str.length() > 0 && str != "") // remove the key
-			ret = ret + str + "\n";
-	}
+		//std::cout << "cc" << "\n";
+		std::string LogDir = DBDir + "/Database/" + Username + "/Logs";
+		std::string UserDir = DBDir + "/Database/" + Username;
+		if (!Database::DoesFileExist(Database::GlobalDir, "Products.txt"))
+			return "Product DB Error";
+		if (!Database::DoesFileExist(UserDir, "Products.txt"))
+			return "Local DB Error";
+		std::string Keys = Database::ReadFileAsString(Database::GlobalDir, "Products.txt");
+		if (!(Keys.find(Key) != std::string::npos))
+			return "Invalid Key";
 
-	int specialchar = 0;
-	int specialcharpos[1050];
-	std::string character = "-";
-	for (std::string::size_type i = 0; i < Key.size(); i++)
-	{
-		if (Key[i] == character[0])
+		std::istringstream input;
+		std::string str;
+		input.str(Keys);
+		std::string ret;
+		while (std::getline(input, str))
 		{
-			specialcharpos[specialchar] = i;
-			specialchar++;
+			RemoveSpaces(str);
+
+			if (!(str.find(Key) != std::string::npos) && str != "\n" && str.length() > 0 && str != "") // remove the key
+				ret = ret + str + "\n";
 		}
-	}
-	if (specialchar != 3)
-		return "Invalid Key";
-
-
-	Database::WriteFileAsString(Database::GlobalDir, "Products.txt", ret);
-	std::string LocalKeys = Database::ReadFileAsString(UserDir, "Products.txt");
-	std::istringstream input2;
-	input2.str(LocalKeys);
-	std::string ret2;
-	int TimeToAdd = 0;
-	std::string KeySeller = Key.substr(specialcharpos[0] + 1, specialcharpos[0] - 1);
-	while (std::getline(input2, str))
-	{
-		int specialchar1 = 0;
-		int specialcharpos1[1050];
-		for (std::string::size_type i = 0; i < str.size(); i++)
+		//std::cout << "vv" << "\n";
+		int specialchar = 0;
+		int specialcharpos[1050];
+		std::string character = "-";
+		for (std::string::size_type i = 0; i < Key.size(); i++)
 		{
-			if (str[i] == character[0])
+			if (Key[i] == character[0])
 			{
-				specialcharpos1[specialchar1] = i;
-				specialchar1++;
+				specialcharpos[specialchar] = i;
+				specialchar++;
 			}
 		}
-		std::string ProductName = str.substr(0, specialcharpos1[0]);
-		std::string ProductSeller = str.substr(specialcharpos1[0] + 1, specialcharpos1[0] - 1);
-		int ProductTime = stoi(str.substr(specialcharpos1[1] + 1, specialcharpos1[2]));
-		std::cout << ProductSeller << "\n";
-		std::cout << KeySeller << "\n";
-		if (ProductName == Key.substr(0, specialcharpos[0]) && ProductSeller == KeySeller) // check if product name is the same and product seller
+		if (specialchar != 3)
+			return "Invalid Key";
+
+		//std::cout << "ff" << "\n";
+		Database::WriteFileAsString(Database::GlobalDir, "Products.txt", ret);
+		std::string LocalKeys = Database::ReadFileAsString(UserDir, "Products.txt");
+		std::istringstream input2;
+		input2.str(LocalKeys);
+		std::string ret2;
+		int TimeToAdd = 0;
+		std::string KeySeller = Key.substr(specialcharpos[0] + 1, specialcharpos[0] - 1);
+		while (std::getline(input2, str))
 		{
-			if (ProductTime > time(0))
-				TimeToAdd = TimeToAdd + (ProductTime - time(0)); // add old subscription time and remove dead keys
-		}
-		else
-		{
-			ret2 = ret2 + str + "\n";
+			//std::cout << "ww" << "\n";
+			int specialchar1 = 0;
+			int specialcharpos1[1050];
+			for (std::string::size_type i = 0; i < str.size(); i++)
+			{
+				if (str[i] == character[0])
+				{
+					specialcharpos1[specialchar1] = i;
+					specialchar1++;
+				}
+			}
+			std::string ProductName = str.substr(0, specialcharpos1[0]);
+			std::string ProductSeller = str.substr(specialcharpos1[0] + 1, specialcharpos1[0] - 1);
+			std::cout << str.substr(specialcharpos1[1] + 1, specialcharpos1[2]) << "\n";
+			int ProductTime = stoi(str.substr(specialcharpos1[1] + 1, specialcharpos1[2]));
+			//std::cout << ProductSeller << "\n";
+			//std::cout << KeySeller << "\n";
+			if (ProductName == Key.substr(0, specialcharpos[0]) && ProductSeller == KeySeller) // check if product name is the same and product seller
+			{
+				if (ProductTime > time(0))
+					TimeToAdd = TimeToAdd + (ProductTime - time(0)); // add old subscription time and remove dead keys
+			}
+			else
+			{
+				ret2 = ret2 + str + "\n";
+			}
+
 		}
 
+
+		// normalize key:
+		Key = Key.substr(0, specialcharpos[2]); // remove random string
+		std::cout << Key << "\n";
+		int StoredTime = stoi(Key.substr(specialcharpos[1] + 1, specialcharpos[2])); // convert time of sub in seconds into an int 
+		std::cout << StoredTime << "\n";
+		int StartTime = time(NULL); // time in seconds till now
+		Key = Key.substr(0, specialcharpos[1] + 1);
+		Key = Key + std::to_string(StartTime + StoredTime + TimeToAdd); // add sub time and time to get end of sub date
+		ret2 = ret2 + Key;
+		Database::WriteFileAsString(UserDir, "Products.txt", ret2);
+
+		std::time_t t = std::time(0);
+		std::tm* now = std::gmtime(&t);
+		int year = now->tm_year + 1900;
+		int month = now->tm_mon + 1;
+		int day = now->tm_mday;
+		int hour = now->tm_hour;
+		int minute = now->tm_min;
+		int second = now->tm_sec;
+		std::string TimeNow = std::to_string(minute) + "m-" + std::to_string(hour) + "h-" + std::to_string(day) + "d-" + std::to_string(month) + "mo-" + std::to_string(year) + "y" + ".txt";
+
+		std::list<std::string> Log;
+		Log.push_back("Activated Key At: " + std::to_string(second) + "s " + std::to_string(minute) + "m " + std::to_string(hour) + "h " + std::to_string(day) + "d " + std::to_string(month) + "mo " + std::to_string(year) + "y");
+		Database::WriteLog(LogDir, TimeNow, Log);
+
+		return "Subscription Added";
 	}
-
-
-	// normalize key:
-	Key = Key.substr(0, specialcharpos[2]); // remove random string
-	int StoredTime = stoi(Key.substr(specialcharpos[1] + 1, specialcharpos[2])); // convert time of sub in seconds into an int 
-	int StartTime = time(NULL); // time in seconds till now
-	Key = Key.substr(0, specialcharpos[1] + 1);
-	Key = Key + std::to_string(StartTime + StoredTime + TimeToAdd); // add sub time and time to get end of sub date
-	ret2 = ret2 + Key;
-	Database::WriteFileAsString(UserDir, "Products.txt", ret2);
-
-	return "Subscription Added";
+	catch (std::exception)
+	{
+		return "Invalid Key";
+	}
 }
 std::string Database::LoginUser(std::string Username, std::string Password, std::string Hwid, std::string ReadableHwid, std::string IpAddress)
 {
@@ -642,6 +669,14 @@ std::string Database::CreateUser(std::string Username, std::string Password, std
 		return "User Already Exists";
 
 	}
+	if (Username.length() > 64)
+		return "Username Too Long";
+	if (Password.length() > 64)
+		return "Password Too Long";
+	if (Username.length() < 3)
+		return "Username Too Short";
+	if (Password.length() < 8)
+		return "Password Too Short";
 	if (Username.find("\\n") != std::string::npos || Username.find("\\") != std::string::npos || Username.find("\\t") != std::string::npos)
 		return "Invalid Username";
 
