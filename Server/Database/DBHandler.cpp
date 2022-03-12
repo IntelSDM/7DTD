@@ -505,6 +505,7 @@ std::string Database::RedeemProduct(std::string Username, std::string Key)
 		std::string KeySeller = Key.substr(specialcharpos[0] + 1, specialcharpos[0] - 1);
 		while (std::getline(input2, str))
 		{
+			RemoveSpaces(str);
 			//std::cout << "ww" << "\n";
 			int specialchar1 = 0;
 			int specialcharpos1[1050];
@@ -534,7 +535,7 @@ std::string Database::RedeemProduct(std::string Username, std::string Key)
 
 		}
 
-
+		RemoveSpaces(ret2);
 		// normalize key:
 		Key = Key.substr(0, specialcharpos[2]); // remove random string
 		std::cout << Key << "\n";

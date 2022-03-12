@@ -149,10 +149,14 @@
     <ClCompile Include="Networking\TCPClient.cpp" />
     <ClCompile Include="Util\Encryption.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Util\Hwid.cpp" />
+    <ClCompile Include="Util\Screenshot.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Networking\TCPClient.h" />
     <ClInclude Include="Util\Encryption.h" />
+    <ClInclude Include="Util\Hwid.h" />
+    <ClInclude Include="Util\Screenshot.h" />
     <ClInclude Include="Util\Xorstr.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
