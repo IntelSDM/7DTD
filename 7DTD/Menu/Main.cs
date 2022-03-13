@@ -21,9 +21,43 @@ namespace Cheat.Menu
         SubMenu Colours = new SubMenu("Colour Menu", "Allows You To Change Colours On The Cheat");
         SubMenu Config = new SubMenu("Config Menu", "Allows You To Save And Load Settings");
 
+        SubMenu Save = new SubMenu("Save Config", "Allows You To Save Settings");
+        SubMenu Load = new SubMenu("Load Config", "Allows You To Load Settings");
+
         List<SubMenu> MenuHistory = new List<SubMenu>();
         SubMenu CurrentMenu;
-
+        #region Config
+        void Configs()
+        {
+            // putting our options into 2 submenus and adding submenus to config menu
+            Config.Items.Add(Save);
+            Config.Items.Add(Load);
+            #region Save Config
+            Button Cfg1 = new Button("Config 1", "", () => Helpers.ConfigHelper.SaveConfig("Config1"));
+            Button Cfg2 = new Button("Config 2", "", () => Helpers.ConfigHelper.SaveConfig("Config2"));
+            Button Cfg3 = new Button("Config 3", "", () => Helpers.ConfigHelper.SaveConfig("Config3"));
+            Button Cfg4 = new Button("Config 4", "", () => Helpers.ConfigHelper.SaveConfig("Config4"));
+            Button Cfg5 = new Button("Config 5", "", () => Helpers.ConfigHelper.SaveConfig("Config5"));
+            Save.Items.Add(Cfg1);
+            Save.Items.Add(Cfg2);
+            Save.Items.Add(Cfg3);
+            Save.Items.Add(Cfg4);
+            Save.Items.Add(Cfg5);
+            #endregion
+            #region Load Config
+            Button Cfg6 = new Button("Config 1", "", () => Helpers.ConfigHelper.LoadConfig("Config1"));
+            Button Cfg7 = new Button("Config 2", "", () => Helpers.ConfigHelper.LoadConfig("Config2"));
+            Button Cfg8 = new Button("Config 3", "", () => Helpers.ConfigHelper.LoadConfig("Config3"));
+            Button Cfg9 = new Button("Config 4", "", () => Helpers.ConfigHelper.LoadConfig("Config4"));
+            Button Cfg10 = new Button("Config 5", "", () => Helpers.ConfigHelper.LoadConfig("Config5"));
+            Load.Items.Add(Cfg6);
+            Load.Items.Add(Cfg7);
+            Load.Items.Add(Cfg8);
+            Load.Items.Add(Cfg9);
+            Load.Items.Add(Cfg10);
+            #endregion
+        }
+        #endregion
         void Start()
         {
             MenuPos.x = 50;
@@ -35,6 +69,8 @@ namespace Cheat.Menu
             MainMenu.Items.Add(PlayerMenu);
             MainMenu.Items.Add(Colours);
             MainMenu.Items.Add(Config);
+
+            
 
             // amount of colours in the dictionary is always the same in game so we dont need to update this.
             foreach (KeyValuePair<string, Color32> value in Globals.Config.Colours.GlobalColors)
