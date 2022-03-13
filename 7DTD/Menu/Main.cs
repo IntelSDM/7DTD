@@ -5,7 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 namespace Cheat.Menu
-{
+{ 
+    // credit to sCrub, some of the code with handling menu objects is his.
     class Main : MonoBehaviour
     {
         Vector2 MenuPos;
@@ -17,7 +18,8 @@ namespace Cheat.Menu
         SubMenu Aimbot = new SubMenu("Aimbot", "Lock Onto Enemies");
 
         List<SubMenu> MenuHistory = new List<SubMenu>();
-        public static SubMenu CurrentMenu;
+        SubMenu CurrentMenu;
+
         void Start()
         {
             MenuPos.x = 50;
@@ -63,13 +65,14 @@ namespace Cheat.Menu
                     }
                 }
             }
+
             Drawing.DrawString(new Vector2(MenuPos.x -5, MenuPos.y - 20), text, Color.red, false, 12, FontStyle.Normal, 0); // draw menu history
 
             foreach (Entity entity in CurrentMenu.Items)
             {
                 if (Selected == entity)
                 {
-                    Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), "> " + entity.Name, Color.white, false, 12, FontStyle.Normal, 0);
+                    Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), "> " + entity.Name, Color.red, false, 12, FontStyle.Normal, 0);
                 }
                 else
                 {
@@ -80,14 +83,34 @@ namespace Cheat.Menu
             }
         void Update1()
         {
+
+            if (Input.GetKeyDown(KeyCode.DownArrow) && CurrentMenu.index < CurrentMenu.Items.Count)
+                CurrentMenu.index++;
+            if (Input.GetKeyDown(KeyCode.UpArrow) && CurrentMenu.index > 0)
+                CurrentMenu.index--;
+            if (Input.GetKeyDown(KeyCode.Backspace) && MenuHistory.Count > 1)
+            {
+                CurrentMenu = MenuHistory[MenuHistory.Count - 2];
+                MenuHistory.Remove(MenuHistory.Last<SubMenu>());
+                return;
+            }
+
             foreach (Entity entity in CurrentMenu.Items)
             {
                 if (CurrentMenu.index == CurrentMenu.Items.IndexOf(entity))
                     Selected = entity;
-                if (Input.GetKeyDown(KeyCode.DownArrow) && CurrentMenu.index < CurrentMenu.Items.Count)
-                    CurrentMenu.index++;
-                if (Input.GetKeyDown(KeyCode.UpArrow) && CurrentMenu.index > 0)
-                    CurrentMenu.index--;
+              
+                if (((Input.GetKeyDown(KeyCode.LeftArrow) && Selected is SubMenu) || Input.GetKeyDown(KeyCode.Backspace)) && CurrentMenu != MainMenu)
+                {
+                 
+                }
+                if (Selected is SubMenu && (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.Return)))
+                {
+                    CurrentMenu = entity as SubMenu;
+                    MenuHistory.Add(entity as SubMenu);
+                    return; // opens a new menu so we need to exit the loop to then render our new currentmenu
+                }
+
             }
         }
     }
