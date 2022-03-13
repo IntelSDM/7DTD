@@ -13,9 +13,14 @@ namespace Cheat.Helpers
         {
 
 
-            AddColour("ZombieColour", Color.blue);
-            AddColour("PlayerColour", Color.white);
-            AddColour("AnimalColour", Color.cyan);
+            AddColour("Zombie Colour", Color.blue);
+            AddColour("Player Colour", Color.white);
+            AddColour("Animal Colour", Color.cyan);
+            AddColour("Menu Primary Colour", Color.red);
+            AddColour("Menu Secondary Colour", Color.white);
+            AddColour("Player Box Colour", Color.red);
+            AddColour("Player Chams Visible Colour", Color.white);
+            AddColour("Player Chams Invisible Colour", Color.red);
         }
         public static Color32 GetColour(string identifier)
         {

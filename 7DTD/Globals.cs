@@ -47,6 +47,7 @@ namespace Cheat
         [ObfuscationAttribute(Exclude = true)]
         private void Start()
         {
+            Helpers.ShaderHelper.GetShader();
             Helpers.ConfigHelper.CreateEnvironment();
             Helpers.ColourHelper.AddColours();
         }

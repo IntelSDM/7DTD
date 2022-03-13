@@ -19,23 +19,27 @@ namespace Cheat.Esp
         }
         void Update1()
         {
-            if (GameManager.Instance.World == null)
-                return;
-            if (!(Time.time > CacheTime))
-                return;
-            AnimalList.Clear();
-            foreach (EntityAnimal animal in FindObjectsOfType<EntityAnimal>().ToList())
+            try
             {
-                if (animal.Health <= 0)
-                    continue;
-                if (animal.IsAlive() == false)
-                    continue;
-                if (animal == null)
-                    continue;
+                if (GameManager.Instance.World == null)
+                    return;
+                if (!(Time.time > CacheTime))
+                    return;
+                AnimalList.Clear();
+                foreach (EntityAnimal animal in FindObjectsOfType<EntityAnimal>().ToList())
+                {
+                    if (animal.Health <= 0)
+                        continue;
+                    if (animal.IsAlive() == false)
+                        continue;
+                    if (animal == null)
+                        continue;
 
-                AnimalList.Add(animal);
+                    AnimalList.Add(animal);
+                }
+                CacheTime = Time.time + 5;
             }
-            CacheTime = Time.time + 5;
+            catch { }
         }
         [ObfuscationAttribute(Exclude = true)]
         void OnGUI()
@@ -44,28 +48,33 @@ namespace Cheat.Esp
         }
         void OnGUI1()
         {
-
-            if (GameManager.Instance.World == null)
-                return;
-            foreach (EntityAnimal animal in AnimalList)
+            try
             {
-                if (animal.Health <= 0)
-                    continue;
-                if (animal.IsAlive() == false)
-                    continue;
-                if (animal == null)
-                    continue;
+                if (GameManager.Instance.World == null)
+                    return;
+                foreach (EntityAnimal animal in AnimalList)
+                {
+                    if (animal.Health <= 0)
+                        continue;
+                    if (animal.IsAlive() == false)
+                        continue;
+                    if (animal == null)
+                        continue;
 
-                Vector3 ScreenPosition = Globals.WorldPointToScreenPoint(animal.transform.position);
-                if (!(Globals.IsScreenPointVisible(ScreenPosition)))
-                    continue;
-                int Distance = (int)Vector3.Distance(Globals.MainCamera.transform.position, animal.transform.position);
-                int Health = animal.Health;
-                string DistanceStr = Globals.Config.Animal.Distance ? $"({Distance.ToString()}m)" : "";
-                string nameStr = Globals.Config.Animal.Name ? $"{animal.EntityName}" : "";
-                string HealthStr = Globals.Config.Animal.Health ? $"({Health}hp)" : "";
-                Drawing.DrawString(new Vector2(ScreenPosition.x, ScreenPosition.y), $"{nameStr}{DistanceStr}{HealthStr}", Helpers.ColourHelper.GetColour("AnimalColour"), true, 12, FontStyle.Normal, 0);
+                    Vector3 ScreenPosition = Globals.WorldPointToScreenPoint(animal.transform.position);
+                    if (!(Globals.IsScreenPointVisible(ScreenPosition)))
+                        continue;
+                    int Distance = (int)Vector3.Distance(Globals.MainCamera.transform.position, animal.transform.position);
+                    int Health = animal.Health;
+                    string DistanceStr = Globals.Config.Animal.Distance ? $"({Distance.ToString()}m)" : "";
+                    string nameStr = Globals.Config.Animal.Name ? $"{animal.EntityName}" : "";
+                    string HealthStr = Globals.Config.Animal.Health ? $"({Health}hp)" : "";
+                    if (Distance > Globals.Config.Animal.MaxDistance)
+                        continue;
+                    Drawing.DrawString(new Vector2(ScreenPosition.x, ScreenPosition.y), $"{nameStr}{DistanceStr}{HealthStr}", Helpers.ColourHelper.GetColour("Animal Colour"), true, 12, FontStyle.Normal, 0);
+                }
             }
+            catch { }
         }
     }
 }

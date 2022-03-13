@@ -12,5 +12,6 @@ namespace Cheat.Configs
         public bool Name = true;
         public bool Health = true;
         public bool Distance = true;
+        public int MaxDistance = 100;
     }
 }

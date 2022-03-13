@@ -17,7 +17,7 @@ namespace Cheat.Menu
 
         SubMenu Esp = new SubMenu("ESP", "Draw Visuals");
         SubMenu Aimbot = new SubMenu("Aimbot", "Lock Onto Enemies");
-        SubMenu PlayerMenu = new SubMenu("Player Menu", "Allows You To Abuse Players");
+        SubMenu PlayerMenu = new SubMenu("Player Menu", "Allows You To Abuse Other Players");
         SubMenu Colours = new SubMenu("Colour Menu", "Allows You To Change Colours On The Cheat");
         SubMenu Config = new SubMenu("Config Menu", "Allows You To Save And Load Settings");
 
@@ -58,6 +58,61 @@ namespace Cheat.Menu
             #endregion
         }
         #endregion
+        #region ESP
+        void ESP()
+        {
+            
+            SubMenu player = new SubMenu("Player Esp", "Shows Player Information");
+            SubMenu zombies = new SubMenu("Zombie Esp", "Shows Zombie Information");
+            SubMenu animal = new SubMenu("animal Esp", "Shows animal Information");
+
+            Esp.Items.Add(player);
+            Esp.Items.Add(zombies);
+            Esp.Items.Add(animal);
+            #region Player
+            Toggle playername = new Toggle("Player Name", "Shows The Player Name", ref Globals.Config.Player.Name);
+            Toggle playerdistance = new Toggle("Player Distance", "Shows Your Distance From The Player", ref Globals.Config.Player.Distance);
+            Toggle playerhealth = new Toggle("Player Health", "Shows The Player Health", ref Globals.Config.Player.Health);
+            IntSlider playermaxdistance = new IntSlider("Max Distance", "Max Distance Players Will Render", ref Globals.Config.Player.MaxDistance, 0, 10000, 50);
+            Toggle playeradmin = new Toggle("Show Admin Information", "Shows If Player Is An Admin", ref Globals.Config.Player.ShowAdmins);
+            Toggle playerbox = new Toggle("Show Boxes", "Draws Boxes Around Players", ref Globals.Config.Player.Box);
+            Toggle playerhealthbar = new Toggle("Show Health Bar", "Draws Health Bar Next To Player", ref Globals.Config.Player.HealthBar);
+            Toggle playerchams = new Toggle("Chams", "Changes Player Model Colour", ref Globals.Config.Player.Chams);
+
+            player.Items.Add(playername);
+            player.Items.Add(playerdistance);
+            player.Items.Add(playerhealth);
+            player.Items.Add(playermaxdistance);
+            player.Items.Add(playeradmin);
+            player.Items.Add(playerbox);
+            player.Items.Add(playerhealthbar);
+            player.Items.Add(playerchams);
+            #endregion
+            #region Zombie
+            Toggle zombiename = new Toggle("Zombie Name", "Shows The Type Of Zombie", ref Globals.Config.Zombie.Name);
+            Toggle zombiedistance = new Toggle("Zombie Distance", "Shows Your Distance From The Zombie", ref Globals.Config.Zombie.Distance);
+            Toggle zombiehealth = new Toggle("Zombie Health", "Shows The Zombie Health", ref Globals.Config.Zombie.Health);
+            IntSlider zombiemaxdistance = new IntSlider("Max Distance", "Max Distance Zombies Will Render", ref Globals.Config.Zombie.MaxDistance, 0, 2000, 50);
+
+            zombies.Items.Add(zombiename);
+            zombies.Items.Add(zombiedistance);
+            zombies.Items.Add(zombiehealth);
+            zombies.Items.Add(zombiemaxdistance);
+            #endregion
+
+            #region Animal
+            Toggle animalname = new Toggle("Animal Name", "Shows The Type Of Animal", ref Globals.Config.Animal.Name);
+            Toggle animaldistance = new Toggle("Animal Distance", "Shows Your Distance From The Animal", ref Globals.Config.Animal.Distance);
+            Toggle animalhealth = new Toggle("Animal Health", "Shows The Animal Health", ref Globals.Config.Animal.Health);
+            IntSlider animalmaxdistance = new IntSlider("Max Distance", "Max Distance Animals Will Render", ref Globals.Config.Animal.MaxDistance, 0, 2000, 50);
+
+            animal.Items.Add(animalname);
+            animal.Items.Add(animaldistance);
+            animal.Items.Add(animalhealth);
+            animal.Items.Add(animalmaxdistance);
+            #endregion
+        }
+        #endregion
         void Start()
         {
             MenuPos.x = 50;
@@ -70,8 +125,8 @@ namespace Cheat.Menu
             MainMenu.Items.Add(Colours);
             MainMenu.Items.Add(Config);
 
-            
-
+            Configs();
+            ESP();
             // amount of colours in the dictionary is always the same in game so we dont need to update this.
             foreach (KeyValuePair<string, Color32> value in Globals.Config.Colours.GlobalColors)
             {
@@ -92,7 +147,7 @@ namespace Cheat.Menu
                 Colours.Items.Add(colourmenu);
             }
 
-            Esp.Items.Add(new Toggle("Name", "sdggs", ref Globals.Config.Zombie.Name));
+           
         }
         void OnGUI()
         {
@@ -127,7 +182,7 @@ namespace Cheat.Menu
                 }
             }
 
-            Drawing.DrawString(new Vector2(MenuPos.x - 5, MenuPos.y - 20), text, Color.red, false, 12, FontStyle.Normal, 0); // draw menu history
+            Drawing.DrawString(new Vector2(MenuPos.x - 5, MenuPos.y - 20), text, Helpers.ColourHelper.GetColour("Menu Primary Colour"), false, 12, FontStyle.Normal, 0); // draw menu history
             #region PlayerMenu
             if (CurrentMenu == PlayerMenu)
             {
@@ -155,27 +210,27 @@ namespace Cheat.Menu
                 if (Selected == entity)
                 {
                     if (entity.Description != null)
-                        Drawing.DrawString(new Vector2(10f, 180f + 20f * (float)CurrentMenu.Items.Count), entity.Description, Color.red, false, 12, FontStyle.Normal, 0);
+                        Drawing.DrawString(new Vector2(MenuPos.x - 5, MenuPos.y + (20f * (float)CurrentMenu.Items.Count)), entity.Description, Helpers.ColourHelper.GetColour("Menu Primary Colour"), false, 12, FontStyle.Normal, 0);
                     if (entity is Toggle)
                     {
                         Toggle toggle = entity as Toggle;
                         string ToggleStr = toggle.Value ? "Enabled" : "Disabled";
-                        Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"- {entity.Name}: {ToggleStr}", Color.red, false, 14, FontStyle.Normal, 0);
+                        Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"- {entity.Name}: {ToggleStr}", Helpers.ColourHelper.GetColour("Menu Primary Colour"), false, 14, FontStyle.Normal, 0);
                     }
                     if (entity is IntSlider)
                     {
                         IntSlider slider = entity as IntSlider;
-                        Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"- {entity.Name}: {slider.Value}", Color.red, false, 14, FontStyle.Normal, 0);
+                        Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"- {entity.Name}: {slider.Value}", Helpers.ColourHelper.GetColour("Menu Primary Colour"), false, 14, FontStyle.Normal, 0);
                     }
                     if (entity is FloatSlider)
                     {
                         FloatSlider slider = entity as FloatSlider;
-                        Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"- {entity.Name}: {slider.Value}", Color.red, false, 14, FontStyle.Normal, 0);
+                        Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"- {entity.Name}: {slider.Value}", Helpers.ColourHelper.GetColour("Menu Primary Colour"), false, 14, FontStyle.Normal, 0);
                     }
                     if (entity is SubMenu)
-                    Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"> {entity.Name}", Color.red, false, 14, FontStyle.Normal, 0);
+                    Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"> {entity.Name}", Helpers.ColourHelper.GetColour("Menu Primary Colour"), false, 14, FontStyle.Normal, 0);
                     if (entity is Button)
-                        Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"- {entity.Name}", Color.red, false, 14, FontStyle.Normal, 0);
+                        Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"- {entity.Name}", Helpers.ColourHelper.GetColour("Menu Primary Colour"), false, 14, FontStyle.Normal, 0);
                 }
                 else
                 {
@@ -183,22 +238,22 @@ namespace Cheat.Menu
                     {
                         Toggle toggle = entity as Toggle;
                         string ToggleStr = toggle.Value ? "Enabled" : "Disabled";
-                        Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"- {entity.Name}: {ToggleStr}", Color.white, false, 12, FontStyle.Normal, 0);
+                        Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"- {entity.Name}: {ToggleStr}", Helpers.ColourHelper.GetColour("Menu Secondary Colour"), false, 12, FontStyle.Normal, 0);
                     }
                     if (entity is IntSlider)
                     {
                         IntSlider slider = entity as IntSlider;
-                        Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"- {entity.Name}: {slider.Value}", Color.white, false, 14, FontStyle.Normal, 0);
+                        Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"- {entity.Name}: {slider.Value}", Helpers.ColourHelper.GetColour("Menu Secondary Colour"), false, 14, FontStyle.Normal, 0);
                     }
                     if (entity is FloatSlider)
                     {
                         FloatSlider slider = entity as FloatSlider;
-                        Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"- {entity.Name}: {slider.Value}", Color.white, false, 14, FontStyle.Normal, 0);
+                        Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"- {entity.Name}: {slider.Value}", Helpers.ColourHelper.GetColour("Menu Secondary Colour"), false, 14, FontStyle.Normal, 0);
                     }
                     if (entity is SubMenu)
-                    Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"> {entity.Name}", Color.white, false, 12, FontStyle.Normal, 0);
+                    Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"> {entity.Name}", Helpers.ColourHelper.GetColour("Menu Secondary Colour"), false, 12, FontStyle.Normal, 0);
                     if(entity is Button)
-                        Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"- {entity.Name}", Color.white, false, 12, FontStyle.Normal, 0);
+                        Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"- {entity.Name}", Helpers.ColourHelper.GetColour("Menu Secondary Colour"), false, 12, FontStyle.Normal, 0);
                 }
             }
               

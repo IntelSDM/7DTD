@@ -19,23 +19,29 @@ namespace Cheat.Esp
         }
         void Update1()
         {
-            if (GameManager.Instance.World == null)
-                return;
-            if (!(Time.time > CacheTime))
-                return;
-            ZombieList.Clear();
-            foreach (EntityZombie zombie in FindObjectsOfType<EntityZombie>().ToList())
+            try
             {
-                if (zombie.Health <= 0)
-                    continue;
-                if (zombie.IsAlive() == false)
-                    continue;
-                if (zombie == null)
-                    continue;
+                if (GameManager.Instance.World == null)
+                    return;
+                if (!(Time.time > CacheTime))
+                    return;
+                ZombieList.Clear();
+                foreach (EntityZombie zombie in FindObjectsOfType<EntityZombie>().ToList())
+                {
+                    if (zombie.Health <= 0)
+                        continue;
+                    if (zombie.IsAlive() == false)
+                        continue;
+                    if (zombie == null)
+                        continue;
 
-                ZombieList.Add(zombie);
+                    ZombieList.Add(zombie);
+                }
+                CacheTime = Time.time + 5;
             }
-            CacheTime = Time.time + 5;
+            catch 
+            { 
+            }
         }
         [ObfuscationAttribute(Exclude = true)]
         void OnGUI()
@@ -45,29 +51,33 @@ namespace Cheat.Esp
         }
         void OnGUI1()
         {
-          
-            Drawing.DrawString(new Vector2(10, 10), "sdgsdgdgs", Color.red, false, 16, FontStyle.Normal, 0);
-            if (GameManager.Instance.World == null)
-                return;
-            foreach (EntityZombie zombie in ZombieList)
+            try
             {
-                if (zombie.Health <= 0)
-                    continue;
-                if (zombie.IsAlive() == false)
-                    continue;
-                if (zombie == null)
-                    continue;
+                if (GameManager.Instance.World == null)
+                    return;
+                foreach (EntityZombie zombie in ZombieList)
+                {
+                    if (zombie.Health <= 0)
+                        continue;
+                    if (zombie.IsAlive() == false)
+                        continue;
+                    if (zombie == null)
+                        continue;
 
-                Vector3 ScreenPosition = Globals.WorldPointToScreenPoint(zombie.transform.position);
-                if (!(Globals.IsScreenPointVisible(ScreenPosition)))
-                    continue;
-                int Distance = (int)Vector3.Distance(Globals.MainCamera.transform.position, zombie.transform.position);
-                int Health = zombie.Health;
-                string DistanceStr = Globals.Config.Zombie.Distance ? $"({Distance.ToString()}m)" : "";
-                string nameStr = Globals.Config.Zombie.Name ? $"{zombie.EntityName}" : "";
-                string HealthStr = Globals.Config.Zombie.Health ? $"({Health}hp)" : "";
-                Drawing.DrawString(new Vector2(ScreenPosition.x, ScreenPosition.y), $"{nameStr}{DistanceStr}{HealthStr}", Helpers.ColourHelper.GetColour("ZombieColour"), true, 12, FontStyle.Normal, 0);
+                    Vector3 ScreenPosition = Globals.WorldPointToScreenPoint(zombie.transform.position);
+                    if (!(Globals.IsScreenPointVisible(ScreenPosition)))
+                        continue;
+                    int Distance = (int)Vector3.Distance(Globals.MainCamera.transform.position, zombie.transform.position);
+                    int Health = zombie.Health;
+                    string DistanceStr = Globals.Config.Zombie.Distance ? $"({Distance.ToString()}m)" : "";
+                    string nameStr = Globals.Config.Zombie.Name ? $"{zombie.EntityName}" : "";
+                    string HealthStr = Globals.Config.Zombie.Health ? $"({Health}hp)" : "";
+                    if (Distance > Globals.Config.Zombie.MaxDistance)
+                        continue;
+                    Drawing.DrawString(new Vector2(ScreenPosition.x, ScreenPosition.y), $"{nameStr}{DistanceStr}{HealthStr}", Helpers.ColourHelper.GetColour("Zombie Colour"), true, 12, FontStyle.Normal, 0);
+                }
             }
+            catch { }
         }
 
     }
