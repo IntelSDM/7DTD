@@ -32,8 +32,6 @@ namespace Cheat.Esp
         }
         void OnGUI()
         {
-            Globals.MainCamera = Camera.main;
-            Drawing.DrawString(new Vector2(10, 10), "sdgsdgdgs", Color.red, false, 16, FontStyle.Normal, 0);
             if (GameManager.Instance.World == null)
                 return;
             foreach (EntityAnimal animal in AnimalList)
@@ -49,7 +47,7 @@ namespace Cheat.Esp
                 if (!(Globals.IsScreenPointVisible(ScreenPosition)))
                     continue;
                 int Distance = (int)Vector3.Distance(Globals.MainCamera.transform.position, animal.transform.position);
-                Drawing.DrawString(new Vector2(ScreenPosition.x, ScreenPosition.y), $"{animal.EntityName}({Distance}m)", Color.blue, true, 12, FontStyle.Normal, 0);
+                Drawing.DrawString(new Vector2(ScreenPosition.x, ScreenPosition.y), $"{animal.EntityName}({Distance}m)", Helpers.ColourHelper.GetColour("AnimalColour"), true, 12, FontStyle.Normal, 0);
             }
 
         }

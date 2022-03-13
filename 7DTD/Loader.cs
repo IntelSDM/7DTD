@@ -14,6 +14,9 @@ namespace Cheat
 
 		//	Loader.hackObject.AddComponent<Globals>();
 			Loader.hackObject.AddComponent<Cheat.Esp.Zombie>();
+			Loader.hackObject.AddComponent<Cheat.Esp.Animal>();
+			Loader.hackObject.AddComponent<Cheat.Esp.Player>();
+			Loader.hackObject.AddComponent<Globals>();
 			UnityEngine.Object.DontDestroyOnLoad(hackObject);
 
 		}

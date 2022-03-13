@@ -50,7 +50,7 @@ namespace Cheat.Esp
                 if (!(Globals.IsScreenPointVisible(ScreenPosition)))
                     continue;
                 int Distance = (int)Vector3.Distance(Globals.MainCamera.transform.position, zombie.transform.position);
-                Drawing.DrawString(new Vector2(ScreenPosition.x, ScreenPosition.y), $"{zombie.EntityName}({Distance}m)", Color.red, true, 12, FontStyle.Normal, 0);
+                Drawing.DrawString(new Vector2(ScreenPosition.x, ScreenPosition.y), $"{zombie.EntityName}({Distance}m)", Helpers.ColourHelper.GetColour("ZombieColour"), true, 12, FontStyle.Normal, 0);
             }
 
         }

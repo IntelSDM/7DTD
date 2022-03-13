@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 using UnityEngine;
 namespace Cheat
 {
-    class Globals
+    class Globals : MonoBehaviour
     {
         public static Camera MainCamera;
+        public static Cheat.Configs.Config Config = new Configs.Config();
         public static bool IsScreenPointVisible(Vector3 screenPoint)
         {
             return screenPoint.z > 0.01f && screenPoint.x > -5f && screenPoint.y > -5f && screenPoint.x < (float)Screen.width && screenPoint.y < (float)Screen.height;
@@ -36,6 +37,11 @@ namespace Cheat
             }
 
             return result;
+        }
+        private void Start()
+        {
+            Helpers.ConfigHelper.CreateEnvironment();
+            Helpers.ColourHelper.AddColours();
         }
     }
 }
