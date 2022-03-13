@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 namespace Cheat
 {
+    /*
+    You may see some unity methods just calling a function of the method with a 1 on the end. This is because we are excluding the unity method from obfuscation.
+    We need to exclude these to keep them working but we make another function to keep the actual code obfuscated.
+     */
     class Globals : MonoBehaviour
     {
         public static Camera MainCamera;
@@ -38,6 +43,7 @@ namespace Cheat
 
             return result;
         }
+        [ObfuscationAttribute(Exclude = true)]
         private void Start()
         {
             Helpers.ConfigHelper.CreateEnvironment();

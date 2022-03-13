@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -11,7 +12,12 @@ namespace Cheat.Esp
     {
         private float CacheTime;
         public static List<EntityZombie> ZombieList = new List<EntityZombie>();
+        [ObfuscationAttribute(Exclude = true)]
         void Update()
+        {
+            Update1();
+        }
+        void Update1()
         {
             if (GameManager.Instance.World == null)
                 return;
@@ -31,7 +37,13 @@ namespace Cheat.Esp
             }
             CacheTime = Time.time + 5;
         }
+        [ObfuscationAttribute(Exclude = true)]
         void OnGUI()
+        {
+            OnGUI1();
+
+        }
+        void OnGUI1()
         {
             Globals.MainCamera = Camera.main;
             Drawing.DrawString(new Vector2(10, 10), "sdgsdgdgs", Color.red, false, 16, FontStyle.Normal, 0);
@@ -50,9 +62,12 @@ namespace Cheat.Esp
                 if (!(Globals.IsScreenPointVisible(ScreenPosition)))
                     continue;
                 int Distance = (int)Vector3.Distance(Globals.MainCamera.transform.position, zombie.transform.position);
-                Drawing.DrawString(new Vector2(ScreenPosition.x, ScreenPosition.y), $"{zombie.EntityName}({Distance}m)", Helpers.ColourHelper.GetColour("ZombieColour"), true, 12, FontStyle.Normal, 0);
+                int Health = zombie.Health;
+                string DistanceStr = Globals.Config.Zombie.Distance ? $"({Distance.ToString()}m)" : "";
+                string nameStr = Globals.Config.Zombie.Name ? $"{zombie.EntityName}" : "";
+                string HealthStr = Globals.Config.Zombie.Health ? $"({Health}hp)" : "";
+                Drawing.DrawString(new Vector2(ScreenPosition.x, ScreenPosition.y), $"{nameStr}{DistanceStr}{HealthStr}", Helpers.ColourHelper.GetColour("ZombieColour"), true, 12, FontStyle.Normal, 0);
             }
-
         }
 
     }
