@@ -12,10 +12,12 @@ namespace Cheat.Menu
         Vector2 MenuPos;
         uint MainMenuIndex = 0;
         private Entity Selected;
+        private double NextPlayerTime;
         SubMenu MainMenu = new SubMenu("Main","Menu");
 
         SubMenu Esp = new SubMenu("ESP", "Draw Visuals");
         SubMenu Aimbot = new SubMenu("Aimbot", "Lock Onto Enemies");
+        SubMenu PlayerMenu = new SubMenu("PlayerMenu", "Allows You To Abuse Players");
 
         List<SubMenu> MenuHistory = new List<SubMenu>();
         SubMenu CurrentMenu;
@@ -28,6 +30,7 @@ namespace Cheat.Menu
             CurrentMenu = MainMenu;
             MainMenu.Items.Add(Esp);
             MainMenu.Items.Add(Aimbot);
+            MainMenu.Items.Add(PlayerMenu);
             Esp.Items.Add(new Toggle("Name", "sdggs", ref Globals.Config.Zombie.Name));
         }
         void OnGUI()
@@ -39,10 +42,10 @@ namespace Cheat.Menu
         {
             Update1();
           
-        }   
+        }
         void OnGUI1()
         {
-           
+
             string text = string.Empty;
             if (MenuHistory.Count > 0)
             {
@@ -62,8 +65,26 @@ namespace Cheat.Menu
                 }
             }
 
-            Drawing.DrawString(new Vector2(MenuPos.x -5, MenuPos.y - 20), text, Color.red, false, 12, FontStyle.Normal, 0); // draw menu history
-
+            Drawing.DrawString(new Vector2(MenuPos.x - 5, MenuPos.y - 20), text, Color.red, false, 12, FontStyle.Normal, 0); // draw menu history
+            if (CurrentMenu == PlayerMenu)
+            {
+                // so basically we can add options to the playerlist here so we can make a button to kill that player etc
+                if (Time.time > NextPlayerTime)
+                {
+                    PlayerMenu.Items.Clear();
+                    foreach (EntityPlayer player in Cheat.Esp.Player.PlayerList)
+                    {
+                        if (player == null)
+                            continue;
+                        if (!player.IsAlive())
+                            continue;
+                        SubMenu playermenu = new SubMenu(player.EntityName,"");
+                        PlayerMenu.Items.Add(playermenu);
+                        playermenu.Items.Add(new Button("Kill Player", "Kills The Player", () => Cheat.Misc.KillPlayer(player)));
+                    }
+                    NextPlayerTime = Time.time + 5;
+                }
+            }
             foreach (Entity entity in CurrentMenu.Items)
             {
                 
@@ -74,17 +95,25 @@ namespace Cheat.Menu
                     {
                         Toggle toggle = entity as Toggle;
                         string ToggleStr = toggle.Value ? "Enabled" : "Disabled";
-                        Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), "> " + entity.Name + ToggleStr, Color.red, false, 14, FontStyle.Normal, 0);
+                        Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"- {entity.Name}: {ToggleStr}", Color.red, false, 14, FontStyle.Normal, 0);
                     }
                     if (entity is SubMenu)
-                    Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), "> " + entity.Name, Color.red, false, 14, FontStyle.Normal, 0);
+                    Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"> {entity.Name}", Color.red, false, 14, FontStyle.Normal, 0);
+                    if (entity is Button)
+                        Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"- {entity.Name}", Color.red, false, 14, FontStyle.Normal, 0);
                 }
                 else
                 {
                     if (entity is Toggle)
-                    Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), entity.Name, Color.white, false, 12, FontStyle.Normal, 0);
+                    {
+                        Toggle toggle = entity as Toggle;
+                        string ToggleStr = toggle.Value ? "Enabled" : "Disabled";
+                        Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"- {entity.Name}: {ToggleStr}", Color.white, false, 12, FontStyle.Normal, 0);
+                    }
                     if (entity is SubMenu)
-                    Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), entity.Name, Color.white, false, 12, FontStyle.Normal, 0);
+                    Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"> {entity.Name}", Color.white, false, 12, FontStyle.Normal, 0);
+                    if(entity is Button)
+                        Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"- {entity.Name}", Color.white, false, 12, FontStyle.Normal, 0);
                 }
             }
               
@@ -92,6 +121,7 @@ namespace Cheat.Menu
         void Update1()
         {
 
+            #region Controls
             if (Input.GetKeyDown(KeyCode.DownArrow) && CurrentMenu.index < CurrentMenu.Items.Count)
                 CurrentMenu.index++;
             if (Input.GetKeyDown(KeyCode.UpArrow) && CurrentMenu.index > 0)
@@ -107,7 +137,8 @@ namespace Cheat.Menu
             {
                 if (CurrentMenu.index == CurrentMenu.Items.IndexOf(entity))
                     Selected = entity;
-              
+                if (entity != Selected)
+                    continue;
                 if (((Input.GetKeyDown(KeyCode.LeftArrow) && Selected is SubMenu)) && CurrentMenu.index < CurrentMenu.Items.Count)
                 {
                  
@@ -128,7 +159,13 @@ namespace Cheat.Menu
                     Toggle toggle = entity as Toggle;
                     toggle.Value = false;
                 }
+                if (Selected is Button && (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.Return)))
+                {
+                    Button button = entity as Button;
+                    button.Method();
+                }
             }
+            #endregion
         }
     }
 }

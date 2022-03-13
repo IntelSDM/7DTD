@@ -19,10 +19,12 @@ namespace Cheat.Esp
     
         void Update1()
         {
+           
             if (GameManager.Instance.World == null)
                 return;
             if (!(Time.time > CacheTime))
                 return;
+            Globals.LocalPlayer = GameManager.Instance.World.GetPrimaryPlayer();
             PlayerList.Clear();
             foreach (EntityPlayer player in GameManager.Instance.World.Players.list)
             {

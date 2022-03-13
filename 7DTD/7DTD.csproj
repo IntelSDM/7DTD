@@ -93,10 +93,12 @@
     <Compile Include="Helpers\ColourHelper.cs" />
     <Compile Include="Helpers\ConfigHelper.cs" />
     <Compile Include="Loader.cs" />
+    <Compile Include="Menu\Button.cs" />
     <Compile Include="Menu\Entity.cs" />
     <Compile Include="Menu\Main.cs" />
     <Compile Include="Menu\SubMenu.cs" />
     <Compile Include="Menu\Toggle.cs" />
+    <Compile Include="Misc.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
