@@ -10,9 +10,6 @@ namespace Cheat.Menu
     {
         public string Name;
         public string Description;
-        public bool BoolValue;
-        public float FloatValue;
-        public int IntValue;
-        public KeyCode KeyValue;
+
     }
 }

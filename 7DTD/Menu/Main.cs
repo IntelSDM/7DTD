@@ -28,7 +28,7 @@ namespace Cheat.Menu
             CurrentMenu = MainMenu;
             MainMenu.Items.Add(Esp);
             MainMenu.Items.Add(Aimbot);
-          //  test.Items.Add(new Toggle("Toggle Test", "Nah", ref Globals.Config.Player.Name));
+            Esp.Items.Add(new Toggle("Name", "sdggs", ref Globals.Config.Zombie.Name));
         }
         void OnGUI()
         {
@@ -42,11 +42,7 @@ namespace Cheat.Menu
         }   
         void OnGUI1()
         {
-            
-           /* if (currentMenu.Items.Count == 0)
-            {
-                return;
-            }*/
+           
             string text = string.Empty;
             if (MenuHistory.Count > 0)
             {
@@ -70,12 +66,24 @@ namespace Cheat.Menu
 
             foreach (Entity entity in CurrentMenu.Items)
             {
+                
                 if (Selected == entity)
                 {
-                    Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), "> " + entity.Name, Color.red, false, 12, FontStyle.Normal, 0);
+
+                    if (entity is Toggle)
+                    {
+                        Toggle toggle = entity as Toggle;
+                        string ToggleStr = toggle.Value ? "Enabled" : "Disabled";
+                        Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), "> " + entity.Name + ToggleStr, Color.red, false, 14, FontStyle.Normal, 0);
+                    }
+                    if (entity is SubMenu)
+                    Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), "> " + entity.Name, Color.red, false, 14, FontStyle.Normal, 0);
                 }
                 else
                 {
+                    if (entity is Toggle)
+                    Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), entity.Name, Color.white, false, 12, FontStyle.Normal, 0);
+                    if (entity is SubMenu)
                     Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), entity.Name, Color.white, false, 12, FontStyle.Normal, 0);
                 }
             }
@@ -100,7 +108,7 @@ namespace Cheat.Menu
                 if (CurrentMenu.index == CurrentMenu.Items.IndexOf(entity))
                     Selected = entity;
               
-                if (((Input.GetKeyDown(KeyCode.LeftArrow) && Selected is SubMenu) || Input.GetKeyDown(KeyCode.Backspace)) && CurrentMenu != MainMenu)
+                if (((Input.GetKeyDown(KeyCode.LeftArrow) && Selected is SubMenu)) && CurrentMenu.index < CurrentMenu.Items.Count)
                 {
                  
                 }
@@ -110,7 +118,16 @@ namespace Cheat.Menu
                     MenuHistory.Add(entity as SubMenu);
                     return; // opens a new menu so we need to exit the loop to then render our new currentmenu
                 }
-
+                if (Selected is Toggle && Input.GetKeyDown(KeyCode.RightArrow))
+                {
+                    Toggle toggle = entity as Toggle;
+                    toggle.Value = true;
+                }
+                if (Selected is Toggle && Input.GetKeyDown(KeyCode.LeftArrow))
+                {
+                    Toggle toggle = entity as Toggle;
+                    toggle.Value = false;
+                }
             }
         }
     }

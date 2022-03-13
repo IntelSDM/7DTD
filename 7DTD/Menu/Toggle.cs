@@ -8,11 +8,27 @@ namespace Cheat.Menu
 {
     class Toggle : Entity
     {
-        public Toggle(string text,string description,ref bool value)
+        public unsafe bool Value
+        {
+            get
+            {
+                return *this.Bool;
+            }
+            set
+            {
+                *this.Bool = value;
+            }
+        }
+        public unsafe Toggle(string text,string description,ref bool value)
         {
             base.Name = text;
             base.Description = description;
-            base.BoolValue = value;
+            fixed (bool* ptr = &value)
+            {
+                bool* @Value = ptr;
+                this.Bool = @Value;
+            }
         }
+        private unsafe bool* Bool;
     }
 }
