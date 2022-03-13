@@ -45,7 +45,7 @@ namespace Cheat.Esp
         }
         void OnGUI1()
         {
-            Globals.MainCamera = Camera.main;
+          
             Drawing.DrawString(new Vector2(10, 10), "sdgsdgdgs", Color.red, false, 16, FontStyle.Normal, 0);
             if (GameManager.Instance.World == null)
                 return;
