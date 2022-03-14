@@ -75,7 +75,7 @@ namespace Cheat.Esp
                     string DistanceStr = Globals.Config.Player.Distance ? $"({Distance.ToString()}m)" : "";
                     string PlayernameStr = Globals.Config.Player.Name ? $"{player.EntityName}" : "";
                     string HealthStr = Globals.Config.Player.Health ? $"({Health}hp)" : "";
-                    Vector3 HeadPosition = Globals.WorldPointToScreenPoint(Globals.GetLimbPosition(player.transform, "Head"));
+                    Vector3 HeadPosition = Globals.WorldPointToScreenPoint(player.emodel.GetHeadTransform().position);
 
                     if (Distance > Globals.Config.Player.MaxDistance)
                         continue;
@@ -84,15 +84,16 @@ namespace Cheat.Esp
                     if ((player.IsAdmin || player.IsSpectator) && Globals.Config.Player.ShowAdmins)
                         Drawing.DrawString(new Vector2(ScreenPosition.x, ScreenPosition.y + 10), $"Admin", Helpers.ColourHelper.GetColour("Player Colour"), true, 11, FontStyle.Normal, 3);
 
-                    if (Globals.Config.Player.Chams)
+                   if (Globals.Config.Player.Chams)
                         Helpers.ShaderHelper.ApplyShader(Helpers.ShaderHelper.Shaders["Chams"], player.gameObject, Helpers.ColourHelper.GetColour("Player Chams Visible Colour"), Helpers.ColourHelper.GetColour("Player Chams Invisible Colour"));
                     else
                         Helpers.ShaderHelper.RemoveShaders(player.gameObject);
 
-                    if (Globals.GetLimbPosition(player.transform, "Head") == null)
-                        continue;
-                    float height = Mathf.Abs(ScreenPosition.y - HeadPosition.y);
-                    Drawing.PlayerCornerBox(new Vector2(HeadPosition.x, HeadPosition.y), height / 2, height, 2, Distance, Helpers.ColourHelper.GetColour("Player Box Colour"));
+                    if (Globals.Config.Player.Box && Distance < 200)
+                    {
+                        float height = Mathf.Abs(ScreenPosition.y - HeadPosition.y);
+                        Drawing.PlayerCornerBox(new Vector2(HeadPosition.x, HeadPosition.y), height / 2, height, 2, Distance, Helpers.ColourHelper.GetColour("Player Box Colour"));
+                    }
                 }
             }
             catch { }

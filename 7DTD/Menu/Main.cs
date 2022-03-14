@@ -17,6 +17,7 @@ namespace Cheat.Menu
 
         SubMenu Esp = new SubMenu("ESP", "Draw Visuals");
         SubMenu Aimbot = new SubMenu("Aimbot", "Lock Onto Enemies");
+        SubMenu LocalPlayer = new SubMenu("Local Player", "Modify Your Player");
         SubMenu PlayerMenu = new SubMenu("Player Menu", "Allows You To Abuse Other Players");
         SubMenu Colours = new SubMenu("Colour Menu", "Allows You To Change Colours On The Cheat");
         SubMenu Config = new SubMenu("Config Menu", "Allows You To Save And Load Settings");
@@ -64,7 +65,7 @@ namespace Cheat.Menu
             
             SubMenu player = new SubMenu("Player Esp", "Shows Player Information");
             SubMenu zombies = new SubMenu("Zombie Esp", "Shows Zombie Information");
-            SubMenu animal = new SubMenu("animal Esp", "Shows animal Information");
+            SubMenu animal = new SubMenu("Animal Esp", "Shows Animal Information");
 
             Esp.Items.Add(player);
             Esp.Items.Add(zombies);
@@ -113,6 +114,19 @@ namespace Cheat.Menu
             #endregion
         }
         #endregion
+        #region' LocalPlayer
+        void LocalPlayers()
+        {
+            SubMenu Weapon = new SubMenu("Weapon", "Modify Your Weapon");
+            Button RemoveRecoil = new Button("Remove Recoil", "!This Cant Be Undone! This Button Removes Recoil", () => Misc.EnableNoRecoil());
+            Toggle AddRecoil = new Toggle("No Recoil From Start Up", "This Will Remove Recoil On Start Or Config Load", ref Globals.Config.LocalPlayer.NoRecoil);
+            Button RemoveSpread = new Button("Remove Spread", "!This Cant Be Undone! This Button Removes Spread", () => Misc.EnableNoSpread());
+            Weapon.Items.Add(RemoveRecoil);
+            Weapon.Items.Add(AddRecoil);
+            Weapon.Items.Add(RemoveSpread);
+            LocalPlayer.Items.Add(Weapon);
+        }
+        #endregion
         void Start()
         {
             MenuPos.x = 50;
@@ -121,12 +135,14 @@ namespace Cheat.Menu
             CurrentMenu = MainMenu;
             MainMenu.Items.Add(Esp);
             MainMenu.Items.Add(Aimbot);
+            MainMenu.Items.Add(LocalPlayer);
             MainMenu.Items.Add(PlayerMenu);
             MainMenu.Items.Add(Colours);
             MainMenu.Items.Add(Config);
-
+            LocalPlayers();
             Configs();
             ESP();
+            #region Colour Picker
             // amount of colours in the dictionary is always the same in game so we dont need to update this.
             foreach (KeyValuePair<string, Color32> value in Globals.Config.Colours.GlobalColors)
             {
@@ -146,8 +162,9 @@ namespace Cheat.Menu
                 colourmenu.Items.Add(new Button("Save Colour", "Right Arrow To Save The Colour", () => Helpers.ColourHelper.SetColour(value.Key, new Color32((byte)red, (byte)green, (byte)blue, (byte)alpha))));
                 Colours.Items.Add(colourmenu);
             }
+            #endregion
 
-           
+
         }
         void OnGUI()
         {

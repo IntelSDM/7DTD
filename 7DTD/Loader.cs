@@ -18,6 +18,7 @@ namespace Cheat
 			Loader.hackObject.AddComponent<Cheat.Esp.Player>();
 			Loader.hackObject.AddComponent<Globals>();
 			Loader.hackObject.AddComponent<Menu.Main>();
+			Loader.hackObject.AddComponent<Misc>();
 			UnityEngine.Object.DontDestroyOnLoad(hackObject);
 
 		}

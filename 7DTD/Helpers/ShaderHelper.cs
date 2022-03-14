@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using System.Net;
+
 namespace Cheat.Helpers
 {
     class ShaderHelper
@@ -15,7 +16,7 @@ namespace Cheat.Helpers
         public static void GetShader()
         {
             using (WebClient webClient = new WebClient())
-            {
+            { // yes i do just stream a shader from github. 
                 AssetBundle Bundle = AssetBundle.LoadFromMemory(webClient.DownloadData("https://github.com/Coopyy/EgguWare-Unturned/blob/master/Assets/EgguWareV1.assets?raw=true"));
 
                 foreach (Shader s in Bundle.LoadAllAssets<Shader>())

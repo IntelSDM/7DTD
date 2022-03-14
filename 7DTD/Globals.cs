@@ -15,7 +15,7 @@ namespace Cheat
     {
         public static Camera MainCamera;
         public static Cheat.Configs.Config Config = new Configs.Config();
-        public static EntityPlayer LocalPlayer;
+        public static EntityPlayerLocal LocalPlayer;
         public static bool IsScreenPointVisible(Vector3 screenPoint)
         {
             return screenPoint.z > 0.01f && screenPoint.x > -5f && screenPoint.y > -5f && screenPoint.x < (float)Screen.width && screenPoint.y < (float)Screen.height;

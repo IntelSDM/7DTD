@@ -12,5 +12,6 @@ namespace Cheat.Configs
         public Player Player = new Player();
         public Zombie Zombie = new Zombie();
         public Animal Animal = new Animal();
+        public LocalPlayer LocalPlayer = new LocalPlayer();
     }
 }

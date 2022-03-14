@@ -88,6 +88,7 @@
     <Compile Include="Configs\Animal.cs" />
     <Compile Include="Configs\Colours.cs" />
     <Compile Include="Configs\Config.cs" />
+    <Compile Include="Configs\LocalPlayer.cs" />
     <Compile Include="Configs\Player.cs" />
     <Compile Include="Configs\Zombie.cs" />
     <Compile Include="Drawing.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="Globals.cs" />
     <Compile Include="Helpers\ColourHelper.cs" />
     <Compile Include="Helpers\ConfigHelper.cs" />
+    <Compile Include="Helpers\DumbHook.cs" />
     <Compile Include="Helpers\ShaderHelper.cs" />
     <Compile Include="Loader.cs" />
     <Compile Include="Menu\Button.cs" />
