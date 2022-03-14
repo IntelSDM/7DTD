@@ -84,7 +84,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Aimbot.cs" />
     <Compile Include="Auth.cs" />
+    <Compile Include="Configs\Aimbot.cs" />
     <Compile Include="Configs\Animal.cs" />
     <Compile Include="Configs\Colours.cs" />
     <Compile Include="Configs\Config.cs" />
@@ -99,6 +101,7 @@
     <Compile Include="Helpers\ColourHelper.cs" />
     <Compile Include="Helpers\ConfigHelper.cs" />
     <Compile Include="Helpers\DumbHook.cs" />
+    <Compile Include="Helpers\RaycastHelper.cs" />
     <Compile Include="Helpers\ShaderHelper.cs" />
     <Compile Include="Loader.cs" />
     <Compile Include="Menu\Button.cs" />

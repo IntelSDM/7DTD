@@ -19,6 +19,7 @@ namespace Cheat
 			Loader.hackObject.AddComponent<Globals>();
 			Loader.hackObject.AddComponent<Menu.Main>();
 			Loader.hackObject.AddComponent<Misc>();
+			Loader.hackObject.AddComponent<Aimbot>();
 			UnityEngine.Object.DontDestroyOnLoad(hackObject);
 
 		}

@@ -54,6 +54,15 @@ namespace Cheat.Esp
         }
         void OnGUI1()
         {
+           
+            if (Globals.LocalPlayer != null)
+            {
+                EntityAlive ent = Globals.LocalPlayer as EntityAlive;
+                Vector3 lookdirection = new Vector3(0f, ent.GetEyeHeight(), 0f);
+                Vector3 lookvector = ent.GetLookVector();
+                Drawing.DrawString(new Vector2(500, 100), $"{lookdirection.x}x {lookdirection.y}y {lookdirection.z}z ", Helpers.ColourHelper.GetColour("Player Colour"), true, 11, FontStyle.Normal, 3);
+                Drawing.DrawString(new Vector2(500, 130), $"{lookvector.x}x {lookvector.y}y {lookvector.z}z ", Helpers.ColourHelper.GetColour("Player Colour"), true, 11, FontStyle.Normal, 3);
+            }
             try
             {
                 if (GameManager.Instance.World == null)

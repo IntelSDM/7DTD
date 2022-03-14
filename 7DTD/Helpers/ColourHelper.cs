@@ -21,6 +21,8 @@ namespace Cheat.Helpers
             AddColour("Player Box Colour", Color.red);
             AddColour("Player Chams Visible Colour", Color.white);
             AddColour("Player Chams Invisible Colour", Color.red);
+            AddColour("Aimbot Fov Colour", Color.white);
+            AddColour("Aimbot Target Line Colour", Color.red);
         }
         public static Color32 GetColour(string identifier)
         {

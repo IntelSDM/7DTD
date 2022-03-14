@@ -10,6 +10,8 @@ namespace Cheat.Configs
     {
         public bool NoSpread = true;
         public bool NoRecoil = true;
-        public bool NoMuzzleFlash = true;
+        public bool NoViewBob = true;
+        public bool UnlimitedAmmo = true;
+        public bool UnlimitedRange = true;
     }
 }

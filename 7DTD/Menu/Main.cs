@@ -25,6 +25,9 @@ namespace Cheat.Menu
         SubMenu Save = new SubMenu("Save Config", "Allows You To Save Settings");
         SubMenu Load = new SubMenu("Load Config", "Allows You To Load Settings");
 
+        SubMenu PlayerAimbot = new SubMenu("Player Aimbot", "Configure Aimbot For Players");
+        SubMenu ZombieAimbot = new SubMenu("Zombie Aimbot", "Configure Aimbot For Zombies");
+
         List<SubMenu> MenuHistory = new List<SubMenu>();
         SubMenu CurrentMenu;
         #region Config
@@ -114,17 +117,50 @@ namespace Cheat.Menu
             #endregion
         }
         #endregion
-        #region' LocalPlayer
+        #region LocalPlayer
         void LocalPlayers()
         {
             SubMenu Weapon = new SubMenu("Weapon", "Modify Your Weapon");
             Button RemoveRecoil = new Button("Remove Recoil", "!This Cant Be Undone! This Button Removes Recoil", () => Misc.EnableNoRecoil());
-            Toggle AddRecoil = new Toggle("No Recoil From Start Up", "This Will Remove Recoil On Start Or Config Load", ref Globals.Config.LocalPlayer.NoRecoil);
+            Toggle NoRecoil = new Toggle("No Recoil From Start Up", "This Will Remove Recoil On Start Or Config Load", ref Globals.Config.LocalPlayer.NoRecoil);
             Button RemoveSpread = new Button("Remove Spread", "!This Cant Be Undone! This Button Removes Spread", () => Misc.EnableNoSpread());
+            Toggle NoSpread = new Toggle("No Spread From Start Up", "This Will Remove Spread On Start Or Config Load", ref Globals.Config.LocalPlayer.NoSpread);
+            Toggle NoViewBob = new Toggle("No Shake", "Removes Shake/ViewBob", ref Globals.Config.LocalPlayer.NoViewBob);
+            Toggle UnlimitedAmmo = new Toggle("Unlimited Ammo", "Gives You Unlimited Ammo", ref Globals.Config.LocalPlayer.UnlimitedAmmo);
+            Toggle UnlimitedRange = new Toggle("Unlimited Range", "Allows You To Shoot Further", ref Globals.Config.LocalPlayer.UnlimitedRange);
             Weapon.Items.Add(RemoveRecoil);
-            Weapon.Items.Add(AddRecoil);
+            Weapon.Items.Add(NoRecoil);
             Weapon.Items.Add(RemoveSpread);
+            Weapon.Items.Add(NoSpread);
+            Weapon.Items.Add(NoViewBob);
+            Weapon.Items.Add(UnlimitedAmmo);
             LocalPlayer.Items.Add(Weapon);
+        }
+        #endregion
+        #region Aimbot
+        void Aimbots()
+        {
+            IntSlider fov = new IntSlider("Aimbot Fov", "Circle Range From Centre Of Your Screen That Aimbot Will Target", ref Globals.Config.Aimbot.Fov, 0, 1200, 25);
+            Toggle drawfov = new Toggle("Draw Fov", "Draws A Circle To Display Aimbot Fov", ref Globals.Config.Aimbot.DrawFov);
+            Toggle drawtarget = new Toggle("Draw Aimbot Target Line", "Draws A Line To Aimbot Target", ref Globals.Config.Aimbot.DrawTargetLine);
+            IntSlider hitchance = new IntSlider("Aimbot Hotchance", "% Chance Your Aimbot Hits Target", ref Globals.Config.Aimbot.Hitchance, 0, 100, 10);
+            Aimbot.Items.Add(PlayerAimbot);
+            Aimbot.Items.Add(ZombieAimbot);
+            Aimbot.Items.Add(fov);
+            Aimbot.Items.Add(drawfov);
+            Aimbot.Items.Add(drawtarget);
+            Aimbot.Items.Add(hitchance);
+
+            Toggle targetplayer = new Toggle("Enable Player Aimbot", "Makes Aimbot Target Players", ref Globals.Config.Aimbot.PlayerAimbot);
+            Toggle visibleplayer = new Toggle("Visibility Check", "Aimbot Only Targets Visible Players", ref Globals.Config.Aimbot.PlayerVisibilityChecks);
+            PlayerAimbot.Items.Add(targetplayer);
+            PlayerAimbot.Items.Add(visibleplayer);
+
+            Toggle targetzombie = new Toggle("Enable Zombie Aimbot", "Makes Aimbot Target Zombies", ref Globals.Config.Aimbot.ZombieAimbot);
+            Toggle visiblezombie = new Toggle("Visibility Check", "Aimbot Only Targets Visible Zombies", ref Globals.Config.Aimbot.ZombieVisibilityChecks);
+            ZombieAimbot.Items.Add(targetzombie);
+            ZombieAimbot.Items.Add(visiblezombie);
+
         }
         #endregion
         void Start()
@@ -142,6 +178,7 @@ namespace Cheat.Menu
             LocalPlayers();
             Configs();
             ESP();
+            Aimbots();
             #region Colour Picker
             // amount of colours in the dictionary is always the same in game so we dont need to update this.
             foreach (KeyValuePair<string, Color32> value in Globals.Config.Colours.GlobalColors)
@@ -260,12 +297,12 @@ namespace Cheat.Menu
                     if (entity is IntSlider)
                     {
                         IntSlider slider = entity as IntSlider;
-                        Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"- {entity.Name}: {slider.Value}", Helpers.ColourHelper.GetColour("Menu Secondary Colour"), false, 14, FontStyle.Normal, 0);
+                        Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"- {entity.Name}: {slider.Value}", Helpers.ColourHelper.GetColour("Menu Secondary Colour"), false, 12, FontStyle.Normal, 0);
                     }
                     if (entity is FloatSlider)
                     {
                         FloatSlider slider = entity as FloatSlider;
-                        Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"- {entity.Name}: {slider.Value}", Helpers.ColourHelper.GetColour("Menu Secondary Colour"), false, 14, FontStyle.Normal, 0);
+                        Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"- {entity.Name}: {slider.Value}", Helpers.ColourHelper.GetColour("Menu Secondary Colour"), false, 12, FontStyle.Normal, 0);
                     }
                     if (entity is SubMenu)
                     Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"> {entity.Name}", Helpers.ColourHelper.GetColour("Menu Secondary Colour"), false, 12, FontStyle.Normal, 0);

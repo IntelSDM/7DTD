@@ -14,12 +14,19 @@ namespace Cheat
 
         // protected virtual float updateAccuracy(ItemActionData _actionData, bool _isAimingGun) hook this to do nospread
         // protected virtual Vector3 fireShot(int _shotIdx, ItemActionRanged.ItemActionDataRanged _actionData) for silentaim 	public virtual Ray GetLookRay()
+        // public virtual float GetRange(ItemActionData _actionData) // longer range
+        // protected virtual Vector3 getDirectionOffset hook this and return target playerpos
 
+      
         #region Hook Methods
         public static DumbHook FireAnimationHook;
         public bool FireAnimationHooked = false;
         public static DumbHook UpdateAccuracyHook;
         public bool AccuracyHooked = false;
+        public static DumbHook UnlimitedRangeHook;
+        public bool UnlimitedRangeHooked = false;
+        public static DumbHook SilentAimHook;
+        public bool SilentAimHooked = false;
         public void FireAnimation()
         {
 
@@ -27,7 +34,19 @@ namespace Cheat
         public float Accuracy(ItemActionData _actionData, bool _isAimingGun)
         {
             (_actionData as ItemActionRanged.ItemActionDataRanged).lastAccuracy = 0;
+
             return (_actionData as ItemActionRanged.ItemActionDataRanged).lastAccuracy;
+        }
+        public float GetRange(ItemActionData _actionData)
+        {
+            vp_FPWeapon weapon = Globals.LocalPlayer?.vp_FPWeapon;
+            Inventory inventory = Globals.LocalPlayer?.inventory;
+            ItemActionAttack gun = inventory?.GetHoldingGun();
+            ItemActionRanged action = gun as ItemActionRanged;
+            if (!Globals.Config.LocalPlayer.UnlimitedRange)
+                return EffectManager.GetValue(PassiveEffects.MaxRange, _actionData.invData.itemValue, action.Range, _actionData.invData.holdingEntity, null, default(FastTags), true, true, true, true, 1, true);
+            else
+                return 100000000000;
         }
         public static void EnableNoRecoil()
         {
@@ -40,6 +59,18 @@ namespace Cheat
             UpdateAccuracyHook = new DumbHook();
             UpdateAccuracyHook.Init(typeof(ItemActionRanged).GetMethod("updateAccuracy", BindingFlags.NonPublic | BindingFlags.Instance), typeof(Misc).GetMethod("Accuracy", BindingFlags.Public | BindingFlags.Instance));
             UpdateAccuracyHook.Hook();
+        }
+        bool silentaim = true;
+        public Vector3 fireShot(int _shotIdx, ItemActionRanged.ItemActionDataRanged _actionData)
+        {
+            // getlookray might be a bit better, we just need the ray.origin - direction to be our target's position
+            return Vector3.zero;
+        }
+        public  Ray GetLookRay()
+        {
+            EntityAlive ent = Globals.LocalPlayer as EntityAlive;
+            return new Ray(ent.position + new Vector3(0f, ent.GetEyeHeight(), 0f), Vector3.zero);
+         //   return new Ray(ent.position + new Vector3(0f, ent.GetEyeHeight(), 0f), ent.GetLookVector());
         }
         #endregion
         [ObfuscationAttribute(Exclude = true)]
@@ -64,7 +95,22 @@ namespace Cheat
                 UpdateAccuracyHook.Hook();
                 AccuracyHooked = true;
             }
+            if ( !UnlimitedRangeHooked) 
+            {
+                UnlimitedRangeHook = new DumbHook();
+                UnlimitedRangeHook.Init(typeof(ItemActionRanged).GetMethod("GetRange", BindingFlags.Public | BindingFlags.Instance), typeof(Misc).GetMethod("GetRange", BindingFlags.Public | BindingFlags.Instance));
+                UnlimitedRangeHook.Hook();
+                UnlimitedRangeHooked = true;
+            }
+            if (!SilentAimHooked) 
+            {
+                SilentAimHook = new DumbHook();
+                SilentAimHook.Init(typeof(EntityAlive).GetMethod("GetLookRay", BindingFlags.Public | BindingFlags.Instance), typeof(Misc).GetMethod("GetLookRay", BindingFlags.Public | BindingFlags.Instance));
+                SilentAimHook.Hook();
+                SilentAimHooked = true;
+            }
             #endregion
+
             if (Globals.LocalPlayer == null)
                 return;
 
@@ -73,17 +119,23 @@ namespace Cheat
             GamePrefs.Set(EnumGamePrefs.DebugMenuEnabled, true);
             GameStats.Set(EnumGameStats.IsPlayerCollisionEnabled, false);
             GameStats.Set(EnumGameStats.IsCreativeMenuEnabled, true);
+
+       //     EntityAlive ent = Globals.LocalPlayer as EntityAlive;
+
             // GamePrefs.GetString(EnumGamePrefs.TelnetPassword)// get rcon password
-         //   EffectManager.GetValue
+            #region LocalPlayer
             try
             {
                 vp_FPWeapon weapon = Globals.LocalPlayer?.vp_FPWeapon;
                 if (weapon)
                 {
-                    weapon.BobRate = Vector4.zero;
-                    weapon.ShakeAmplitude = Vector3.zero;
-                    weapon.StepForceScale = 0f;
-                    weapon.ShakeSpeed = 0;
+                    if (Globals.Config.LocalPlayer.NoViewBob)
+                    {
+                        weapon.BobRate = Vector4.zero;
+                        weapon.ShakeAmplitude = Vector3.zero;
+                        weapon.StepForceScale = 0f;
+                        weapon.ShakeSpeed = 0;
+                    }
                 }
                 Inventory inventory = Globals.LocalPlayer?.inventory;
                 if (inventory != null)
@@ -93,14 +145,19 @@ namespace Cheat
                     {
                      
                     }
-                    gun.InfiniteAmmo = true;
-                    gun.Velocity.Value = 100000000;
-                    gun.Range = 1000000000;
-                    gun.BlockRange = 100000000;
+                    if (Globals.Config.LocalPlayer.UnlimitedAmmo)
+                    {
+                        gun.InfiniteAmmo = true;
+                        gun.Velocity.Value = 100000000;
+                        gun.Range = 1000000000;
+                        gun.AutoFire.Value = true;
+                        gun.BlockRange = 100000000;
+                    }
                 }
             }
             catch { }
-  
+            #endregion
+
         }
         [ObfuscationAttribute(Exclude = true)]
         void Start()
@@ -117,16 +174,6 @@ namespace Cheat
             DamageSource source = new DamageSource(EnumDamageSource.Internal, EnumDamageTypes.BloodLoss);
             player.DamageEntity(source, 100000000, false, 1);
         }
-        void NoSpread(int seed, Transform target)
-        {
-            
-            if (!Globals.Config.LocalPlayer.NoSpread)
-            {
-          /*      UnityEngine.Random.InitState(seed);
-                target.Rotate(0f, 0f, (float)UnityEngine.Random.Range(0, 360));
-                target.Rotate(0f, UnityEngine.Random.Range(-this.ProjectileSpread, this.ProjectileSpread), 0f);*/
-
-            }
-        }
+       
     }
 }
