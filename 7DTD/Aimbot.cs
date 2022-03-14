@@ -8,7 +8,9 @@ namespace Cheat
 {
     class Aimbot : MonoBehaviour
     {
+        // EnumPlayerKillingMode look into so you can try to disable pve
         // TODO: Add friendslist
+        // Fix Box Height
         public static EntityZombie Zombie; // assign our values here so we dont need to keep calling the targetzombie/player function which loops through loads of stuff
         public static EntityPlayer Player;
         public static Vector3 ZombieHitPos;
@@ -27,7 +29,7 @@ namespace Cheat
                     orderby Vector2.Distance(new Vector2((float)(Screen.width / 2), (float)(Screen.height / 2)), Camera.main.WorldToScreenPoint(tempPlayer.transform.position))
                     select tempPlayer).ToList<EntityPlayer>();
         }
-        public static EntityZombie TargetZombie()
+        EntityZombie TargetZombie()
         {
             EntityZombie result = new EntityZombie();
             if (!Globals.Config.Aimbot.ZombieAimbot)
@@ -63,7 +65,7 @@ namespace Cheat
             return result;
 
         }
-        public static EntityPlayer TargetPlayer()
+        EntityPlayer TargetPlayer()
         {
 
             EntityPlayer result = new EntityPlayer();
@@ -89,7 +91,8 @@ namespace Cheat
                     Pos = Globals.WorldPointToScreenPoint(Pos);
                     if (!Globals.IsScreenPointVisible(Pos))
                         continue;
-
+              //      if (IsFriend(player))
+                //        continue;
                     int fov = (int)Vector2.Distance(new Vector2(Screen.width / 2, Screen.height / 2), new Vector2(Pos.x, Pos.y));
                     if (fov > Globals.Config.Aimbot.Fov)
                         continue;
@@ -113,10 +116,18 @@ namespace Cheat
         }
         void OnGUI1()
         {
-          
+       
             // so basically we cant target a player and zombie at the same time as we exit the function in the silentaim method when we have a target
             if (Globals.LocalPlayer == null)
                 return;
+            try
+            {
+                Drawing.DrawString(new Vector2(100, 190), $"{ Globals.LocalPlayer.entityId}", Color.red, false, 12, FontStyle.Normal, 0);
+                Drawing.DrawString(new Vector2(100, 220), $"{ Globals.LocalPlayer.clientEntityId}", Color.red, false, 12, FontStyle.Normal, 0);
+                Drawing.DrawString(new Vector2(100, 250), $"{ Globals.LocalPlayer.factionId}", Color.red, false, 12, FontStyle.Normal, 0);
+                Drawing.DrawString(new Vector2(100, 290), $"{ Globals.LocalPlayer.Party.PartyID}", Color.red, false, 12, FontStyle.Normal, 0);
+            }
+            catch { }
             if (Zombie == null)
             {
                 Drawing.DrawCircle(Color.blue, new Vector2(Screen.width / 2, Screen.height / 2), 30);
@@ -160,6 +171,18 @@ namespace Cheat
                 return;
             }
             TargettingZombie = false;
+        }
+        public bool IsFriend(EntityPlayer player)
+        {
+            if (player.Party?.PartyID == 0)
+                return false;
+            if (Globals.LocalPlayer?.Party?.PartyID == 0)
+                return false;
+            if (Globals.LocalPlayer.Party.PartyID == player.Party.PartyID)
+                return true;
+         
+            return false;
+
         }
         void SetZombieAimPos()
         {

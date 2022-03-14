@@ -28,6 +28,8 @@ namespace Cheat.Menu
         SubMenu PlayerAimbot = new SubMenu("Player Aimbot", "Configure Aimbot For Players");
         SubMenu ZombieAimbot = new SubMenu("Zombie Aimbot", "Configure Aimbot For Zombies");
 
+        SubMenu Skill = new SubMenu("Skills", "Edit Your Player's Skills");
+
         List<SubMenu> MenuHistory = new List<SubMenu>();
         SubMenu CurrentMenu;
         #region Config
@@ -163,6 +165,34 @@ namespace Cheat.Menu
 
         }
         #endregion
+        #region Skills
+        void Skills()
+        {
+           
+            IntSlider kill = new IntSlider("Amount Of Player Kills", "Amount Of Player Kills To Add", ref Globals.Config.LocalPlayer.Kills,0,30000,3);
+            Button killbtn = new Button("Set Player Kills", "Sets The Amount Of Player Kills Your Player Has", () => Misc.SetKills(Globals.Config.LocalPlayer.Kills));
+            IntSlider zombiekill = new IntSlider("Amount Of Zombie Kills", "Amount Of Zombie Kills To Add", ref Globals.Config.LocalPlayer.ZombieKills, 0, 30000, 3);
+            Button zombiekillbtn = new Button("Set Zombie Kills", "Sets The Amount Of Zombie Kills Your Player Has", () => Misc.SetZombieKills(Globals.Config.LocalPlayer.ZombieKills));
+            IntSlider death = new IntSlider("Amount Of Kills", "Amount Of Kills To Add", ref Globals.Config.LocalPlayer.Deaths, 0, 30000, 3);
+            Button deathbtn = new Button("Set Deaths", "Sets The Amount Of Deaths Your Player Has", () => Misc.SetDeaths(Globals.Config.LocalPlayer.Deaths));
+            IntSlider level = new IntSlider("Amount Of Levels", "Amount Of Zombie Levels To Add", ref Globals.Config.LocalPlayer.Level, 0, 30000, 3);
+            Button levelbtn = new Button("Set Player Levels", "Sets Your Player Level", () => Misc.SetLevel(Globals.Config.LocalPlayer.Level));
+            IntSlider skill = new IntSlider("Amount Of Skill Points", "Amount Of Skill Points To Add", ref Globals.Config.LocalPlayer.SkillPoints, 0, 30000, 3);
+            Button skillbtn = new Button("Set Player Skill Points", "Sets Your Player's Skillpoints", () => Misc.SetLevel(Globals.Config.LocalPlayer.SkillPoints));
+            Skill.Items.Add(kill);
+            Skill.Items.Add(killbtn);
+            Skill.Items.Add(zombiekill);
+            Skill.Items.Add(zombiekillbtn);
+            Skill.Items.Add(death);
+            Skill.Items.Add(deathbtn);
+            Skill.Items.Add(level);
+            Skill.Items.Add(levelbtn);
+            Skill.Items.Add(skill);
+            Skill.Items.Add(skillbtn);
+            LocalPlayer.Items.Add(Skill);
+
+        }
+        #endregion
         void Start()
         {
             MenuPos.x = 50;
@@ -179,6 +209,7 @@ namespace Cheat.Menu
             Configs();
             ESP();
             Aimbots();
+            Skills();
             #region Colour Picker
             // amount of colours in the dictionary is always the same in game so we dont need to update this.
             foreach (KeyValuePair<string, Color32> value in Globals.Config.Colours.GlobalColors)

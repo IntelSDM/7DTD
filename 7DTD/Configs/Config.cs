@@ -14,5 +14,6 @@ namespace Cheat.Configs
         public Animal Animal = new Animal();
         public LocalPlayer LocalPlayer = new LocalPlayer();
         public Aimbot Aimbot = new Aimbot();
+        public Friends Friends = new Friends();
     }
 }

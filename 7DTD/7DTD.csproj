@@ -90,6 +90,7 @@
     <Compile Include="Configs\Animal.cs" />
     <Compile Include="Configs\Colours.cs" />
     <Compile Include="Configs\Config.cs" />
+    <Compile Include="Configs\Friends.cs" />
     <Compile Include="Configs\LocalPlayer.cs" />
     <Compile Include="Configs\Player.cs" />
     <Compile Include="Configs\Zombie.cs" />

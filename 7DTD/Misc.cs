@@ -120,9 +120,6 @@ namespace Cheat
             GameStats.Set(EnumGameStats.IsPlayerCollisionEnabled, false);
             GameStats.Set(EnumGameStats.IsCreativeMenuEnabled, true);
 
-       //     EntityAlive ent = Globals.LocalPlayer as EntityAlive;
-
-            // GamePrefs.GetString(EnumGamePrefs.TelnetPassword)// get rcon password
             #region LocalPlayer
             try
             {
@@ -159,21 +156,55 @@ namespace Cheat
             #endregion
 
         }
+
         [ObfuscationAttribute(Exclude = true)]
         void Start()
         { 
         }
         void Start1()
         {
-       /* CreateShot_Silent = new DumbHook();
-            CreateShot_Silent.Init(typeof(Block).GetMethod("OnBlockDamaged", BindingFlags.Public | BindingFlags.Instance), typeof(Cheat).GetMethod("OnBlockDamaged", BindingFlags.Public | BindingFlags.Instance));
-            CreateShot_Silent.Hook();*/
+    
         }
         public static void KillPlayer(EntityPlayer player)
         {
             DamageSource source = new DamageSource(EnumDamageSource.Internal, EnumDamageTypes.BloodLoss);
             player.DamageEntity(source, 100000000, false, 1);
         }
-       
+
+        #region Skills
+        public static void SetLevel(int level)
+        {
+            if (Globals.LocalPlayer == null)
+                return;
+            Globals.LocalPlayer.Progression.Level = level;
+        }
+        public static void SetKills(int kills)
+        {
+            if (Globals.LocalPlayer == null)
+                return;
+            Globals.LocalPlayer.KilledPlayers = kills;
+        }
+        public static void SetZombieKills(int kills)
+        {
+            if (Globals.LocalPlayer == null)
+                return;
+            Globals.LocalPlayer.KilledZombies = kills;
+        }
+        public static void SetSkillPoints(int points)
+        {
+            if (Globals.LocalPlayer == null)
+                return;
+            Globals.LocalPlayer.Progression.SkillPoints = points;
+        }
+        public static void SetDeaths(int deaths)
+        {
+            if (Globals.LocalPlayer == null)
+                return;
+            //   GameSparksCollector.IncrementCounter(GameSparksCollector.GSDataKey.PlayerDeathCauses, text, 1, true, GameSparksCollector.GSDataCollection.SessionUpdates);
+            EntityAlive alive = Globals.LocalPlayer as EntityAlive;
+            alive.Died = deaths;
+        }
+        #endregion
+
     }
 }
