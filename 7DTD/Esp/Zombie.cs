@@ -37,7 +37,7 @@ namespace Cheat.Esp
 
                     ZombieList.Add(zombie);
                 }
-                CacheTime = Time.time + 5;
+                CacheTime = Time.time + 3;
             }
             catch 
             { 

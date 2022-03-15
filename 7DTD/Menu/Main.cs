@@ -14,6 +14,7 @@ namespace Cheat.Menu
         private Entity Selected;
         private double NextPlayerTime;
         private KeyCode KeyToBind;
+        int itemamount = 1;
         SubMenu MainMenu = new SubMenu("Main","Menu");
 
         SubMenu Esp = new SubMenu("ESP", "Draw Visuals");
@@ -33,6 +34,7 @@ namespace Cheat.Menu
         SubMenu Movement = new SubMenu("Movement", "Edit Your Player's Movement");
         SubMenu PlayerProperties = new SubMenu("Properties", "Edit Stamina And Other Player Properties");
         SubMenu Weapon = new SubMenu("Weapon", "Modify Your Weapon");
+        SubMenu World = new SubMenu("World", "Modify Player World Settings");
         List<SubMenu> MenuHistory = new List<SubMenu>();
         SubMenu CurrentMenu;
         #region Config
@@ -122,8 +124,8 @@ namespace Cheat.Menu
             #endregion
         }
         #endregion
-        #region LocalPlayer
-        void LocalPlayers()
+        #region Weapon
+        void Weapons()
         {
            
             Button RemoveRecoil = new Button("Remove Recoil", "!This Cant Be Undone! This Button Removes Recoil", () => Misc.EnableNoRecoil());
@@ -145,7 +147,7 @@ namespace Cheat.Menu
         #region Aimbot
         void Aimbots()
         {
-            IntSlider fov = new IntSlider("Aimbot Fov", "Circle Range From Centre Of Your Screen That Aimbot Will Target", ref Globals.Config.Aimbot.Fov, 0, 1200, 25);
+            IntSlider fov = new IntSlider("Aimbot Fov", "Circle Range From Centre Of Your Screen That Aimbot Will Target", ref Globals.Config.Aimbot.Fov, 0, 1800, 25);
             Toggle drawfov = new Toggle("Draw Fov", "Draws A Circle To Display Aimbot Fov", ref Globals.Config.Aimbot.DrawFov);
             Toggle drawtarget = new Toggle("Draw Aimbot Target Line", "Draws A Line To Aimbot Target", ref Globals.Config.Aimbot.DrawTargetLine);
             IntSlider hitchance = new IntSlider("Aimbot Hotchance", "% Chance Your Aimbot Hits Target", ref Globals.Config.Aimbot.Hitchance, 0, 100, 10);
@@ -205,18 +207,52 @@ namespace Cheat.Menu
         {
             Toggle speedhack = new Toggle("Speedhack", "Allows You To Zoom", ref Globals.Config.LocalPlayer.Speedhack);
             IntSlider speed = new IntSlider("Speed Value", "Change The Speed Your Speedhack Works At", ref Globals.Config.LocalPlayer.SpeedAmount, 1, 30, 1);
-            Keybind speedbind = new Keybind("Speedhack Keybind", "Sets The Key You Hold To Use Keybind", ref Globals.Config.LocalPlayer.SpeedKey);
+            Keybind speedbind = new Keybind("Speedhack Keybind", "Sets The Key You Hold To Use Speedhack", ref Globals.Config.LocalPlayer.SpeedKey);
+            Toggle noclip = new Toggle("Custom Noclip", "Custom Noclip To Avoid Instant Bans, Noclip With This Then Turn On Fly For Best Usage", ref Globals.Config.LocalPlayer.BtecNoclip);
+            IntSlider noclipspeed = new IntSlider("Noclip Speed Value", "Change The Speed You Noclip At", ref Globals.Config.LocalPlayer.NoclipSpeed, 1, 30, 1);
+            Keybind noclipbind = new Keybind("Noclip Keybind", "Sets The Key You Hold To Use Custom Noclip", ref Globals.Config.LocalPlayer.NoclipKey);
             Movement.Items.Add(speedhack);
             Movement.Items.Add(speed);
             Movement.Items.Add(speedbind);
+            Movement.Items.Add(noclip);
+            Movement.Items.Add(noclipspeed);
+            Movement.Items.Add(noclipbind);
             LocalPlayer.Items.Add(Movement); // teleport to waypoint, speedhack, also try find the function that shows other player's bases and hook it
         }
         #endregion
         #region Properties
         void Properties()
         {
+            Toggle unlimitedstamina = new Toggle("Unlimited Stamina", "Run Forrest, Run", ref Globals.Config.LocalPlayer.UnlimitedStamina);
+            Toggle unlimitedhunger = new Toggle("Unlimited Hunger", "You Are Too Chonky To Lose Hunger", ref Globals.Config.LocalPlayer.UnlimitedHunger);
+            Toggle unlimitedwater = new Toggle("Unlimited Water", "Never Run Out Of Water Like A Camel", ref Globals.Config.LocalPlayer.UnlimitedThirtst);
+            Toggle unlimitedhealth = new Toggle("Instant Health Regeneration", "You Health Instantly Regenerates To Max", ref Globals.Config.LocalPlayer.InstantHealth);
+            Button cleardebuff = new Button("Clear Debuffs", "Removes Injuries Such As Broken Legs", () => Misc.ClearDebuff());
+            Toggle spoofname = new Toggle("Spoof name", "Spoofs Your Name", ref Globals.Config.LocalPlayer.SpoofName);
+            Button name = new Button("Copy Name From Clipboard", "Copies Name From Clipboard And Spoofs Name To It", () => Misc.ClipboardToString(out Misc.Name));
+            PlayerProperties.Items.Add(unlimitedstamina);
+            PlayerProperties.Items.Add(unlimitedhunger);
+            PlayerProperties.Items.Add(unlimitedwater);
+            PlayerProperties.Items.Add(unlimitedhealth);
+            PlayerProperties.Items.Add(cleardebuff);
             LocalPlayer.Items.Add(PlayerProperties);
         
+        }
+        #endregion
+        #region World
+        void Worlds()
+        {
+            LocalPlayer.Items.Add(World);
+            Button cmd = new Button("Execute Console Comand From Clipboard", "Copy A Comand Then Click Enter", () => Misc.ExecuteCommandFromClipboard());
+            IntSlider itmamount = new IntSlider("Amount Of Items", "Amount Of Items To Give Yourself", ref itemamount, 1, 100, 1);
+            Button giveitem = new Button("Give Item From Name From Clipboard", "Copy An Item Code And Input Amount And You Will Be Given The Item", () => Misc.GiveItemFromClipboard(itemamount));
+            Toggle instant1 = new Toggle("Instant Break Blocks 1", "Breaks Blocks And Bypasses Most Server Checks", ref Globals.Config.LocalPlayer.InstantBreak1);
+            Toggle instant2 = new Toggle("Instant Break Blocks 2", "Breaks Blocks With A Different Bypass", ref Globals.Config.LocalPlayer.InstantBreak2);
+            World.Items.Add(cmd);
+            World.Items.Add(itmamount);
+            World.Items.Add(giveitem);
+            World.Items.Add(instant1);
+            World.Items.Add(instant2);
         }
         #endregion
         // if entity is keybind. keybind = keycode.none, if any keybind == keycode.null make it = setkey
@@ -274,6 +310,10 @@ namespace Cheat.Menu
         }
         void Start()
         {
+            Start1();
+        }
+        void Start1()
+        {
             MenuPos.x = 50;
             MenuPos.y = 100;
             MenuHistory.Add(MainMenu);
@@ -284,13 +324,14 @@ namespace Cheat.Menu
             MainMenu.Items.Add(PlayerMenu);
             MainMenu.Items.Add(Colours);
             MainMenu.Items.Add(Config);
-            LocalPlayers();
+            Weapons();
             Configs();
             ESP();
             Aimbots();
             Skills();
             Movements();
             Properties();
+            Worlds();
             #region Colour Picker
             // amount of colours in the dictionary is always the same in game so we dont need to update this.
             foreach (KeyValuePair<string, Color32> value in Globals.Config.Colours.GlobalColors)
@@ -450,90 +491,94 @@ namespace Cheat.Menu
                 MenuHistory.Remove(MenuHistory.Last<SubMenu>());
                 return;
             }
+            if (((Input.GetKeyDown(KeyCode.LeftArrow) && Selected is SubMenu)) && CurrentMenu.index < CurrentMenu.Items.Count)
+            {
 
+                CurrentMenu = MenuHistory[MenuHistory.Count - 2];
+                MenuHistory.Remove(MenuHistory.Last<SubMenu>());
+                return;
+            }
             foreach (Entity entity in CurrentMenu.Items)
             {
-                if (entity is Keybind)
-                {
-                    Keybind bind = entity as Keybind;
-                    if(bind.Value == KeyCode.None)
-                    bind.Value = SetKey();
-                    
-                }
+            
                 if (CurrentMenu.index == CurrentMenu.Items.IndexOf(entity))
                     Selected = entity;
                 if (entity != Selected)
                     continue;
-                if (((Input.GetKeyDown(KeyCode.LeftArrow) && Selected is SubMenu)) && CurrentMenu.index < CurrentMenu.Items.Count)
-                {
-                 
-                }
-                if (Selected is SubMenu && (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.Return)))
-                {
-                    CurrentMenu = entity as SubMenu;
-                    MenuHistory.Add(entity as SubMenu);
-                    return; // opens a new menu so we need to exit the loop to then render our new currentmenu
-                }
-                if (Selected is Toggle && Input.GetKeyDown(KeyCode.RightArrow))
-                {
-                    Toggle toggle = entity as Toggle;
-                    toggle.Value = true;
-                }
-                if (Selected is Toggle && Input.GetKeyDown(KeyCode.LeftArrow))
-                {
-                    Toggle toggle = entity as Toggle;
-                    toggle.Value = false;
-                }
-                if (Selected is Button && (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.Return)))
-                {
-                    Button button = entity as Button;
-                    button.Method();
-                }
-                if (Selected is IntSlider && Input.GetKeyDown(KeyCode.RightArrow))
-                {
-                    IntSlider slider = entity as IntSlider;
-                    int result = slider.Value + slider.IncrementValue;
 
-                    if (result > slider.MaxValue)
-                        slider.Value = slider.MaxValue;
-                    else
-                        slider.Value = result;
-                }   
-                if (Selected is IntSlider && Input.GetKeyDown(KeyCode.LeftArrow))
-                {
-                    IntSlider slider = entity as IntSlider;
-                    int result = slider.Value - slider.IncrementValue;
+            }
+            if (Selected is Keybind)
+            {
+                Keybind bind = Selected as Keybind;
+                if (bind.Value == KeyCode.None)
+                    bind.Value = SetKey();
 
-                    if (result < slider.MinValue)
-                        slider.Value = slider.MinValue;
-                    else
-                        slider.Value = result;
-                }
-                if (Selected is FloatSlider && Input.GetKeyDown(KeyCode.RightArrow))
-                {
-                    FloatSlider slider = entity as FloatSlider;
-                    float result = slider.Value + slider.IncrementValue;
+            }
+            if (Selected is SubMenu && (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.Return)))
+            {
+                CurrentMenu = Selected as SubMenu;
+                MenuHistory.Add(Selected as SubMenu);
+                return; // opens a new menu so we need to exit the loop to then render our new currentmenu
+            }
+            if (Selected is Toggle && Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                Toggle toggle = Selected as Toggle;
+                toggle.Value = true;
+            }
+            if (Selected is Toggle && Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                Toggle toggle = Selected as Toggle;
+                toggle.Value = false;
+            }
+            if (Selected is Button && (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.Return)))
+            {
+                Button button = Selected as Button;
+                button.Method();
+            }
+            if (Selected is IntSlider && Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                IntSlider slider = Selected as IntSlider;
+                int result = slider.Value + slider.IncrementValue;
 
-                    if (result > slider.MaxValue)
-                        slider.Value = slider.MaxValue;
-                    else
-                        slider.Value = result;
-                }
-                if (Selected is FloatSlider && Input.GetKeyDown(KeyCode.LeftArrow))
-                {
-                    FloatSlider slider = entity as FloatSlider;
-                    float result = slider.Value - slider.IncrementValue;
+                if (result > slider.MaxValue)
+                    slider.Value = slider.MaxValue;
+                else
+                    slider.Value = result;
+            }
+            if (Selected is IntSlider && Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                IntSlider slider = Selected as IntSlider;
+                int result = slider.Value - slider.IncrementValue;
 
-                    if (result < slider.MinValue)
-                        slider.Value = slider.MinValue;
-                    else
-                        slider.Value = result;
-                }
-                if (Selected is Keybind && (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.Return)))
-                {
-                    Keybind bind = entity as Keybind;
-                    bind.Value = KeyCode.None;
-                }
+                if (result < slider.MinValue)
+                    slider.Value = slider.MinValue;
+                else
+                    slider.Value = result;
+            }
+            if (Selected is FloatSlider && Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                FloatSlider slider = Selected as FloatSlider;
+                float result = slider.Value + slider.IncrementValue;
+
+                if (result > slider.MaxValue)
+                    slider.Value = slider.MaxValue;
+                else
+                    slider.Value = result;
+            }
+            if (Selected is FloatSlider && Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                FloatSlider slider = Selected as FloatSlider;
+                float result = slider.Value - slider.IncrementValue;
+
+                if (result < slider.MinValue)
+                    slider.Value = slider.MinValue;
+                else
+                    slider.Value = result;
+            }
+            if (Selected is Keybind && (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.Return)))
+            {
+                Keybind bind = Selected as Keybind;
+                bind.Value = KeyCode.None;
             }
             #endregion
         }

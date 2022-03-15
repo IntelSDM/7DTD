@@ -25,19 +25,213 @@ namespace Cheat
         public bool AccuracyHooked = false;
         public static DumbHook UnlimitedRangeHook;
         public bool UnlimitedRangeHooked = false;
-        public static DumbHook SilentAimHook;
-        public bool SilentAimHooked = false;
+        public static DumbHook BlockDamage;
+        public bool BlockDamageHooked = false;
+
+        [ObfuscationAttribute(Exclude = true)]
+        public virtual int Damage(WorldBase _world, int _clrIdx, Vector3i _blockPos, BlockValue _blockValue, int _damagePoints, int _entityIdThatDamaged, bool _bUseHarvestTool, bool _bBypassMaxDamage, int _recDepth = 0)
+        {
+            return Dam(_world, _clrIdx, _blockPos, _blockValue, _damagePoints, _entityIdThatDamaged, _bUseHarvestTool, _bBypassMaxDamage, _recDepth);
+        }
+
+        public int Dam(WorldBase _world, int _clrIdx, Vector3i _blockPos, BlockValue _blockValue, int _damagePoints, int _entityIdThatDamaged, bool _bUseHarvestTool, bool _bBypassMaxDamage, int _recDepth = 0)
+        {
+            if (Globals.Config.LocalPlayer.InstantBreak1)
+            {
+                _blockValue.Block.CanPickup = true;
+                _world.GetGameManager().PickupBlockServer(_clrIdx, _blockPos, _blockValue, 0);
+                _blockValue.Block.FallDamage = 0;
+            }
+            if (Globals.Config.LocalPlayer.InstantBreak2)
+            { 
+            _entityIdThatDamaged = 0;
+            _bBypassMaxDamage = true;
+            _blockValue.Block.UpgradeExp = float.MaxValue;
+            _blockValue.Block.Damage = float.MaxValue;
+            }
+
+            ChunkCluster chunkCluster = _world.ChunkClusters[_clrIdx];
+            if (chunkCluster == null)
+            {
+                return 0;
+            }
+            if (_blockValue.Block.isMultiBlock && _blockValue.ischild)
+            {
+                Vector3i parentPos = _blockValue.Block.multiBlockPos.GetParentPos(_blockPos, _blockValue);
+                BlockValue block = chunkCluster.GetBlock(parentPos);
+                if (block.ischild)
+                {
+                    /*    Log.Error("Block on position {0} with name '{1}' should be a parent but is not! (6)", new object[]
+                        {
+                        parentPos,
+                        block.Block.blockName
+                        });*/
+                    return 0;
+                }
+                return block.Block.OnBlockDamaged(_world, _clrIdx, parentPos, block, _damagePoints, _entityIdThatDamaged, _bUseHarvestTool, _bBypassMaxDamage, _recDepth + 1);
+            }
+            else
+            {
+                int num = _blockValue.damage;
+                bool flag = num >= _blockValue.Block.MaxDamage;
+                num += _damagePoints;
+                chunkCluster.InvokeOnBlockDamagedDelegates(_blockPos, _blockValue, _damagePoints, _entityIdThatDamaged);
+                Block block2 = _blockValue.Block;
+                if (num < 0)
+                {
+                    if (!_blockValue.Block.UpgradeBlock.isair)
+                    {
+                        BlockValue blockValue = _blockValue.Block.UpgradeBlock;
+                        blockValue = BlockPlaceholderMap.Instance.Replace(blockValue, _world.GetGameRandom(), _blockPos.x, _blockPos.z, false, QuestTags.none);
+                        blockValue.rotation = _blockValue.rotation;
+                        blockValue.meta = _blockValue.meta;
+                        blockValue.damage = 0;
+                        Block block3 = blockValue.Block;
+                        if (!block3.shape.IsTerrain())
+                        {
+                            _world.SetBlockRPC(_clrIdx, _blockPos, blockValue);
+                            if (chunkCluster.GetTextureFull(_blockPos) != 0L)
+                            {
+                                GameManager.Instance.SetBlockTextureServer(_blockPos, BlockFace.None, 0, _entityIdThatDamaged);
+                            }
+                        }
+                        else
+                        {
+                            _world.SetBlockRPC(_clrIdx, _blockPos, blockValue, block3.Density);
+                        }
+                        DynamicMeshManager.ChunkChanged(_blockPos, _entityIdThatDamaged, _blockValue.type);
+                        return blockValue.damage;
+                    }
+                    if (_blockValue.damage != 0)
+                    {
+                        _blockValue.damage = 0;
+                        _world.SetBlockRPC(_clrIdx, _blockPos, _blockValue);
+                    }
+                    return 0;
+                }
+                else
+                {
+                    if (!flag && num >= block2.MaxDamage)
+                    {
+                        num -= block2.MaxDamage;
+                        DynamicMeshManager.ChunkChanged(_blockPos, _entityIdThatDamaged, _blockValue.type);
+                        Block.DestroyedResult destroyedResult = _blockValue.Block.OnBlockDestroyedBy(_world, _clrIdx, _blockPos, _blockValue, _entityIdThatDamaged, _bUseHarvestTool);
+                        if (destroyedResult != Block.DestroyedResult.Keep)
+                        {
+                            if (!_blockValue.Block.DowngradeBlock.isair && destroyedResult == Block.DestroyedResult.Downgrade)
+                            {
+                                if (_recDepth == 0)
+                                {
+                                    _blockValue.Block.SpawnDestroyParticleEffect(_world, _blockValue, _blockPos, 1f, _blockValue.Block.tintColor, _entityIdThatDamaged);
+                                }
+                                BlockValue blockValue2 = _blockValue.Block.DowngradeBlock;
+                                blockValue2 = BlockPlaceholderMap.Instance.Replace(blockValue2, _world.GetGameRandom(), _blockPos.x, _blockPos.z, false, QuestTags.none);
+                                blockValue2.rotation = _blockValue.rotation;
+                                blockValue2.meta = _blockValue.meta;
+                                Block block4 = blockValue2.Block;
+                                if (!block4.shape.IsTerrain())
+                                {
+                                    _world.SetBlockRPC(_clrIdx, _blockPos, blockValue2);
+                                    if (chunkCluster.GetTextureFull(_blockPos) != 0L)
+                                    {
+                                        if (_blockValue.Block.RemovePaintOnDowngrade == null)
+                                        {
+                                            GameManager.Instance.SetBlockTextureServer(_blockPos, BlockFace.None, 0, _entityIdThatDamaged);
+                                        }
+                                        else
+                                        {
+                                            for (int i = 0; i < _blockValue.Block.RemovePaintOnDowngrade.Count; i++)
+                                            {
+                                                GameManager.Instance.SetBlockTextureServer(_blockPos, _blockValue.Block.RemovePaintOnDowngrade[i], 0, _entityIdThatDamaged);
+                                            }
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    _world.SetBlockRPC(_clrIdx, _blockPos, blockValue2, block4.Density);
+                                }
+                                if ((num > 0 && _blockValue.Block.EnablePassThroughDamage) || _bBypassMaxDamage)
+                                {
+                                    block4.OnBlockDamaged(_world, _clrIdx, _blockPos, blockValue2, num, _entityIdThatDamaged, _bUseHarvestTool, _bBypassMaxDamage, _recDepth + 1);
+                                }
+                            }
+                            else
+                            {
+                                QuestEventManager.Current.BlockDestroyed(block2, _blockPos);
+                                _blockValue.Block.SpawnDestroyParticleEffect(_world, _blockValue, _blockPos, 1f, _blockValue.Block.GetColorForSide(_blockValue, BlockFace.Top), _entityIdThatDamaged);
+                                _world.SetBlockRPC(_clrIdx, _blockPos, BlockValue.Air);
+                                TileEntityLootContainer tileEntityLootContainer = _world.GetTileEntity(_clrIdx, _blockPos) as TileEntityLootContainer;
+                                if (tileEntityLootContainer != null)
+                                {
+                                    tileEntityLootContainer.OnDestroy();
+                                    for (int j = 0; j < LocalPlayerUI.PlayerUIs.Count; j++)
+                                    {
+                                        if (LocalPlayerUI.PlayerUIs[j].windowManager.IsWindowOpen("looting") && ((XUiC_LootWindow)LocalPlayerUI.PlayerUIs[j].xui.GetWindow("windowLooting").Controller).GetLootBlockPos() == _blockPos)
+                                        {
+                                            LocalPlayerUI.PlayerUIs[j].windowManager.Close("looting");
+                                        }
+                                    }
+                                    Chunk chunk = _world.GetChunkFromWorldPos(_blockPos) as Chunk;
+                                    if (chunk != null)
+                                    {
+                                        chunk.RemoveTileEntityAt<TileEntityLootContainer>((World)_world, World.toBlock(_blockPos));
+                                    }
+                                }
+                            }
+                        }
+                        return block2.MaxDamage;
+                    }
+                    if (_blockValue.damage != num)
+                    {
+                        _blockValue.damage = num;
+                        if (!block2.shape.IsTerrain())
+                        {
+                            _world.SetBlocksRPC(new List<BlockChangeInfo>
+                        {
+                            new BlockChangeInfo(_blockPos, _blockValue, false, true)
+                        });
+                        }
+                        else
+                        {
+                            sbyte density = _world.GetDensity(_clrIdx, _blockPos);
+                            sbyte b = (sbyte)Utils.FastMin(-1f, (float)MarchingCubes.DensityTerrain * (1f - (float)num / (float)block2.MaxDamage));
+                            if ((_damagePoints > 0 && b > density) || (_damagePoints < 0 && b < density))
+                            {
+                                _world.SetBlockRPC(_clrIdx, _blockPos, _blockValue, b);
+                            }
+                            else
+                            {
+                                _world.SetBlockRPC(_clrIdx, _blockPos, _blockValue);
+                            }
+                        }
+                    }
+                    return _blockValue.damage;
+                }
+            }
+        }
+
+        [ObfuscationAttribute(Exclude = true)]
         public void FireAnimation()
         {
 
         }
+        [ObfuscationAttribute(Exclude = true)]
         public float Accuracy(ItemActionData _actionData, bool _isAimingGun)
+        {
+            return Accuracy1(_actionData, _isAimingGun);
+        }
+        public float Accuracy1(ItemActionData _actionData, bool _isAimingGun)
         {
             (_actionData as ItemActionRanged.ItemActionDataRanged).lastAccuracy = 0;
 
             return (_actionData as ItemActionRanged.ItemActionDataRanged).lastAccuracy;
         }
         public float GetRange(ItemActionData _actionData)
+        {
+            return (GetRange1(_actionData));
+        }
+        public float GetRange1(ItemActionData _actionData)
         {
             vp_FPWeapon weapon = Globals.LocalPlayer?.vp_FPWeapon;
             Inventory inventory = Globals.LocalPlayer?.inventory;
@@ -54,6 +248,7 @@ namespace Cheat
             FireAnimationHook.Init(typeof(EntityPlayerLocal).GetMethod("OnFired", BindingFlags.Public | BindingFlags.Instance), typeof(Misc).GetMethod("FireAnimation", BindingFlags.Public | BindingFlags.Instance));
             FireAnimationHook.Hook();
         }
+
         public static void EnableNoSpread()
         {
             UpdateAccuracyHook = new DumbHook();
@@ -61,17 +256,13 @@ namespace Cheat
             UpdateAccuracyHook.Hook();
         }
         bool silentaim = true;
-        public Vector3 fireShot(int _shotIdx, ItemActionRanged.ItemActionDataRanged _actionData)
-        {
-            // getlookray might be a bit better, we just need the ray.origin - direction to be our target's position
-            return Vector3.zero;
-        }
-        public  Ray GetLookRay()
+   
+  /*      public  Ray GetLookRay()
         {
             EntityAlive ent = Globals.LocalPlayer as EntityAlive;
             return new Ray(ent.position + new Vector3(0f, ent.GetEyeHeight(), 0f), Vector3.zero);
          //   return new Ray(ent.position + new Vector3(0f, ent.GetEyeHeight(), 0f), ent.GetLookVector());
-        }
+        }*/
         #endregion
         [ObfuscationAttribute(Exclude = true)]
         void Update()
@@ -81,7 +272,11 @@ namespace Cheat
         void Update1()
         {
             Speedhack();
+            SetProperties();
+            Noclip();
+            Worlds();
             #region Hooks
+            // some of these should just be done in a start function but i kinda want them all in 1 area so i am not splitting them up
             if (Globals.Config.LocalPlayer.NoRecoil && !FireAnimationHooked) // allows us to hook it on config load
             {
                 FireAnimationHook = new DumbHook();
@@ -99,17 +294,18 @@ namespace Cheat
             if ( !UnlimitedRangeHooked) 
             {
                 UnlimitedRangeHook = new DumbHook();
-                UnlimitedRangeHook.Init(typeof(ItemActionRanged).GetMethod("GetRange", BindingFlags.Public | BindingFlags.Instance), typeof(Misc).GetMethod("GetRange", BindingFlags.Public | BindingFlags.Instance));
+                UnlimitedRangeHook.Init(typeof(Block).GetMethod("OnBlockDamaged", BindingFlags.Public | BindingFlags.Instance), typeof(Misc).GetMethod("Damage", BindingFlags.Public | BindingFlags.Instance));
                 UnlimitedRangeHook.Hook();
                 UnlimitedRangeHooked = true;
             }
-            if (!SilentAimHooked) 
+            if (!BlockDamageHooked)
             {
-                SilentAimHook = new DumbHook();
-                SilentAimHook.Init(typeof(EntityAlive).GetMethod("GetLookRay", BindingFlags.Public | BindingFlags.Instance), typeof(Misc).GetMethod("GetLookRay", BindingFlags.Public | BindingFlags.Instance));
-                SilentAimHook.Hook();
-                SilentAimHooked = true;
+                BlockDamage = new DumbHook();
+                BlockDamage.Init(typeof(ItemActionRanged).GetMethod("GetRange", BindingFlags.Public | BindingFlags.Instance), typeof(Misc).GetMethod("GetRange", BindingFlags.Public | BindingFlags.Instance));
+                BlockDamage.Hook();
+                BlockDamageHooked = true;
             }
+          
             #endregion
 
             if (Globals.LocalPlayer == null)
@@ -178,6 +374,8 @@ namespace Cheat
         }
         void Speedhack()
         {
+            if (Globals.LocalPlayer == null)
+                return;
             if (!Globals.Config.LocalPlayer.Speedhack)
                 return;
                 if (Input.GetKey(Globals.Config.LocalPlayer.SpeedKey))
@@ -190,6 +388,28 @@ namespace Cheat
                 }
             
 
+        }
+        void Noclip()
+        {
+            if (Globals.LocalPlayer == null)
+                return;
+            if (!Globals.Config.LocalPlayer.BtecNoclip)
+                return;
+            if (!Input.GetKey(Globals.Config.LocalPlayer.NoclipKey))
+                return;
+            Globals.LocalPlayer.inWaterPercent = 100;
+            if (Input.GetKey(KeyCode.W))
+                Globals.LocalPlayer.transform.position = Globals.LocalPlayer.transform.position + Camera.main.transform.forward * Globals.Config.LocalPlayer.NoclipSpeed;
+            if (Input.GetKey(KeyCode.S))
+                Globals.LocalPlayer.transform.position = Globals.LocalPlayer.transform.position - Camera.main.transform.forward * Globals.Config.LocalPlayer.NoclipSpeed;
+            if (Input.GetKey(KeyCode.A))
+                Globals.LocalPlayer.transform.position = Globals.LocalPlayer.transform.position - Camera.main.transform.right * Globals.Config.LocalPlayer.NoclipSpeed;
+            if (Input.GetKey(KeyCode.D))
+                Globals.LocalPlayer.transform.position = Globals.LocalPlayer.transform.position + Camera.main.transform.right * Globals.Config.LocalPlayer.NoclipSpeed;
+            if (Input.GetKey(KeyCode.Space))
+                Globals.LocalPlayer.transform.position = Globals.LocalPlayer.transform.position + Camera.main.transform.up * Globals.Config.LocalPlayer.NoclipSpeed;
+            if (Input.GetKey(KeyCode.LeftControl))
+                Globals.LocalPlayer.transform.position = Globals.LocalPlayer.transform.position - Camera.main.transform.up * Globals.Config.LocalPlayer.NoclipSpeed;
         }
         #endregion
         #region Skills
@@ -224,6 +444,128 @@ namespace Cheat
             //   GameSparksCollector.IncrementCounter(GameSparksCollector.GSDataKey.PlayerDeathCauses, text, 1, true, GameSparksCollector.GSDataCollection.SessionUpdates);
             EntityAlive alive = Globals.LocalPlayer as EntityAlive;
             alive.Died = deaths;
+        }
+        #endregion
+        #region Properties
+        float NextClear = 0;
+        public static string Name = Globals.LocalPlayer?.EntityName;
+        public static void ClipboardToString(out string text)
+        {
+            string systemCopyBuffer = GUIUtility.systemCopyBuffer;
+            text = systemCopyBuffer;
+        }
+        void SetProperties()
+        {
+            if (Globals.LocalPlayer == null)
+                return;
+            if (Globals.Config.LocalPlayer.UnlimitedStamina)
+            {
+                Globals.LocalPlayer.Stats.Stamina.Value = 100000f;
+                Globals.LocalPlayer.Stamina = 100000f;
+                Globals.LocalPlayer.AddStamina(100000f);
+                Globals.LocalPlayer.classMaxStamina = 100000;
+            }
+            if (Globals.Config.LocalPlayer.UnlimitedHunger)
+            {
+                Globals.LocalPlayer.Stats.Food.Value = 100000f;
+                Globals.LocalPlayer.classMaxFood = 100000;
+ 
+            }
+            if (Globals.Config.LocalPlayer.UnlimitedThirtst)
+            {
+                Globals.LocalPlayer.Stats.Water.Value = 100000f;
+                Globals.LocalPlayer.Water = 100000f;
+                Globals.LocalPlayer.classMaxWater = 100000;
+
+            }
+            if (Globals.Config.LocalPlayer.InstantHealth)
+            {
+                Globals.LocalPlayer.Stats.Health.Value = 10000000f;
+                Globals.LocalPlayer.Health = 10000;
+                Globals.LocalPlayer.AddHealth(10000000);
+                Globals.LocalPlayer.fallDistance = 0;
+                Globals.LocalPlayer.ClearStun();
+                Globals.LocalPlayer.classMaxHealth = 100000;
+                Globals.LocalPlayer.Stats.Health.MaxModifier = 1000000000;
+
+            }
+            if (Globals.Config.LocalPlayer.SpoofName)
+            {
+                Globals.LocalPlayer.SetEntityName(Name);
+            }
+          
+
+        }
+        #endregion
+        #region Console
+        public static void ExecuteCommandFromClipboard()
+        {
+            if (Globals.LocalPlayer == null)
+                return;
+            string systemCopyBuffer = GUIUtility.systemCopyBuffer;
+            ExecuteConsoleCommand(systemCopyBuffer);
+        }
+        private static void ExecuteConsoleCommand(string text)
+        {
+            if (Globals.LocalPlayer == null)
+                return;
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"{text}", null);
+        }
+        public static void ClearDebuff()
+        {
+            if (Globals.LocalPlayer == null)
+                return;
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffInfectionCatch", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffAbrasionCatch", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffLegSprainedCHTrigger", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffLegBroken", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffArmSprainedCHTrigger", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffArmBroken", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffFatiguedTrigger", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffInjuryBleedingTwo", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffLaceration", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffInjuryStunned01CHTrigger", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffInjuryStunned01Cooldown", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffInjuryConcussion", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffInjuryBleedingOne", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffInjuryBleedingBarbedWire", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffInjuryBleeding", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffInjuryBleedingParticle", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffPlayerFallingDamage", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffFatigued", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffStayDownKO", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffInjuryCrippled01", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffInjuryUnconscious", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffBatterUpSlowDown", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffRadiation03", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffNearDeathTrauma", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffDysenteryCatchFood", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffDysenteryCatchDrink", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffDysenteryMain", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffIllPneumonia00", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffIllPneumonia01", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffInfectionMain", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffInfection04", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffStatusHungry01", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffStatusHungry02", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffStatusHungry03", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffStatusThirsty01", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffStatusThirsty02", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffStatusThirsty03", null);
+        }
+        public static void GiveItemFromClipboard(int amount)
+        {
+            string systemCopyBuffer = GUIUtility.systemCopyBuffer;
+            string text = $"giveself {systemCopyBuffer} 6 {amount.ToString()} true";
+            ExecuteConsoleCommand(text);
+        }
+        #endregion
+        #region World
+        void Worlds()
+        {
+            if (Globals.LocalPlayer == null)
+                return;
+
         }
         #endregion
 

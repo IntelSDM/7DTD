@@ -36,8 +36,7 @@ namespace Cheat
                 return result;
             if (Globals.LocalPlayer == null)
                 return result;
-            if (!Input.GetKey(Globals.Config.Aimbot.ZombieKey))
-                return result;
+           
             try
             {
 
@@ -75,8 +74,7 @@ namespace Cheat
                 return result;
             if (Globals.LocalPlayer == null)
                 return result;
-            if (!Input.GetKey(Globals.Config.Aimbot.PlayerKey))
-                return result;
+          
             try
             {
 
@@ -153,7 +151,10 @@ namespace Cheat
                 return;
             if (Aimbot.Player != null)
             {
+               
                 TargettingPlayer = true;
+                if (!Input.GetKey(Globals.Config.Aimbot.PlayerKey))
+                    return;
                 Globals.LocalPlayer.transform.eulerAngles = new Vector3(0f, Globals.LocalPlayer.transform.rotation.eulerAngles.y, 0f);
                 Camera.main.transform.LookAt(PlayerHitPos);
                 return; // stop it changing target to zombie(proritising players)
@@ -161,7 +162,10 @@ namespace Cheat
             TargettingPlayer = false;
             if (Aimbot.Zombie != null)
             {
+               
                 TargettingZombie = true;
+                if (!Input.GetKey(Globals.Config.Aimbot.ZombieKey))
+                    return;
                 Globals.LocalPlayer.transform.eulerAngles = new Vector3(0f, Globals.LocalPlayer.transform.rotation.eulerAngles.y, 0f);
                 Camera.main.transform.LookAt(ZombieHitPos);
                 return;
