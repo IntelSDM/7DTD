@@ -38,6 +38,10 @@ namespace Cheat.Configs
 
         public bool InstantBreak1 = true;
         public bool InstantBreak2 = false;
-
+        public bool InstantBreak3 = false;
+        public bool DebugMenu = true;
+        public bool CreativeMenu = true;
+        public bool FarInteract = false;
+        public int FarInteractDistance = 35;
     }
 }

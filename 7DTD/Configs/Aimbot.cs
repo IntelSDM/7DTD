@@ -18,6 +18,7 @@ namespace Cheat.Configs
         public KeyCode ZombieKey = KeyCode.Mouse0;
 
         public bool PlayerAimbot = true;
+        public bool PlayerAimbotTargetFriends = false;
         public bool PlayerVisibilityChecks = true;
         public KeyCode PlayerKey = KeyCode.Mouse0;
         

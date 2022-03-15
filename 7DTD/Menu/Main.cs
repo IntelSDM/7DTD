@@ -163,9 +163,11 @@ namespace Cheat.Menu
             Aimbot.Items.Add(hitchance);
 
             Toggle targetplayer = new Toggle("Enable Player Aimbot", "Makes Aimbot Target Players", ref Globals.Config.Aimbot.PlayerAimbot);
+            Toggle targetfriend = new Toggle("Target Friends", "Makes Aimbot Target Friends", ref Globals.Config.Aimbot.PlayerAimbotTargetFriends);
             Toggle visibleplayer = new Toggle("Visibility Check", "Aimbot Only Targets Visible Players", ref Globals.Config.Aimbot.PlayerVisibilityChecks);
             Keybind playerbind = new Keybind("PLayer Aimbot Keybind", "Key Aimbot Will Work On - To have it turned on when you shoot use your mouse0", ref Globals.Config.Aimbot.PlayerKey);
             PlayerAimbot.Items.Add(targetplayer);
+            PlayerAimbot.Items.Add(targetfriend);
             PlayerAimbot.Items.Add(visibleplayer);
             PlayerAimbot.Items.Add(playerbind);
 
@@ -257,6 +259,10 @@ namespace Cheat.Menu
             Button craft = new Button("Instant Free Craft", "Craft Items Instantly With No Resources", () => Misc.InstantCraft());
             Button nuke = new Button("Kill Everyone Excluding Yourself", "Kills Everyone But You", () => Misc.KillEveryoneElse());
             Button nuke2 = new Button("Kill Everyone Including Yourself", "Kills Everyone", () => Misc.KillEveryone());
+            Toggle creative = new Toggle("Creative Menu", "Allows You To Spawn Items", ref Globals.Config.LocalPlayer.CreativeMenu);
+            Toggle debug = new Toggle("Debug Menu", "Allows You To Fly And Teleport On Map", ref Globals.Config.LocalPlayer.DebugMenu);
+            Toggle farinteract = new Toggle("Far Interact", "Allows You To Place And Pickup Blocks Further Away", ref Globals.Config.LocalPlayer.FarInteract);
+            IntSlider interactdistance = new IntSlider("Far Interact Distance", "How Far You Can Interact", ref Globals.Config.LocalPlayer.FarInteractDistance, 25, 1000, 5);
             World.Items.Add(cmd);
             World.Items.Add(itmamount);
             World.Items.Add(giveitem);
@@ -265,6 +271,10 @@ namespace Cheat.Menu
             World.Items.Add(craft);
             World.Items.Add(nuke);
             World.Items.Add(nuke2);
+            World.Items.Add(creative);
+            World.Items.Add(debug);
+            World.Items.Add(farinteract);
+            World.Items.Add(interactdistance);
         }
         #endregion
         // if entity is keybind. keybind = keycode.none, if any keybind == keycode.null make it = setkey

@@ -36,13 +36,15 @@ namespace Cheat
                 return result;
             if (Globals.LocalPlayer == null)
                 return result;
+          
            
             try
             {
 
                 foreach (EntityZombie zombie in ZombieClosestToCrosshair(Esp.Zombie.ZombieList))
                 {
-                    if (!(zombie.IsAlive()) || zombie == null)
+                  
+                        if (!(zombie.IsAlive()) || zombie == null)
                         continue;
                     Vector3 Pos = Vector3.zero;
 
@@ -80,7 +82,10 @@ namespace Cheat
 
                 foreach (EntityPlayer player in PlayerClosestToCrosshair(Esp.Player.PlayerList))
                 {
-                    if (!(player.IsAlive()) || player == null)
+                    if (Globals.LocalPlayer.IsFriendsWith(player) && Globals.Config.Aimbot.PlayerAimbotTargetFriends) // make check so they can turn off this check
+                        continue;
+                   
+                        if (!(player.IsAlive()) || player == null)
                         continue;
                     Vector3 Pos = Vector3.zero;
 

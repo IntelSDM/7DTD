@@ -25,6 +25,11 @@ namespace Cheat
 							recipe.craftingTime = 0.1f;
 						}
          debug and creative menu options
+        open locked crates
+        place items in blocked zones
+        Ignore building block damage
+        isfriendswith
+        drawmapicon
          */
 
 
@@ -58,7 +63,10 @@ namespace Cheat
             _bBypassMaxDamage = true;
             _blockValue.Block.UpgradeExp = float.MaxValue;
             _blockValue.Block.Damage = float.MaxValue;
+              
             }
+            if (Globals.Config.LocalPlayer.InstantBreak3)
+                _blockValue.Block.MaxDamage = 1;
 
             ChunkCluster chunkCluster = _world.ChunkClusters[_clrIdx];
             if (chunkCluster == null)
@@ -316,11 +324,6 @@ namespace Cheat
             if (Globals.LocalPlayer == null)
                 return;
 
-             GamePrefs.Set(EnumGamePrefs.CreativeMenuEnabled, true);
-            GameStats.Set(EnumGameStats.IsFlyingEnabled, true);
-            GamePrefs.Set(EnumGamePrefs.DebugMenuEnabled, true);
-            GameStats.Set(EnumGameStats.IsPlayerCollisionEnabled, false);
-            GameStats.Set(EnumGameStats.IsCreativeMenuEnabled, true);
 
             #region LocalPlayer
             try
@@ -575,7 +578,24 @@ namespace Cheat
         {
             if (Globals.LocalPlayer == null)
                 return;
+            if (Globals.Config.LocalPlayer.CreativeMenu)
+            {
 
+                GamePrefs.Set(EnumGamePrefs.CreativeMenuEnabled, true);
+                GameStats.Set(EnumGameStats.IsCreativeMenuEnabled, true);
+            }
+            if (Globals.Config.LocalPlayer.DebugMenu)
+            {
+                GameStats.Set(EnumGameStats.IsFlyingEnabled, true);
+                GamePrefs.Set(EnumGamePrefs.DebugMenuEnabled, true);
+                GameStats.Set(EnumGameStats.IsPlayerCollisionEnabled, false);
+            }
+            if (Globals.Config.LocalPlayer.FarInteract)
+            {
+                Constants.cDigAndBuildDistance = Globals.Config.LocalPlayer.FarInteractDistance;
+                Constants.cCollectItemDistance = Globals.Config.LocalPlayer.FarInteractDistance;
+            //    Constants.cBuildIntervall = 0.1f;
+            }
         }
         public static void KillEveryone()
         {
