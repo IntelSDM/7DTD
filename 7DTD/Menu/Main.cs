@@ -13,6 +13,7 @@ namespace Cheat.Menu
         uint MainMenuIndex = 0;
         private Entity Selected;
         private double NextPlayerTime;
+        private KeyCode KeyToBind;
         SubMenu MainMenu = new SubMenu("Main","Menu");
 
         SubMenu Esp = new SubMenu("ESP", "Draw Visuals");
@@ -29,7 +30,9 @@ namespace Cheat.Menu
         SubMenu ZombieAimbot = new SubMenu("Zombie Aimbot", "Configure Aimbot For Zombies");
 
         SubMenu Skill = new SubMenu("Skills", "Edit Your Player's Skills");
-
+        SubMenu Movement = new SubMenu("Movement", "Edit Your Player's Movement");
+        SubMenu PlayerProperties = new SubMenu("Properties", "Edit Stamina And Other Player Properties");
+        SubMenu Weapon = new SubMenu("Weapon", "Modify Your Weapon");
         List<SubMenu> MenuHistory = new List<SubMenu>();
         SubMenu CurrentMenu;
         #region Config
@@ -122,7 +125,7 @@ namespace Cheat.Menu
         #region LocalPlayer
         void LocalPlayers()
         {
-            SubMenu Weapon = new SubMenu("Weapon", "Modify Your Weapon");
+           
             Button RemoveRecoil = new Button("Remove Recoil", "!This Cant Be Undone! This Button Removes Recoil", () => Misc.EnableNoRecoil());
             Toggle NoRecoil = new Toggle("No Recoil From Start Up", "This Will Remove Recoil On Start Or Config Load", ref Globals.Config.LocalPlayer.NoRecoil);
             Button RemoveSpread = new Button("Remove Spread", "!This Cant Be Undone! This Button Removes Spread", () => Misc.EnableNoSpread());
@@ -193,6 +196,78 @@ namespace Cheat.Menu
 
         }
         #endregion
+        #region Movement
+        void Movements()
+        {
+            Toggle speedhack = new Toggle("Speedhack", "Allows You To Zoom", ref Globals.Config.LocalPlayer.Speedhack);
+            IntSlider speed = new IntSlider("Speed Value", "Change The Speed Your Speedhack Works At", ref Globals.Config.LocalPlayer.SpeedAmount, 1, 30, 1);
+            Keybind speedbind = new Keybind("Speedhack Keybind", "Sets The Key You Hold To Use Keybind", ref Globals.Config.LocalPlayer.SpeedKey);
+            Movement.Items.Add(speedhack);
+            Movement.Items.Add(speed);
+            Movement.Items.Add(speedbind);
+            LocalPlayer.Items.Add(Movement); // teleport to waypoint, speedhack, also try find the function that shows other player's bases and hook it
+        }
+        #endregion
+        #region Properties
+        void Properties()
+        {
+            LocalPlayer.Items.Add(PlayerProperties);
+        
+        }
+        #endregion
+        // if entity is keybind. keybind = keycode.none, if any keybind == keycode.null make it = setkey
+        KeyCode SetKey()
+        {
+            KeyCode Key = new KeyCode();
+            Event e = Event.current;
+            if (e.keyCode != KeyCode.RightArrow)
+            {
+                Key = e.keyCode;
+              
+
+            }
+            else
+            {
+                Key = KeyCode.None;
+
+            }
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                Key = KeyCode.Mouse0;
+               
+            }
+            if (Input.GetKeyDown(KeyCode.Mouse1))
+            {
+                Key = KeyCode.Mouse1;
+                
+            }
+            if (Input.GetKeyDown(KeyCode.Mouse2))
+            {
+                Key = KeyCode.Mouse2;
+               
+            }
+            if (Input.GetKeyDown(KeyCode.Mouse3))
+            {
+                Key = KeyCode.Mouse3;
+               
+            }
+            if (Input.GetKeyDown(KeyCode.Mouse4))
+            {
+                Key = KeyCode.Mouse4;
+              
+            }
+            if (Input.GetKeyDown(KeyCode.Mouse5))
+            {
+                Key = KeyCode.Mouse5;
+                
+            }
+            if (Input.GetKeyDown(KeyCode.Mouse6))
+            {
+                Key = KeyCode.Mouse6;
+                
+            }
+            return Key;
+        }
         void Start()
         {
             MenuPos.x = 50;
@@ -210,6 +285,8 @@ namespace Cheat.Menu
             ESP();
             Aimbots();
             Skills();
+            Movements();
+            Properties();
             #region Colour Picker
             // amount of colours in the dictionary is always the same in game so we dont need to update this.
             foreach (KeyValuePair<string, Color32> value in Globals.Config.Colours.GlobalColors)
@@ -246,6 +323,7 @@ namespace Cheat.Menu
         }
         void OnGUI1()
         {
+          
             Globals.MainCamera = Camera.main;
 
             string text = string.Empty;
@@ -283,7 +361,7 @@ namespace Cheat.Menu
                             continue;
                         SubMenu playermenu = new SubMenu(player.EntityName,"");
                         PlayerMenu.Items.Add(playermenu);
-                        playermenu.Items.Add(new Button("Kill Player", "Kills The Player", () => Cheat.Misc.KillPlayer(player)));
+                        playermenu.Items.Add(new Button("Kill Player", "JFKs The Player", () => Cheat.Misc.KillPlayer(player)));
                     }
                     NextPlayerTime = Time.time + 5;
                 }
@@ -312,6 +390,11 @@ namespace Cheat.Menu
                         FloatSlider slider = entity as FloatSlider;
                         Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"- {entity.Name}: {slider.Value}", Helpers.ColourHelper.GetColour("Menu Primary Colour"), false, 14, FontStyle.Normal, 0);
                     }
+                    if (entity is Keybind)
+                    {
+                        Keybind bind = entity as Keybind;
+                        Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"- {entity.Name}: {bind.Value.ToString()}", Helpers.ColourHelper.GetColour("Menu Primary Colour"), false, 14, FontStyle.Normal, 0);
+                    }
                     if (entity is SubMenu)
                     Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"> {entity.Name}", Helpers.ColourHelper.GetColour("Menu Primary Colour"), false, 14, FontStyle.Normal, 0);
                     if (entity is Button)
@@ -334,6 +417,11 @@ namespace Cheat.Menu
                     {
                         FloatSlider slider = entity as FloatSlider;
                         Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"- {entity.Name}: {slider.Value}", Helpers.ColourHelper.GetColour("Menu Secondary Colour"), false, 12, FontStyle.Normal, 0);
+                    }
+                    if (entity is Keybind)
+                    {
+                        Keybind bind = entity as Keybind;
+                        Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"- {entity.Name}: {bind.Value.ToString()}", Helpers.ColourHelper.GetColour("Menu Secondary Colour"), false, 12, FontStyle.Normal, 0);
                     }
                     if (entity is SubMenu)
                     Drawing.DrawString(new Vector2(MenuPos.x, MenuPos.y + (20 * CurrentMenu.Items.IndexOf(entity))), $"> {entity.Name}", Helpers.ColourHelper.GetColour("Menu Secondary Colour"), false, 12, FontStyle.Normal, 0);
@@ -360,6 +448,13 @@ namespace Cheat.Menu
 
             foreach (Entity entity in CurrentMenu.Items)
             {
+                if (entity is Keybind)
+                {
+                    Keybind bind = entity as Keybind;
+                    if(bind.Value == KeyCode.None)
+                    bind.Value = SetKey();
+                    
+                }
                 if (CurrentMenu.index == CurrentMenu.Items.IndexOf(entity))
                     Selected = entity;
                 if (entity != Selected)
@@ -428,6 +523,11 @@ namespace Cheat.Menu
                         slider.Value = slider.MinValue;
                     else
                         slider.Value = result;
+                }
+                if (Selected is Keybind && (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.Return)))
+                {
+                    Keybind bind = entity as Keybind;
+                    bind.Value = KeyCode.None;
                 }
             }
             #endregion

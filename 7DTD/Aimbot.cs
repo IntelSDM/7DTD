@@ -120,14 +120,7 @@ namespace Cheat
             // so basically we cant target a player and zombie at the same time as we exit the function in the silentaim method when we have a target
             if (Globals.LocalPlayer == null)
                 return;
-            try
-            {
-                Drawing.DrawString(new Vector2(100, 190), $"{ Globals.LocalPlayer.entityId}", Color.red, false, 12, FontStyle.Normal, 0);
-                Drawing.DrawString(new Vector2(100, 220), $"{ Globals.LocalPlayer.clientEntityId}", Color.red, false, 12, FontStyle.Normal, 0);
-                Drawing.DrawString(new Vector2(100, 250), $"{ Globals.LocalPlayer.factionId}", Color.red, false, 12, FontStyle.Normal, 0);
-                Drawing.DrawString(new Vector2(100, 290), $"{ Globals.LocalPlayer.Party.PartyID}", Color.red, false, 12, FontStyle.Normal, 0);
-            }
-            catch { }
+
             if (Zombie == null)
             {
                 Drawing.DrawCircle(Color.blue, new Vector2(Screen.width / 2, Screen.height / 2), 30);

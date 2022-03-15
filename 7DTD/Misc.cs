@@ -80,6 +80,7 @@ namespace Cheat
         }
         void Update1()
         {
+            Speedhack();
             #region Hooks
             if (Globals.Config.LocalPlayer.NoRecoil && !FireAnimationHooked) // allows us to hook it on config load
             {
@@ -170,7 +171,26 @@ namespace Cheat
             DamageSource source = new DamageSource(EnumDamageSource.Internal, EnumDamageTypes.BloodLoss);
             player.DamageEntity(source, 100000000, false, 1);
         }
+        #region Movement
+        public static void TeleportToPlayer(EntityPlayer player)
+        { 
+        }
+        void Speedhack()
+        {
+            if (!Globals.Config.LocalPlayer.Speedhack)
+                return;
+                if (Input.GetKey(Globals.Config.LocalPlayer.SpeedKey))
+                {
+                Time.timeScale = Globals.Config.LocalPlayer.SpeedAmount;
+                }
+                else
+                {
+                    Time.timeScale = 1;
+                }
+            
 
+        }
+        #endregion
         #region Skills
         public static void SetLevel(int level)
         {
