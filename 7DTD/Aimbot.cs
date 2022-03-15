@@ -36,6 +36,8 @@ namespace Cheat
                 return result;
             if (Globals.LocalPlayer == null)
                 return result;
+            if (!Input.GetKey(Globals.Config.Aimbot.ZombieKey))
+                return result;
             try
             {
 
@@ -73,7 +75,8 @@ namespace Cheat
                 return result;
             if (Globals.LocalPlayer == null)
                 return result;
-
+            if (!Input.GetKey(Globals.Config.Aimbot.PlayerKey))
+                return result;
             try
             {
 

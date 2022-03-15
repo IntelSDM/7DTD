@@ -15,10 +15,12 @@ namespace Cheat.Configs
 
         public bool ZombieAimbot = true;
         public bool ZombieVisibilityChecks = true;
+        public KeyCode ZombieKey = KeyCode.Mouse0;
 
         public bool PlayerAimbot = true;
         public bool PlayerVisibilityChecks = true;
-
+        public KeyCode PlayerKey = KeyCode.Mouse0;
+        
 
     }
 }

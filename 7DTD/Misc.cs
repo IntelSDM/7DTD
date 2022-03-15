@@ -173,7 +173,8 @@ namespace Cheat
         }
         #region Movement
         public static void TeleportToPlayer(EntityPlayer player)
-        { 
+        {
+            Globals.LocalPlayer.transform.position = player.transform.position;
         }
         void Speedhack()
         {

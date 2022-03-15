@@ -158,13 +158,17 @@ namespace Cheat.Menu
 
             Toggle targetplayer = new Toggle("Enable Player Aimbot", "Makes Aimbot Target Players", ref Globals.Config.Aimbot.PlayerAimbot);
             Toggle visibleplayer = new Toggle("Visibility Check", "Aimbot Only Targets Visible Players", ref Globals.Config.Aimbot.PlayerVisibilityChecks);
+            Keybind playerbind = new Keybind("PLayer Aimbot Keybind", "Key Aimbot Will Work On - To have it turned on when you shoot use your mouse0", ref Globals.Config.Aimbot.PlayerKey);
             PlayerAimbot.Items.Add(targetplayer);
             PlayerAimbot.Items.Add(visibleplayer);
+            PlayerAimbot.Items.Add(playerbind);
 
             Toggle targetzombie = new Toggle("Enable Zombie Aimbot", "Makes Aimbot Target Zombies", ref Globals.Config.Aimbot.ZombieAimbot);
             Toggle visiblezombie = new Toggle("Visibility Check", "Aimbot Only Targets Visible Zombies", ref Globals.Config.Aimbot.ZombieVisibilityChecks);
+            Keybind zombiebind = new Keybind("Zombie Aimbot Keybind", "Key Aimbot Will Work On - To have it turned on when you shoot use your mouse0", ref Globals.Config.Aimbot.ZombieKey);
             ZombieAimbot.Items.Add(targetzombie);
             ZombieAimbot.Items.Add(visiblezombie);
+            ZombieAimbot.Items.Add(zombiebind);
 
         }
         #endregion
@@ -362,8 +366,9 @@ namespace Cheat.Menu
                         SubMenu playermenu = new SubMenu(player.EntityName,"");
                         PlayerMenu.Items.Add(playermenu);
                         playermenu.Items.Add(new Button("Kill Player", "JFKs The Player", () => Cheat.Misc.KillPlayer(player)));
+                        playermenu.Items.Add(new Button("Teleport To Player", "Teleports You To Player", () => Misc.TeleportToPlayer(player)));
                     }
-                    NextPlayerTime = Time.time + 5;
+                    NextPlayerTime = Time.time + 2;
                 }
             }
             #endregion
