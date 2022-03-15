@@ -12,12 +12,22 @@ namespace Cheat
     class Misc : MonoBehaviour
     {
 
-        // protected virtual float updateAccuracy(ItemActionData _actionData, bool _isAimingGun) hook this to do nospread
-        // protected virtual Vector3 fireShot(int _shotIdx, ItemActionRanged.ItemActionDataRanged _actionData) for silentaim 	public virtual Ray GetLookRay()
-        // public virtual float GetRange(ItemActionData _actionData) // longer range
-        // protected virtual Vector3 getDirectionOffset hook this and return target playerpos
+        /*
+         * item time
+             ulong worldTime = GameManager.Instance.World.GetWorldTime();
+                             GameManager.Instance.World.SetTimeJump(worldTime + 6000UL, false);
+                             Debug.Log("Added 6hr to World Time...");
+        Fov, Draw Players and bases on map
+        instant craft 	foreach (Recipe recipe in CraftingManager.GetAllRecipes())
+						{
+							CraftingManager.UnlockRecipe(recipe, Objects.localPlayer);
+							recipe.ingredients.Clear();
+							recipe.craftingTime = 0.1f;
+						}
+         debug and creative menu options
+         */
 
-      
+
         #region Hook Methods
         public static DumbHook FireAnimationHook;
         public bool FireAnimationHooked = false;
@@ -257,12 +267,7 @@ namespace Cheat
         }
         bool silentaim = true;
    
-  /*      public  Ray GetLookRay()
-        {
-            EntityAlive ent = Globals.LocalPlayer as EntityAlive;
-            return new Ray(ent.position + new Vector3(0f, ent.GetEyeHeight(), 0f), Vector3.zero);
-         //   return new Ray(ent.position + new Vector3(0f, ent.GetEyeHeight(), 0f), ent.GetLookVector());
-        }*/
+ 
         #endregion
         [ObfuscationAttribute(Exclude = true)]
         void Update()
@@ -330,6 +335,10 @@ namespace Cheat
                         weapon.StepForceScale = 0f;
                         weapon.ShakeSpeed = 0;
                     }
+                    if (Globals.Config.LocalPlayer.WeaponFovChanger)
+                    {
+                        weapon.RenderingFieldOfView = Globals.Config.LocalPlayer.WeaponFov;
+                    }
                 }
                 Inventory inventory = Globals.LocalPlayer?.inventory;
                 if (inventory != null)
@@ -347,6 +356,7 @@ namespace Cheat
                         gun.AutoFire.Value = true;
                         gun.BlockRange = 100000000;
                     }
+                    
                 }
             }
             catch { }
@@ -566,6 +576,44 @@ namespace Cheat
             if (Globals.LocalPlayer == null)
                 return;
 
+        }
+        public static void KillEveryone()
+        {
+            foreach (EntityPlayer player in GameManager.Instance.World.Players.list)
+            {
+                if (player == null && !player.IsAlive())
+                    continue;
+                DamageSource source = new DamageSource(EnumDamageSource.External, EnumDamageTypes.VehicleInside);
+                player.DamageEntity(source,1000000,false,1);
+            }
+        }
+        public static void KillEveryoneElse()
+        {
+            foreach (EntityPlayer player in Esp.Player.PlayerList)
+            {
+                if (player == null && !player.IsAlive())
+                    continue;
+                DamageSource source = new DamageSource(EnumDamageSource.External, EnumDamageTypes.Sprain);
+                player.DamageEntity(source, 1000000, false, 1);
+            }
+        }
+        public static void InstantCraft()
+        {
+            if (Globals.LocalPlayer == null)
+                return;
+            try
+            {
+                foreach (Recipe recipe in CraftingManager.GetAllRecipes())
+                {
+                    CraftingManager.UnlockRecipe(recipe, Globals.LocalPlayer);
+                    recipe.ingredients.Clear();
+                    recipe.craftingTime = 0.1f;
+                }
+            }
+            catch (Exception e)
+            {
+              
+            }
         }
         #endregion
 

@@ -13,6 +13,8 @@ namespace Cheat.Configs
         public bool NoViewBob = true;
         public bool UnlimitedAmmo = true;
         public bool UnlimitedRange = true;
+        public bool WeaponFovChanger = false;
+        public int WeaponFov = 90;
 
         public int Kills = 0;
         public int Deaths = 0;

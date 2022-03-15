@@ -135,12 +135,16 @@ namespace Cheat.Menu
             Toggle NoViewBob = new Toggle("No Shake", "Removes Shake/ViewBob", ref Globals.Config.LocalPlayer.NoViewBob);
             Toggle UnlimitedAmmo = new Toggle("Unlimited Ammo", "Gives You Unlimited Ammo", ref Globals.Config.LocalPlayer.UnlimitedAmmo);
             Toggle UnlimitedRange = new Toggle("Unlimited Range", "Allows You To Shoot Further", ref Globals.Config.LocalPlayer.UnlimitedRange);
+            Toggle FovChanger = new Toggle("Weapon Fov Changer", "Changes Distance Of Weapon From Camera", ref Globals.Config.LocalPlayer.WeaponFovChanger);
+            IntSlider FovSlider = new IntSlider("Weapon Fov", "Amount Of Fov The Fov Changer Will Change", ref Globals.Config.LocalPlayer.WeaponFov, 10, 190, 5);
             Weapon.Items.Add(RemoveRecoil);
             Weapon.Items.Add(NoRecoil);
             Weapon.Items.Add(RemoveSpread);
             Weapon.Items.Add(NoSpread);
             Weapon.Items.Add(NoViewBob);
             Weapon.Items.Add(UnlimitedAmmo);
+            Weapon.Items.Add(FovChanger);
+            Weapon.Items.Add(FovSlider);
             LocalPlayer.Items.Add(Weapon);
         }
         #endregion
@@ -235,6 +239,8 @@ namespace Cheat.Menu
             PlayerProperties.Items.Add(unlimitedwater);
             PlayerProperties.Items.Add(unlimitedhealth);
             PlayerProperties.Items.Add(cleardebuff);
+            PlayerProperties.Items.Add(spoofname);
+            PlayerProperties.Items.Add(name);
             LocalPlayer.Items.Add(PlayerProperties);
         
         }
@@ -248,11 +254,17 @@ namespace Cheat.Menu
             Button giveitem = new Button("Give Item From Name From Clipboard", "Copy An Item Code And Input Amount And You Will Be Given The Item", () => Misc.GiveItemFromClipboard(itemamount));
             Toggle instant1 = new Toggle("Instant Break Blocks 1", "Breaks Blocks And Bypasses Most Server Checks", ref Globals.Config.LocalPlayer.InstantBreak1);
             Toggle instant2 = new Toggle("Instant Break Blocks 2", "Breaks Blocks With A Different Bypass", ref Globals.Config.LocalPlayer.InstantBreak2);
+            Button craft = new Button("Instant Free Craft", "Craft Items Instantly With No Resources", () => Misc.InstantCraft());
+            Button nuke = new Button("Kill Everyone Excluding Yourself", "Kills Everyone But You", () => Misc.KillEveryoneElse());
+            Button nuke2 = new Button("Kill Everyone Including Yourself", "Kills Everyone", () => Misc.KillEveryone());
             World.Items.Add(cmd);
             World.Items.Add(itmamount);
             World.Items.Add(giveitem);
             World.Items.Add(instant1);
             World.Items.Add(instant2);
+            World.Items.Add(craft);
+            World.Items.Add(nuke);
+            World.Items.Add(nuke2);
         }
         #endregion
         // if entity is keybind. keybind = keycode.none, if any keybind == keycode.null make it = setkey
