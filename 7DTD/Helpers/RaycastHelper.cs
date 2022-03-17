@@ -17,14 +17,14 @@ namespace Cheat.Helpers
                 Camera.main.transform.position,
                 pos,
                 out RaycastHit,
-                -538750997) && RaycastHit.collider && RaycastHit.collider.gameObject.transform.root.gameObject == player.gameObject.transform.root.gameObject;
+                -538750997) && RaycastHit.collider&& RaycastHit.transform.position == pos && RaycastHit.collider.gameObject.transform.root.gameObject == player.gameObject.transform.root.gameObject;
         }
         public static bool ZombiePos(EntityZombie zombie, Vector3 pos)
         {
             return Physics.Linecast(
                 Camera.main.transform.position,
                 pos,
-                out RaycastHit, -538750997) && RaycastHit.collider && RaycastHit.collider.gameObject.transform.root.gameObject == zombie.gameObject.transform.root.gameObject;
+                out RaycastHit, -538750997) && RaycastHit.collider && RaycastHit.transform.position == pos && RaycastHit.collider.gameObject.transform.root.gameObject == zombie.gameObject.transform.root.gameObject;
        
         }
        

@@ -17,27 +17,21 @@ namespace Cheat
              ulong worldTime = GameManager.Instance.World.GetWorldTime();
                              GameManager.Instance.World.SetTimeJump(worldTime + 6000UL, false);
                              Debug.Log("Added 6hr to World Time...");
-        Fov, Draw Players and bases on map
-        instant craft 	foreach (Recipe recipe in CraftingManager.GetAllRecipes())
-						{
-							CraftingManager.UnlockRecipe(recipe, Objects.localPlayer);
-							recipe.ingredients.Clear();
-							recipe.craftingTime = 0.1f;
-						}
-         debug and creative menu options
+        Draw Players and bases on map
         open locked crates
         place items in blocked zones
-        Ignore building block damage
         isfriendswith
         drawmapicon
+        nenu x and y slider and credits
+        FIX MEMORY LEAK - not caused by misc update, 
          */
 
 
         #region Hook Methods
         public static DumbHook FireAnimationHook;
-        public bool FireAnimationHooked = false;
+        public static bool FireAnimationHooked = false;
         public static DumbHook UpdateAccuracyHook;
-        public bool AccuracyHooked = false;
+        public static bool AccuracyHooked = false;
         public static DumbHook UnlimitedRangeHook;
         public bool UnlimitedRangeHooked = false;
         public static DumbHook BlockDamage;
@@ -245,6 +239,7 @@ namespace Cheat
 
             return (_actionData as ItemActionRanged.ItemActionDataRanged).lastAccuracy;
         }
+        [ObfuscationAttribute(Exclude = true)]
         public float GetRange(ItemActionData _actionData)
         {
             return (GetRange1(_actionData));
@@ -262,16 +257,24 @@ namespace Cheat
         }
         public static void EnableNoRecoil()
         {
-            FireAnimationHook = new DumbHook();
-            FireAnimationHook.Init(typeof(EntityPlayerLocal).GetMethod("OnFired", BindingFlags.Public | BindingFlags.Instance), typeof(Misc).GetMethod("FireAnimation", BindingFlags.Public | BindingFlags.Instance));
-            FireAnimationHook.Hook();
+            if (!FireAnimationHooked)
+            {
+                FireAnimationHook = new DumbHook();
+                FireAnimationHook.Init(typeof(EntityPlayerLocal).GetMethod("OnFired", BindingFlags.Public | BindingFlags.Instance), typeof(Misc).GetMethod("FireAnimation", BindingFlags.Public | BindingFlags.Instance));
+                FireAnimationHook.Hook();
+                FireAnimationHooked = true;
+            }
         }
 
         public static void EnableNoSpread()
         {
-            UpdateAccuracyHook = new DumbHook();
-            UpdateAccuracyHook.Init(typeof(ItemActionRanged).GetMethod("updateAccuracy", BindingFlags.NonPublic | BindingFlags.Instance), typeof(Misc).GetMethod("Accuracy", BindingFlags.Public | BindingFlags.Instance));
-            UpdateAccuracyHook.Hook();
+            if (!AccuracyHooked)
+            {
+                UpdateAccuracyHook = new DumbHook();
+                UpdateAccuracyHook.Init(typeof(ItemActionRanged).GetMethod("updateAccuracy", BindingFlags.NonPublic | BindingFlags.Instance), typeof(Misc).GetMethod("Accuracy", BindingFlags.Public | BindingFlags.Instance));
+                UpdateAccuracyHook.Hook();
+                AccuracyHooked = true;
+            }
         }
         bool silentaim = true;
    
@@ -286,8 +289,8 @@ namespace Cheat
         {
             Speedhack();
             SetProperties();
-            Noclip();
-            Worlds();
+           Noclip();
+        //    Worlds();
             #region Hooks
             // some of these should just be done in a start function but i kinda want them all in 1 area so i am not splitting them up
             if (Globals.Config.LocalPlayer.NoRecoil && !FireAnimationHooked) // allows us to hook it on config load
@@ -323,7 +326,7 @@ namespace Cheat
 
             if (Globals.LocalPlayer == null)
                 return;
-
+      
 
             #region LocalPlayer
             try
@@ -363,7 +366,7 @@ namespace Cheat
                 }
             }
             catch { }
-            #endregion
+            #endregion 
 
         }
 
@@ -502,10 +505,15 @@ namespace Cheat
                 Globals.LocalPlayer.Stats.Health.MaxModifier = 1000000000;
 
             }
-            if (Globals.Config.LocalPlayer.SpoofName)
+            try
             {
-                Globals.LocalPlayer.SetEntityName(Name);
+                if (Globals.Config.LocalPlayer.SpoofName)
+                {
+                    if(Globals.LocalPlayer.EntityName != Name)
+                    Globals.LocalPlayer.SetEntityName(Name);
+                }
             }
+            catch { }
           
 
         }
@@ -580,15 +588,11 @@ namespace Cheat
                 return;
             if (Globals.Config.LocalPlayer.CreativeMenu)
             {
-
-                GamePrefs.Set(EnumGamePrefs.CreativeMenuEnabled, true);
-                GameStats.Set(EnumGameStats.IsCreativeMenuEnabled, true);
+       
             }
             if (Globals.Config.LocalPlayer.DebugMenu)
             {
-                GameStats.Set(EnumGameStats.IsFlyingEnabled, true);
-                GamePrefs.Set(EnumGamePrefs.DebugMenuEnabled, true);
-                GameStats.Set(EnumGameStats.IsPlayerCollisionEnabled, false);
+            
             }
             if (Globals.Config.LocalPlayer.FarInteract)
             {
@@ -596,6 +600,35 @@ namespace Cheat
                 Constants.cCollectItemDistance = Globals.Config.LocalPlayer.FarInteractDistance;
             //    Constants.cBuildIntervall = 0.1f;
             }
+            if (Globals.Config.LocalPlayer.LandClaim)
+            {
+                if (!GameStats.GetBool(EnumGameStats.LandClaimOnlineDurabilityModifier))
+                    GameStats.Set(EnumGameStats.LandClaimOnlineDurabilityModifier, 1);
+                if (!GameStats.GetBool(EnumGameStats.LandClaimOfflineDurabilityModifier))
+                    GameStats.Set(EnumGameStats.LandClaimOfflineDurabilityModifier, 1);
+
+            }
+
+        }
+        public static void CreativeMenu()
+        {
+            if (Globals.LocalPlayer == null)
+                return;
+            //      if(!GamePrefs.GetBool(EnumGamePrefs.CreativeMenuEnabled))
+            GamePrefs.Set(EnumGamePrefs.CreativeMenuEnabled, true);
+            //    if (!GameStats.GetBool(EnumGameStats.IsCreativeMenuEnabled))
+            GameStats.Set(EnumGameStats.IsCreativeMenuEnabled, true);
+        }
+        public static void DebugMenu()
+        {
+            if (Globals.LocalPlayer == null)
+                return;
+            if (!GameStats.GetBool(EnumGameStats.IsFlyingEnabled))
+                GameStats.Set(EnumGameStats.IsFlyingEnabled, true);
+            if (!GamePrefs.GetBool(EnumGamePrefs.DebugMenuEnabled))
+                GamePrefs.Set(EnumGamePrefs.DebugMenuEnabled, true);
+            if (!GameStats.GetBool(EnumGameStats.IsPlayerCollisionEnabled))
+                GameStats.Set(EnumGameStats.IsPlayerCollisionEnabled, false);
         }
         public static void KillEveryone()
         {

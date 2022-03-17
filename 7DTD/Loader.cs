@@ -12,14 +12,14 @@ namespace Cheat
 		{
 
 
-		//	Loader.hackObject.AddComponent<Globals>();
+	
 			Loader.hackObject.AddComponent<Cheat.Esp.Zombie>();
 			Loader.hackObject.AddComponent<Cheat.Esp.Animal>();
 			Loader.hackObject.AddComponent<Cheat.Esp.Player>();
 			Loader.hackObject.AddComponent<Globals>();
 			Loader.hackObject.AddComponent<Menu.Main>();
 			Loader.hackObject.AddComponent<Misc>();
-			Loader.hackObject.AddComponent<Aimbot>();
+			Loader.hackObject.AddComponent<Aimbot>(); // memory leaks 3min 500mb	
 			UnityEngine.Object.DontDestroyOnLoad(hackObject);
 
 		}

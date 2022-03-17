@@ -98,10 +98,39 @@ namespace Cheat.Esp
                     else
                         Helpers.ShaderHelper.RemoveShaders(player.gameObject);
 
+                    float height = Mathf.Abs(ScreenPosition.y - HeadPosition.y);
                     if (Globals.Config.Player.Box && Distance < 200)
                     {
-                        float height = Mathf.Abs(ScreenPosition.y - HeadPosition.y);
-                        Drawing.PlayerCornerBox(new Vector2(HeadPosition.x, HeadPosition.y), height / 2, height, 2, Distance, Helpers.ColourHelper.GetColour("Player Box Colour"));
+                       
+                        Drawing.PlayerCornerBox(new Vector2(HeadPosition.x, HeadPosition.y + 0.5f), height / 2, height, 2, Distance, Helpers.ColourHelper.GetColour("Player Box Colour"));
+                    }
+                    if (Globals.Config.Player.HealthBar && Distance < 200)
+                    {
+                        float maxhp = player.Stats.Health.Max;
+                        float hp = player.Stats.Health.Value;
+                        float percent = hp / maxhp;
+                        float percent2 = (hp / maxhp) * 100;
+                        float use = percent * height - 2f;
+                        Color32 barcol = new Color32();
+                        if (percent2 <= 100 && percent2 >= 86)
+                        {
+                            barcol = new Color32(15, 212, 10, 255);
+                        }
+                        if (percent2 <= 85 && percent2 >= 66)
+                        {
+                            barcol = new Color32(253, 219, 9, 200);
+
+                        }
+                        if (percent2 <= 65 && percent2 >= 35)
+                        {
+                            barcol = new Color32(249, 108, 24, 200);
+                        }
+                        if (percent2 <= 34 && percent2 >= 0)
+                        {
+                            barcol = new Color32(249, 3, 3, 255);
+                        }
+                        Drawing.DrawFilledBox(HeadPosition.x - height / 4 - 5, HeadPosition.y, 4, height, new Color32(0, 0, 0, 180));
+                        Drawing.DrawFilledBox(HeadPosition.x - height / 4 - 4, HeadPosition.y + height - use - 1, 2f, use, barcol);
                     }
                 }
             }

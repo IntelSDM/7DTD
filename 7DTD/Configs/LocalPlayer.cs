@@ -36,6 +36,7 @@ namespace Cheat.Configs
         public bool InstantHealth = true;
         public bool SpoofName = false;
 
+        public bool LandClaim = true;
         public bool InstantBreak1 = true;
         public bool InstantBreak2 = false;
         public bool InstantBreak3 = false;

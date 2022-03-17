@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -32,14 +33,15 @@ namespace Cheat
         EntityZombie TargetZombie()
         {
             EntityZombie result = new EntityZombie();
+            try
+            {
+            
             if (!Globals.Config.Aimbot.ZombieAimbot)
                 return result;
             if (Globals.LocalPlayer == null)
                 return result;
-          
            
-            try
-            {
+           
 
                 foreach (EntityZombie zombie in ZombieClosestToCrosshair(Esp.Zombie.ZombieList))
                 {
@@ -48,17 +50,18 @@ namespace Cheat
                         continue;
                     Vector3 Pos = Vector3.zero;
 
-                        Pos = zombie.emodel.GetHeadTransform().position;
-                    if (Globals.Config.Aimbot.ZombieVisibilityChecks && !Helpers.RaycastHelper.ZombiePos(zombie, Pos))
+                    Pos = zombie.emodel.GetHeadTransform().position;
+                    if (!Globals.IsScreenPointVisible(Globals.WorldPointToScreenPoint(Pos)))
                         continue;
-                    Pos = Globals.WorldPointToScreenPoint(Pos);
-                    if (!Globals.IsScreenPointVisible(Pos))
-                        continue;
-
-                    int fov = (int)Vector2.Distance(new Vector2(Screen.width / 2, Screen.height / 2), new Vector2(Pos.x, Pos.y));
+                    int fov = (int)Vector2.Distance(new Vector2(Screen.width / 2, Screen.height / 2), new Vector2(Globals.WorldPointToScreenPoint(Pos).x, Globals.WorldPointToScreenPoint(Pos).y));
                     if (fov > Globals.Config.Aimbot.Fov)
                         continue;
 
+                    if (Globals.Config.Aimbot.ZombieVisibilityChecks && !Helpers.RaycastHelper.ZombiePos(zombie, Pos))
+                        continue;
+                    
+
+                   
                     result = zombie;
                     break; // break so it wont loop through the list again and get a further from crosshair entity
                 }
@@ -72,35 +75,40 @@ namespace Cheat
         {
 
             EntityPlayer result = new EntityPlayer();
-            if (!Globals.Config.Aimbot.PlayerAimbot)
+            try
+            {
+                if (!Globals.Config.Aimbot.PlayerAimbot)
                 return result;
             if (Globals.LocalPlayer == null)
                 return result;
           
-            try
-            {
+            
 
                 foreach (EntityPlayer player in PlayerClosestToCrosshair(Esp.Player.PlayerList))
                 {
                     if (Globals.LocalPlayer.IsFriendsWith(player) && Globals.Config.Aimbot.PlayerAimbotTargetFriends) // make check so they can turn off this check
                         continue;
-                   
-                        if (!(player.IsAlive()) || player == null)
+
+                    if (player.Health <= 0)
+                        continue;
+                    if (player.IsAlive() == false)
+                        continue;
+                    if (player == null)
+                        continue;
+                    if (player.IsSleeping)
                         continue;
                     Vector3 Pos = Vector3.zero;
 
-                        Pos = player.emodel.GetHeadTransform().position;
+                    Pos = player.emodel.GetHeadTransform().position;
+
+                    if (!Globals.IsScreenPointVisible(Globals.WorldPointToScreenPoint(Pos)))
+                        continue;
+
+                    int fov = (int)Vector2.Distance(new Vector2(Screen.width / 2, Screen.height / 2), new Vector2(Globals.WorldPointToScreenPoint(Pos).x, Globals.WorldPointToScreenPoint(Pos).y));
+                    if (fov > Globals.Config.Aimbot.Fov)
+                        continue;
 
                     if (Globals.Config.Aimbot.PlayerVisibilityChecks && !Helpers.RaycastHelper.PlayerPos(player, Pos))
-                        continue;
-
-                    Pos = Globals.WorldPointToScreenPoint(Pos);
-                    if (!Globals.IsScreenPointVisible(Pos))
-                        continue;
-              //      if (IsFriend(player))
-                //        continue;
-                    int fov = (int)Vector2.Distance(new Vector2(Screen.width / 2, Screen.height / 2), new Vector2(Pos.x, Pos.y));
-                    if (fov > Globals.Config.Aimbot.Fov)
                         continue;
 
                     result = player;
@@ -112,48 +120,57 @@ namespace Cheat
             return result;
 
         }
+        [ObfuscationAttribute(Exclude = true)]
         void Update()
         {
             Update1();
         }
+        [ObfuscationAttribute(Exclude = true)]
         void OnGUI()
         {
             OnGUI1();
         }
         void OnGUI1()
         {
-       
+
             // so basically we cant target a player and zombie at the same time as we exit the function in the silentaim method when we have a target
-            if (Globals.LocalPlayer == null)
-                return;
-
-            if (Zombie == null)
+            try
             {
-                Drawing.DrawCircle(Color.blue, new Vector2(Screen.width / 2, Screen.height / 2), 30);
+                if (Globals.LocalPlayer == null)
+                    return;
+
+                if (Zombie == null)
+                {
+                    Drawing.DrawCircle(Color.blue, new Vector2(Screen.width / 2, Screen.height / 2), 30);
+                }
+                if (Globals.Config.Aimbot.DrawFov)
+                    Drawing.DrawCircle(Helpers.ColourHelper.GetColour("Aimbot Fov Colour"), new Vector2(Screen.width / 2, Screen.height / 2), Globals.Config.Aimbot.Fov);
+
+                if ((Zombie == null) && Player == null)
+                    return;
+                //   TargetZombie();
+                Vector3 pos = Vector3.zero;
+                if (TargettingPlayer)
+                    pos = PlayerHitPos;
+                if (TargettingZombie)
+                    pos = ZombieHitPos;
+                pos = Globals.WorldPointToScreenPoint(pos);
+
+
+
+                if (Globals.Config.Aimbot.DrawTargetLine && Globals.IsScreenPointVisible(pos) && pos != Vector3.zero && pos != null)
+                    Drawing.DrawLine(new Vector2(Screen.width / 2, Screen.height / 2), new Vector2(pos.x, pos.y), Helpers.ColourHelper.GetColour("Aimbot Target Line Colour"), 1);
             }
-            if (Globals.Config.Aimbot.DrawFov)
-                Drawing.DrawCircle(Helpers.ColourHelper.GetColour("Aimbot Fov Colour"), new Vector2(Screen.width / 2, Screen.height / 2), Globals.Config.Aimbot.Fov);
-
-            if ((Zombie == null) && Player == null)
-                return;
-         //   TargetZombie();
-            Vector3 pos = Vector3.zero;
-            if (TargettingPlayer)
-                pos = PlayerHitPos;
-            if (TargettingZombie)
-                pos = ZombieHitPos;
-            pos = Globals.WorldPointToScreenPoint(pos);
-              
-          
-
-            if(Globals.Config.Aimbot.DrawTargetLine && Globals.IsScreenPointVisible(pos) && pos != Vector3.zero && pos != null)
-                Drawing.DrawLine(new Vector2(Screen.width / 2, Screen.height / 2), new Vector2(pos.x, pos.y), Helpers.ColourHelper.GetColour("Aimbot Target Line Colour"), 1);
-           
+            catch { }
         }
         void SilentAim()
         {
             if (Globals.LocalPlayer == null || Globals.MainCamera == null)
                 return;
+            System.Random rand = new System.Random();
+            if (rand.Next(0, 100) >= Globals.Config.Aimbot.Hitchance)
+                return;
+
             if (Aimbot.Player != null)
             {
                
@@ -208,7 +225,7 @@ namespace Cheat
         void Update1()
         {
             Zombie = TargetZombie();
-            SetZombieAimPos();
+           SetZombieAimPos();
             Player = TargetPlayer();
             SetPlayerAimPos();
             SilentAim();
