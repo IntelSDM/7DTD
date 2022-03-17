@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -334,6 +335,7 @@ namespace Cheat.Menu
             }
             return Key;
         }
+        [ObfuscationAttribute(Exclude = true)]
         void Start()
         {
             Start1();
@@ -382,11 +384,13 @@ namespace Cheat.Menu
 
 
         }
+        [ObfuscationAttribute(Exclude = true)]
         void OnGUI()
         {
             OnGUI1();
 
         }
+        [ObfuscationAttribute(Exclude = true)]
         void Update()
         {
             Update1();

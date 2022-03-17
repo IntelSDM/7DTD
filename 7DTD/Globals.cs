@@ -45,7 +45,11 @@ namespace Cheat
             return result;
         }
         [ObfuscationAttribute(Exclude = true)]
-        private void Start()
+        void Start()
+        {
+            Start1();
+        }
+        private void Start1()
         {
             Helpers.ShaderHelper.GetShader();
             Helpers.ConfigHelper.CreateEnvironment();
