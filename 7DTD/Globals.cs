@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Pipes;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -16,6 +18,24 @@ namespace Cheat
         public static Camera MainCamera;
         public static Cheat.Configs.Config Config = new Configs.Config();
         public static EntityPlayerLocal LocalPlayer;
+        public static bool LoggedIn = false;
+        public static void Auth()
+        {
+            // alright so basically we make a pipe, our loader connects to this 
+            var namedPipeServer = new NamedPipeServerStream("my-7dtd-pipe", PipeDirection.InOut, 1, PipeTransmissionMode.Byte);
+            var streamReader = new StreamReader(namedPipeServer);
+            namedPipeServer.WaitForConnection();
+
+            var writer = new StreamWriter(namedPipeServer);
+            writer.Write("Coolio");
+            writer.Write((char)0);
+            writer.Flush();
+            namedPipeServer.WaitForPipeDrain();
+
+            namedPipeServer.Dispose();
+            LoggedIn = true; // prevents people finding the init after obfuscation and just jumping to that, it breaks the cheat if they try that.
+            Loader.Init();
+        }
         public static bool IsScreenPointVisible(Vector3 screenPoint)
         {
             return screenPoint.z > 0.01f && screenPoint.x > -5f && screenPoint.y > -5f && screenPoint.x < (float)Screen.width && screenPoint.y < (float)Screen.height;

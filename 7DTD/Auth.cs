@@ -9,31 +9,19 @@ using System.Threading.Tasks;
 
 namespace Cheat
 {
-    class Auth
+
+    public class Load // renamed from auth so a moron looking through it in dnspy will have less of an idea what we are doing, we cant have this class obfuscated since we call it to load the cheat.
     {
         // Clean up our files, probably best to do this in our loader.
+        // join locked/private servers
+        // encrypt config
         [ObfuscationAttribute(Exclude = true)]
         public static void Start()
         {
            
 
-            Start1();
+            Globals.Auth();
         }
-        private static void Start1()
-        {
-            // alright so basically we make a pipe, our loader connects to this 
-            var namedPipeServer = new NamedPipeServerStream("my-7dtd-pipe", PipeDirection.InOut, 1, PipeTransmissionMode.Byte);
-            var streamReader = new StreamReader(namedPipeServer);
-            namedPipeServer.WaitForConnection();
-
-            var writer = new StreamWriter(namedPipeServer);
-            writer.Write("Coolio");
-            writer.Write((char)0);
-            writer.Flush();
-            namedPipeServer.WaitForPipeDrain();
-
-            namedPipeServer.Dispose();
-            Loader.Init();
-        }
+     
     }
 }

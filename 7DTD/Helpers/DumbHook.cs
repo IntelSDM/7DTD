@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 
 namespace Cheat.Helpers
 {
-	public class DumbHook
+	class DumbHook
 	{
 		public MethodInfo OriginalMethod { get; private set; }
 
