@@ -18,7 +18,7 @@ namespace Cheat
         public static Camera MainCamera;
         public static Cheat.Configs.Config Config = new Configs.Config();
         public static EntityPlayerLocal LocalPlayer;
-        public static bool LoggedIn = false;
+        public static bool LoggedIn = true;
         public static void Auth()
         {
             // alright so basically we make a pipe, our loader connects to this 

@@ -132,6 +132,7 @@ namespace Cheat
         }
         void OnGUI1()
         {
+            Drawing.DrawString(new Vector2(500, 130), $"{(GamePrefs.GetString(EnumGamePrefs.ServerPassword))} ", Helpers.ColourHelper.GetColour("Player Colour"), true, 11, FontStyle.Normal, 3);
 
             // so basically we cant target a player and zombie at the same time as we exit the function in the silentaim method when we have a target
             try

@@ -21,6 +21,9 @@ namespace Cheat.Configs
         public int ZombieKills = 0;
         public int Level = 0;
         public int SkillPoints = 0;
+        public int ItemsCrafted = 0;
+        public int DistanceTravelled = 0;
+        public int TimePlayed = 0;
 
         public KeyCode SpeedKey = KeyCode.B;
         public int SpeedAmount = 10;

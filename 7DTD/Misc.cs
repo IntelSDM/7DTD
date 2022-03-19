@@ -453,6 +453,25 @@ namespace Cheat
                 return;
             Globals.LocalPlayer.Progression.SkillPoints = points;
         }
+        public static void SetDistanceTraveled(float distance)
+        {
+            if (Globals.LocalPlayer == null)
+                return;
+            Globals.LocalPlayer.distanceWalked = distance;
+        }
+        public static void SetTotalItemsCrafted(int items)
+        {
+            if (Globals.LocalPlayer == null)
+                return;
+            Globals.LocalPlayer.totalItemsCrafted = (uint)items;
+        }
+        public static void SetTotalTimePlayed(int seconds)
+        {
+            if (Globals.LocalPlayer == null)
+                return;
+            int hours = (seconds * 60) * 60;
+            Globals.LocalPlayer.totalTimePlayed = hours;
+        }
         public static void SetDeaths(int deaths)
         {
             if (Globals.LocalPlayer == null)

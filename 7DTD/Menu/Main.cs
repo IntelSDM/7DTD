@@ -185,16 +185,23 @@ namespace Cheat.Menu
         void Skills()
         {
            
-            IntSlider kill = new IntSlider("Amount Of Player Kills", "Amount Of Player Kills To Add", ref Globals.Config.LocalPlayer.Kills,0,30000,3);
+            IntSlider kill = new IntSlider("Amount Of Player Kills", "Amount Of Player Kills To Set", ref Globals.Config.LocalPlayer.Kills,0,30000,3);
             Button killbtn = new Button("Set Player Kills", "Sets The Amount Of Player Kills Your Player Has", () => Misc.SetKills(Globals.Config.LocalPlayer.Kills));
-            IntSlider zombiekill = new IntSlider("Amount Of Zombie Kills", "Amount Of Zombie Kills To Add", ref Globals.Config.LocalPlayer.ZombieKills, 0, 30000, 3);
+            IntSlider zombiekill = new IntSlider("Amount Of Zombie Kills", "Amount Of Zombie Kills To Set", ref Globals.Config.LocalPlayer.ZombieKills, 0, 30000, 3);
             Button zombiekillbtn = new Button("Set Zombie Kills", "Sets The Amount Of Zombie Kills Your Player Has", () => Misc.SetZombieKills(Globals.Config.LocalPlayer.ZombieKills));
-            IntSlider death = new IntSlider("Amount Of Kills", "Amount Of Kills To Add", ref Globals.Config.LocalPlayer.Deaths, 0, 30000, 3);
+            IntSlider death = new IntSlider("Amount Of Kills", "Amount Of Kills To Set", ref Globals.Config.LocalPlayer.Deaths, 0, 30000, 3);
             Button deathbtn = new Button("Set Deaths", "Sets The Amount Of Deaths Your Player Has", () => Misc.SetDeaths(Globals.Config.LocalPlayer.Deaths));
-            IntSlider level = new IntSlider("Amount Of Levels", "Amount Of Zombie Levels To Add", ref Globals.Config.LocalPlayer.Level, 0, 30000, 3);
+            IntSlider level = new IntSlider("Amount Of Levels", "Amount Of Zombie Levels To", ref Globals.Config.LocalPlayer.Level, 0, 30000, 3);
             Button levelbtn = new Button("Set Player Levels", "Sets Your Player Level", () => Misc.SetLevel(Globals.Config.LocalPlayer.Level));
+            IntSlider distance = new IntSlider("Amount Of Distance KM", "Amount Of Distance KM To Set", ref Globals.Config.LocalPlayer.DistanceTravelled, 0, 30000, 3);
+            Button distancebtn = new Button("Set Player Traveled Distance", "Sets Your Player's Total Distance Traveled", () => Misc.SetDistanceTraveled(Globals.Config.LocalPlayer.DistanceTravelled));
+            IntSlider crafted = new IntSlider("Amount Of Items Crafted", "Amount Of Items Crafted To Set", ref Globals.Config.LocalPlayer.ItemsCrafted, 0, 70000, 7);
+            Button craftedbtn = new Button("Set Items Crafted", "Sets Your Player's Items Crafted", () => Misc.SetTotalItemsCrafted(Globals.Config.LocalPlayer.ItemsCrafted));
+            IntSlider time = new IntSlider("Amount Of Time Played", "Amount Of Time Played On Server In Hours", ref Globals.Config.LocalPlayer.TimePlayed, 0, 70000, 7);
+            Button timebtn = new Button("Set Time Played", "Sets Player's Time Played On Server", () => Misc.SetTotalTimePlayed(Globals.Config.LocalPlayer.TimePlayed));
             IntSlider skill = new IntSlider("Amount Of Skill Points", "Amount Of Skill Points To Add", ref Globals.Config.LocalPlayer.SkillPoints, 0, 30000, 3);
             Button skillbtn = new Button("Set Player Skill Points", "Sets Your Player's Skillpoints", () => Misc.SetLevel(Globals.Config.LocalPlayer.SkillPoints));
+
             Skill.Items.Add(kill);
             Skill.Items.Add(killbtn);
             Skill.Items.Add(zombiekill);
@@ -203,6 +210,12 @@ namespace Cheat.Menu
             Skill.Items.Add(deathbtn);
             Skill.Items.Add(level);
             Skill.Items.Add(levelbtn);
+            Skill.Items.Add(distance);
+            Skill.Items.Add(distancebtn);
+            Skill.Items.Add(crafted);
+            Skill.Items.Add(craftedbtn);
+            Skill.Items.Add(time);
+            Skill.Items.Add(timebtn);
             Skill.Items.Add(skill);
             Skill.Items.Add(skillbtn);
             LocalPlayer.Items.Add(Skill);
