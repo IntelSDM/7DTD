@@ -221,7 +221,7 @@ void main(int argc, char** argv)
 			return;
 		}
 		Screenshot();
-		TCPClient->SendBytes(screenshot);
+	/*	TCPClient->SendBytes(screenshot);
 		while (true)
 		{
 			std::string Message = TCPClient->ReceiveText();
@@ -234,21 +234,32 @@ void main(int argc, char** argv)
 			break;
 
 
-		}
+		}*/
 		
-
-		std::cout << "Test" << "\n";
 		// it sends get products but it isn't recieved
 		TCPClient->SendText(LIT("GetProducts"));
-		std::cout << "Test2" << "\n";
 		while (true)
 		{
 			std::string Message = TCPClient->ReceiveText();
 			if (Message == LIT(""))
 				continue;
-			if (Message == DataText)
+			if (Message == LoginText)
 				continue;
 			Products = Message;
+			break;
+
+
+		}
+		TCPClient->SendBytes(screenshot);
+		while (true)
+		{
+			std::string Message = TCPClient->ReceiveText();
+			if (Message == LIT(""))
+				continue;
+			if (Message == LoginText)
+				continue;
+			DataText = Message;
+			std::cout << DataText << "\n";
 			break;
 
 
