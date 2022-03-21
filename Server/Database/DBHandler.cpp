@@ -182,8 +182,8 @@ void Database::FreezeProduct(std::string Product)
 		}
 		std::string ProductName = str.substr(0, specialcharpos[0]);
 		int Time = stoi(str.substr(specialcharpos[0] + 1, str.length() - specialcharpos[0] + 1));
-	//	std::cout << Time << "\n";
-	//	std::cout << ProductName << "\n";
+		//	std::cout << Time << "\n";
+		//	std::cout << ProductName << "\n";
 		if (str != "" && ProductName != Product)
 			ret = ret + str + "\n";
 
@@ -417,7 +417,7 @@ std::string Database::GetActiveProducts(std::string Username) // in the future m
 				}
 			}
 			std::string ProductName = str.substr(0, specialcharpos[0]);
-			int ProductTime = stoi(str.substr(specialcharpos[1] + 1, specialcharpos[2]));
+			int ProductTime = stoi(str.substr(specialcharpos[1] + 1, specialcharpos[2] - 1));
 			std::string SellerName = str.substr(specialcharpos[0] + 1, specialcharpos[0] - 1);
 			int ProductTimeDays;
 			bool IsFrozen = false;
@@ -466,9 +466,10 @@ std::string Database::GetActiveProducts(std::string Username) // in the future m
 
 		}
 	}
-	catch (std::exception)
+	catch (std::exception ex)
 	{
-		return "No Active Products";
+		//	std::cout << ex.what() << "\n";
+		//	return "No Active Products";
 	}
 
 
@@ -553,7 +554,7 @@ std::string Database::RedeemProduct(std::string Username, std::string Key)
 			std::string ProductName = str.substr(0, specialcharpos1[0]);
 			std::string ProductSeller = str.substr(specialcharpos1[0] + 1, specialcharpos1[0] - 1);
 			std::cout << str.substr(specialcharpos1[1] + 1, specialcharpos1[2]) << "\n";
-			int ProductTime = stoi(str.substr(specialcharpos1[1] + 1, specialcharpos1[2]));
+			int ProductTime = stoi(str.substr(specialcharpos1[1] + 1, specialcharpos1[2] - 1));
 			//std::cout << ProductSeller << "\n";
 			//std::cout << KeySeller << "\n";
 			if (ProductName == Key.substr(0, specialcharpos[0]) && ProductSeller == KeySeller) // check if product name is the same and product seller
