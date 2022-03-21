@@ -84,7 +84,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IntDir>$(SolutionDir)obj\Client\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)Client\Networking;$(SolutionDir)Client\Util;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\dev\Desktop\Vmp;$(SolutionDir)Client\Networking;$(SolutionDir)Client\Util;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\dev\Desktop\Vmp;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -157,6 +158,7 @@
     <ClInclude Include="Util\Encryption.h" />
     <ClInclude Include="Util\Hwid.h" />
     <ClInclude Include="Util\Screenshot.h" />
+    <ClInclude Include="Util\VMProtectSDK.h" />
     <ClInclude Include="Util\Xorstr.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

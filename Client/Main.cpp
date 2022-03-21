@@ -13,6 +13,7 @@
 #include "Screenshot.h"
 #include "TCPClient.h"
 #include "Xorstr.h"
+#include "VMProtectSDK.h"
 
 // import libraries for gdi and winsockets
 #pragma comment(lib, "gdiplus.lib")
@@ -41,14 +42,14 @@ std::string ActivateProduct(std::string Product)
 }
 void Register(std::string Username, std::string Password)
 {
-
+	VMProtectBeginUltra("Register");
 
 	TCPClient->SendText(LIT("Register|") + Username + LIT("|") + Password + LIT("|") + ReadableHwid() + LIT("|") + Hwid());
 
 	while (true)
 	{
 		std::string Message = TCPClient->ReceiveText();
-		if (Message == "")
+		if (Message == LIT(""))
 			continue;
 		if (Message == LIT("Successful Login"))
 		{
@@ -57,21 +58,21 @@ void Register(std::string Username, std::string Password)
 			break;
 		}
 		LoginText = Message;
-		std::cout << Message << "\n";
+		std::cout << Message << LIT("\n");
 		break;
 
 	}
-
+	VMProtectEnd();
 }
 void Login(std::string Username, std::string Password)
 {
 	
-
+	VMProtectBeginUltra("Login");
 	TCPClient->SendText(LIT("Login|") + Username + LIT("|") + Password + LIT("|") + ReadableHwid() + LIT("|") + Hwid()); // the order is kinda random to be somewhat confusing to people i guess
 	while (true)
 	{
 		std::string Message = TCPClient->ReceiveText();
-		if (Message == "")
+		if (Message == LIT(""))
 			continue;
 		if (Message == LIT("Successful Login"))
 		{
@@ -80,18 +81,21 @@ void Login(std::string Username, std::string Password)
 			break;
 		}
 		LoginText = Message;
-		std::cout << Message << "\n";
+		std::cout << Message << LIT("\n");
 		break;
 
 	}
+	VMProtectEnd();
+	
 }
 void VersionCheck()
 {
+	VMProtectBeginUltra("VersionCheck");
 	TCPClient->SendText(LIT("Version") + Version);
 	while (true)
 	{
 		std::string Message = TCPClient->ReceiveText();
-		if (Message == "")
+		if (Message == LIT(""))
 			continue;
 		if (Message == LIT("Valid Version"))
 		{
@@ -115,9 +119,10 @@ void VersionCheck()
 
 		std::ofstream fout(LIT("Client.exe"), std::ios::binary);
 		fout.write((char*)data1.data(), data1.size());
-		std::cout << LIT("Updating Client, Relaunch Loader, Will Require You To Relaunch 2 Times") << "\n";
+		std::cout << LIT("Updating Client, Relaunch Loader, Will Require You To Relaunch 2 Times\n");
 		
 	}
+	VMProtectEnd();
 }
 
 HANDLE fileHandle;
@@ -129,50 +134,14 @@ void ReadString(char* output) {
 	} while (read > 0 && *(output + index - 1) != 0);
 }
 
-std::string GetGameDir()
-{
-	char value[255];
-	DWORD BufferSize = BUFFER;
-	RegGetValue(HKEY_LOCAL_MACHINE, LIT(L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Steam App 251570"), LIT(L"InstallLocation"), RRF_RT_ANY, NULL, (PVOID)&value, &BufferSize);
-	std::string str;
-	int lasti;
 
-	for (int i = 0; i < BufferSize - 2; i+=2)
-	{
-		
-		str = str + value[i];
-	}
-
-	std::cout << str << "\n";
-	int specialchar = 0;
-	int specialcharpos[1050];
-	std::string character = "\\";
-	for (std::string::size_type i = 0; i < str.size(); i++)
-	{
-		if (str[i] == character[0])
-		{
-			specialcharpos[specialchar] = i;
-			specialchar++;
-		}
-	}
-
-//	str = str.substr(specialcharpos[0] + 1, specialcharpos[1] - 6);
-
-	// if it isn't one of these we could check  if it is possibly something like c:\mygames\steam or c:\mygames\steamlibrary. so we just go and take the 1st backslash and 2nd backslash and calculate between that
-	std::string drive = std::to_string(str[0]); 
-	std::string format1 = drive + ":\\Steam\\steamapps\\common\\";
-	std::string format2 = drive + ":\\SteamLibrary\\steamapps\\common\\";
-	std::string format3 = drive + ":\\Program Files (x86)\\Steam\\steamapps\\common";
-	
-	return LIT("Failed");
-}
 
 // scan through every drive via  just looping the alphabet and find the steamlibrary folder and find the game. 
 void main(int argc, char** argv)
 {
 	//std::cout << GetGameDir() << "\n";
 
-
+	VMProtectBeginUltra("Main");
 
 	std::string ipAddress = LIT("127.0.0.1");
 	int port = 54000;
@@ -256,7 +225,7 @@ void main(int argc, char** argv)
 		while (true)
 		{
 			std::string Message = TCPClient->ReceiveText();
-			if (Message == "")
+			if (Message == LIT(""))
 				continue;
 			if (Message == LoginText)
 				continue;
@@ -270,7 +239,7 @@ void main(int argc, char** argv)
 		while (true)
 		{
 			std::string Message = TCPClient->ReceiveText();
-			if (Message == "")
+			if (Message == LIT(""))
 				continue;
 			if (Message == LoginText)
 				continue;
@@ -281,7 +250,7 @@ void main(int argc, char** argv)
 		}
 
 		if (Products == LIT("No Active Products"))
-			std::cout << Products << "\n";
+			std::cout << Products << LIT("\n");
 		else
 		{
 			std::istringstream input;
@@ -304,13 +273,16 @@ void main(int argc, char** argv)
 				}
 				std::string ProductName = str.substr(0, specialcharpos[0]);
 				std::string ProductTime = str.substr(specialcharpos[1] + 1, specialcharpos[1]);
-				std::cout << ProductName << LIT(" ") << ProductTime << LIT(" Days Left") << "\n";
+				std::cout << ProductName << LIT(" ") << ProductTime << LIT(" Days Left") << LIT("\n");
 			}
 		}
 
 		std::cout << LIT("1) Activate Key\n");
 		if (Products != LIT("No Active Products"))
+		{
+			std::cout << LIT("-Make Sure Game Is Closed Before Loading Cheat.\n");
 			std::cout << LIT("2) Load Cheat\n");
+		}
 
 		std::cin >> Input;
 		if (Input != LIT("1") && Input != LIT("2"))
@@ -323,9 +295,9 @@ void main(int argc, char** argv)
 			while (true)
 			{
 				std::string Message = TCPClient->ReceiveText();
-				if (Message == "")
+				if (Message == LIT(""))
 					continue;
-				std::cout << Message << "\n";
+				std::cout << Message << LIT("\n");
 				break;
 			}
 			closesocket(sock);
@@ -351,8 +323,13 @@ void main(int argc, char** argv)
 
 				// This is connecting to our inp server to connect to the cheat, the cheat wont load unless we connect on the loader.
 
-			
-
+				try
+				{
+					std::string remove = str + LIT("\\7DaysToDie_Data\\Managed\\EasyAntiCheat.Client.dll");
+					std::remove(remove.c_str());
+				}
+				catch (const std::exception&){}
+				
 				std::string File;
 				std::string File1;
 				TCPClient->SendText(LIT("SendCheat"));
@@ -373,41 +350,54 @@ void main(int argc, char** argv)
 				std::ofstream fout(str + LIT("\\EasyAntiCheat.Client.dll"), std::ios::binary);
 				fout.write((char*)data1.data(), data1.size());
 
+
+
 				HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 				SetConsoleTextAttribute(hConsole, 2); // Green
-				std::cout << "Now Open Your Game." << "\n";
+				std::cout << LIT("Now Open Your Game.\n");
 				SetConsoleTextAttribute(hConsole, 4);// Red
-				std::cout << "After You Open The Game You Will Notice It Not Responding Or You Have A White Or Black Screen." << "\n";
+				std::cout << LIT("After You Open The Game You Will Notice It Not Responding Or You Have A White Or Black Screen.\n");
 				SetConsoleTextAttribute(hConsole, 2); // Green
-				std::cout << "When You See This Type 1 Into The Console And Click Enter To Continue." << "\n";
+				std::cout << LIT("When You See This Type 1 Into The Console And Click Enter To Continue.\n");
 
-				fileHandle = CreateFileW(LIT(L"\\\\.\\pipe\\my-7dtd-pipe"), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
-
-				// read from pipe server
-				char* buffer = new char[100];
-				memset(buffer, 0, 100);
-				ReadString(buffer);
-
-				TCPClient->SendText(LIT("SendOriginal"));
-				while (true)
+				std::cin >> Input;
+				if(Input == LIT("1"))
 				{
-					std::string Message = TCPClient->ReceiveText();
-					if (Message == "")
-						continue;
-				//	std::cout << Message << "\n";
-
-					File1 = Message;
-					break;
-
-
-				}
-				std::vector<BYTE> data2(File1.begin(), File1.end());
-				std::ofstream fout1(str + LIT("\\7DaysToDie_Data\\Managed\\EasyAntiCheat.Client.dll"), std::ios::binary);
-				fout1.write((char*)data2.data(), data2.size());
 				
-				SetConsoleTextAttribute(hConsole, 2); // Green
-				std::cout << "Cheat Loaded, Close This Window." << "\n";
+					
 
+						fileHandle = CreateFileW(LIT(L"\\\\.\\pipe\\my-7dtd-pipe"), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
+
+						// read from pipe server
+						char* buffer = new char[100];
+					memset(buffer, 0, 100);
+					ReadString(buffer);
+
+					TCPClient->SendText(LIT("SendOriginal"));
+					while (true)
+					{
+						std::string Message = TCPClient->ReceiveText();
+						if (Message == LIT(""))
+							continue;
+						//	std::cout << Message << "\n";
+
+						File1 = Message;
+						break;
+
+
+					}
+					std::vector<BYTE> data2(File1.begin(), File1.end());
+					std::ofstream fout1(str + LIT("\\7DaysToDie_Data\\Managed\\EasyAntiCheat.Client.dll"), std::ios::binary);
+					fout1.write((char*)data2.data(), data2.size());
+
+					SetConsoleTextAttribute(hConsole, 2); // Green
+					std::cout << LIT("Cheat Loaded, Close This Window.\n");
+
+					closesocket(sock);
+					WSACleanup();
+					return;
+				}
+				std::cout << LIT("Failed, Please Try Again.\n");
 				closesocket(sock);
 				WSACleanup();
 				return;
@@ -418,27 +408,6 @@ void main(int argc, char** argv)
 
 	if (Input == LIT("2"))
 	{
-		fileHandle = CreateFileW(LIT(L"\\\\.\\pipe\\my-7dtd-pipe"), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
-
-		// read from pipe server
-		char* buffer = new char[100];
-		memset(buffer, 0, 100);
-		ReadString(buffer);
-
-		std::cout << "read from pipe server: " << buffer << "\r\n";
-
-
-		char value[255];
-		DWORD BufferSize = BUFFER;
-		RegGetValue(HKEY_LOCAL_MACHINE, LIT(L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Steam App 251570"), LIT(L"InstallLocation"), RRF_RT_ANY, NULL, (PVOID)&value, &BufferSize);
-		std::string str = "";
-		for (int i = 0; i < BufferSize; i++)
-		{
-			str = str + value[i];
-
-		}
-
-
 
 		std::cout << LIT("Username: ");
 		std::cin >> Input;
@@ -462,5 +431,5 @@ void main(int argc, char** argv)
 	}
 	closesocket(sock);
 	WSACleanup();
-
+	VMProtectEnd();
 }

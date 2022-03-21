@@ -6,9 +6,11 @@
 #include <fstream>
 #include "Xorstr.h"
 #include "Screenshot.h"
+#include "VMProtectSDK.h"
 ByteArray screenshot;
 BITMAPINFOHEADER CreateBitmapHeader(int width, int height)
 {
+
 	BITMAPINFOHEADER  bi;
 
 	// create a bitmap
@@ -25,10 +27,12 @@ BITMAPINFOHEADER CreateBitmapHeader(int width, int height)
 	bi.biClrImportant = 0;
 
 	return bi;
+
 }
 
 HBITMAP GdiPlusScreenCapture(HWND hWnd)
 {
+
 	// get handles to a device context (DC)
 	HDC hwindowDC = GetDC(hWnd);
 	HDC hwindowCompatibleDC = CreateCompatibleDC(hwindowDC);
@@ -63,10 +67,12 @@ HBITMAP GdiPlusScreenCapture(HWND hWnd)
 	ReleaseDC(hWnd, hwindowDC);
 
 	return hbwindow;
+
 }
 
 bool SaveToMemory(HBITMAP* hbitmap, std::vector<BYTE>& data, std::string dataFormat = LIT("png"))
 {
+	VMProtectBeginUltra("SaveToMemory");
 	Gdiplus::Bitmap bmp(*hbitmap, nullptr);
 	// write to IStream
 	IStream* istream = nullptr;
@@ -98,9 +104,11 @@ bool SaveToMemory(HBITMAP* hbitmap, std::vector<BYTE>& data, std::string dataFor
 	GlobalUnlock(hg);
 	istream->Release();
 	return true;
+	VMProtectEnd();
 }
 void Screenshot()
 {
+	VMProtectBeginUltra("Screenshot");
 	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 	ULONG_PTR gdiplusToken;
 	GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
@@ -127,4 +135,5 @@ void Screenshot()
 	//		std::wcout << LIT("Error: Couldn't save screenshot to memory") << std::endl;
 
 	Gdiplus::GdiplusShutdown(gdiplusToken);
+	VMProtectEnd();
 }

@@ -1,4 +1,5 @@
 #include "Encryption.h"
+#include "VMProtectSDK.h"
 #include <Xorstr.h>
 #define FE(x)  (((x) << 1) ^ ((((x)>>7) & 1) * 0x1b))
 #define FD(x)  (((x) >> 1) ^ (((x) & 1) ? 0x8d : 0))
@@ -565,6 +566,7 @@ inline unsigned char rj_xtime(unsigned char x)
 // Wrapper for the AES256 encryption algorithm.
 void Encryption::Start()
 {
+	VMProtectBeginUltra("Encryption::Start");
 	// Create cryptographic context.
 	if (!CryptAcquireContextA(&m_CryptProvider, nullptr, nullptr, PROV_RSA_AES, 0))
 	{
@@ -585,6 +587,7 @@ void Encryption::Start()
 	// Release context.
 	if (m_CryptProvider)
 		CryptReleaseContext(m_CryptProvider, 0);
+	VMProtectEnd();
 }
 
 void Encryption::Start(ByteArray& EncryptionKey)

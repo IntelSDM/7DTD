@@ -47,5 +47,8 @@
     <ClInclude Include="Util\Screenshot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Util\VMProtectSDK.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

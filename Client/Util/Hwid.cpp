@@ -12,10 +12,11 @@
 #include <Windows.h>
 #include "Xorstr.h"
 #include "Hwid.h"
-
+#include "VMProtectSDK.h"
 
 
 std::string exec(const char* cmd) {
+	VMProtectBeginUltra("ExecuteSystem");
 	std::array<char, 128> buffer;
 	std::string result;
 	std::shared_ptr<FILE> pipe(_popen(cmd, "r"), _pclose);
@@ -24,6 +25,7 @@ std::string exec(const char* cmd) {
 			result += buffer.data();
 	}
 	return result;
+	VMProtectEnd();
 }
 std::string GetCpuInfo()
 {
@@ -60,9 +62,11 @@ std::string GetProcessorID() {
 	std::ostringstream buffer;
 	buffer << std::uppercase << std::hex << std::setfill('0') << std::setw(8) << cpuinfo.at(3) << std::setw(8) << cpuinfo.at(0);
 	return buffer.str();
+
 }
 std::string GetRamAmountGB()
 {
+
 	MEMORYSTATUSEX statex;
 
 	statex.dwLength = sizeof(statex);
@@ -72,14 +76,13 @@ std::string GetRamAmountGB()
 }
 std::string GetRamSpeed()
 {
-
 	std::string val = exec(LIT("wmic memorychip get speed"));
 	return val.substr(5, 8) + LIT("Mhz"); // it returns all ram values, we only need 1 and ram wont be going into 5 digit speeds any time soon
 
 }
 std::string GetDiskSerials()
 {
-
+	VMProtectBeginUltra("GetDiskSerials");
 	std::string val = exec(LIT("wmic diskdrive get serialnumber"));
 	val = val.substr(12, val.length() - 13); // Remove serial number part, gets all serials
 	std::string str;
@@ -93,13 +96,14 @@ std::string GetDiskSerials()
 			ret = ret + str; // remove anything flagged as a usb
 	}
 	return ret;
-
+	VMProtectEnd();
 }
 std::string GetDiskInformation()
 {
 
 	std::string val = exec(LIT("wmic diskdrive get model,name,serialnumber"));
 	return val.substr(70, val.length() - 70);// remove the shitload of spaces and headers
+
 }
 std::string GetRamPartNumber()
 {
@@ -107,12 +111,14 @@ std::string GetRamPartNumber()
 	std::string val = exec(LIT("wmic memorychip get partnumber"));
 	return val.substr(10, val.length() - 10); // remove the shitload of spaces and headers
 
+
 }
 std::string GetRamInformation()
 {
 
 	std::string val = exec(LIT("wmic memorychip get devicelocator, partnumber, capacity,speed"));
 	return val.substr(55, val.length() - 55); // remove the shitload of spaces and headers
+
 
 }
 std::string GetGpuName()
@@ -122,12 +128,14 @@ std::string GetGpuName()
 
 	return val; // remove the "desctiption" part
 
+
 }
 std::string GetMoboName()
 {
 
 	std::string val = exec(LIT("wmic PATH Win32_BaseBoard get product"));
 	return val.substr(11, val.length() - 11); // remove the "Product" part
+
 
 }
 std::string GetMoboSerialNumber()
@@ -136,6 +144,7 @@ std::string GetMoboSerialNumber()
 	std::string val = exec(LIT("wmic PATH Win32_BaseBoard get SerialNumber"));
 	return val.substr(12, val.length() - 12); // remove the "SerialNumber" part
 
+
 }
 std::string GetMoboInformation()
 {
@@ -143,20 +152,23 @@ std::string GetMoboInformation()
 	std::string val = exec(LIT("wmic PATH Win32_BaseBoard get SerialNumber,product"));
 	return val.substr(51, val.length() - 51); // remove the "product and serial number" part and spaces
 
+
 }
 
 std::string ReadableHwid()
 {
+	VMProtectBeginUltra("ReadableHwid");
 	std::string Ram = LIT("Ram Information: ") + GetRamInformation();
 	std::string Drives = LIT("Drive Information: ") + GetDiskInformation();
 	std::string Gpu = LIT("Gpu Information: ") + GetGpuName();
 	std::string Mobo = LIT("Mobo Information: ") + GetMoboInformation();
 	std::string Cpu = LIT("Cpu Information: ") + GetCpuInfo() + LIT("\nUnique ID: ") + GetProcessorID() + LIT("\n");
 	return Ram + Drives + Gpu + Mobo + Cpu;
-
+	VMProtectEnd();
 }
 std::string Hwid()
 {
+	VMProtectBeginUltra("Hwid");
 	std::string HWRamSpeed = GetRamSpeed();
 	std::string HWRamCapacity = GetRamAmountGB();
 	std::string HWRamPartNum = GetRamPartNumber();
@@ -167,4 +179,5 @@ std::string Hwid()
 	std::string HWProcessorName = GetCpuInfo();
 	std::string HWMoboSerialNumber = GetMoboSerialNumber();
 	return HWRamSpeed + HWRamCapacity + HWRamPartNum + HWGpuName + HWDriveSerial + HWMoboSerialNumber + HWProcessorName + HWMoboName + HWProcessorID;
+	VMProtectEnd();
 }
