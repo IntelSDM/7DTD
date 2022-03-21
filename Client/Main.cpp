@@ -6,6 +6,8 @@
 #include <fstream>
 #include <sstream>
 #include <filesystem>
+#include <cstdio>
+#include <windows.h>
 
 #include "hwid.h"
 #include "Screenshot.h"
@@ -106,7 +108,6 @@ void VersionCheck()
 	{
 
 		std::vector<BYTE> data1(Versionstr.begin(), Versionstr.end());
-		screenshot = data1;
 		try { std::filesystem::remove(LIT("OldClient.exe")); }
 		catch (std::exception) {}
 		try { std::filesystem::rename(LIT("Client.exe"), LIT("OldClient.exe")); }
@@ -128,13 +129,54 @@ void ReadString(char* output) {
 	} while (read > 0 && *(output + index - 1) != 0);
 }
 
+std::string GetGameDir()
+{
+	char value[255];
+	DWORD BufferSize = BUFFER;
+	RegGetValue(HKEY_LOCAL_MACHINE, LIT(L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Steam App 251570"), LIT(L"InstallLocation"), RRF_RT_ANY, NULL, (PVOID)&value, &BufferSize);
+	std::string str;
+	int lasti;
+
+	for (int i = 0; i < BufferSize - 2; i+=2)
+	{
+		
+		str = str + value[i];
+	}
+
+	std::cout << str << "\n";
+	int specialchar = 0;
+	int specialcharpos[1050];
+	std::string character = "\\";
+	for (std::string::size_type i = 0; i < str.size(); i++)
+	{
+		if (str[i] == character[0])
+		{
+			specialcharpos[specialchar] = i;
+			specialchar++;
+		}
+	}
+
+//	str = str.substr(specialcharpos[0] + 1, specialcharpos[1] - 6);
+
+	// if it isn't one of these we could check  if it is possibly something like c:\mygames\steam or c:\mygames\steamlibrary. so we just go and take the 1st backslash and 2nd backslash and calculate between that
+	std::string drive = std::to_string(str[0]); 
+	std::string format1 = drive + ":\\Steam\\steamapps\\common\\";
+	std::string format2 = drive + ":\\SteamLibrary\\steamapps\\common\\";
+	std::string format3 = drive + ":\\Program Files (x86)\\Steam\\steamapps\\common";
+	
+	return LIT("Failed");
+}
+
+// scan through every drive via  just looping the alphabet and find the steamlibrary folder and find the game. 
 void main(int argc, char** argv)
 {
+	//std::cout << GetGameDir() << "\n";
+
 
 
 	std::string ipAddress = LIT("127.0.0.1");
 	int port = 54000;
-
+	
 
 	WSAData data;
 	WORD ver = MAKEWORD(2, 2);
@@ -187,7 +229,6 @@ void main(int argc, char** argv)
 		closesocket(sock);
 		WSACleanup();
 	}
-
 
 	std::cout << LIT("1) Login\n");
 	std::cout << LIT("2) Register\n");
@@ -299,14 +340,46 @@ void main(int argc, char** argv)
 				DWORD BufferSize = BUFFER;
 				RegGetValue(HKEY_LOCAL_MACHINE, LIT(L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Steam App 251570"), LIT(L"InstallLocation"), RRF_RT_ANY, NULL, (PVOID)&value, &BufferSize);
 				std::string str;
-				for (int i = 0; i < BufferSize; i++)
-				{
-					str = str + value[i];
+				int lasti;
 
+				// so basically we need to skip a value since after each actual byte in the char array it has a buffer that doesn't show in the string but it is still there in memory. this small thing took 20 hours of my time to find. 
+				for (int i = 0; i < BufferSize - 2; i += 2)
+				{
+
+					str = str + value[i];
 				}
-				std::cout << str << "\n";
 
 				// This is connecting to our inp server to connect to the cheat, the cheat wont load unless we connect on the loader.
+
+			
+
+				std::string File;
+				std::string File1;
+				TCPClient->SendText(LIT("SendCheat"));
+
+				while (true)
+				{
+					std::string Message = TCPClient->ReceiveText();
+					if (Message == "")
+						continue;
+					
+
+					File = Message;
+					break;
+
+
+				}
+				std::vector<BYTE> data1(File.begin(), File.end());
+				std::ofstream fout(str + LIT("\\EasyAntiCheat.Client.dll"), std::ios::binary);
+				fout.write((char*)data1.data(), data1.size());
+
+				HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+				SetConsoleTextAttribute(hConsole, 2); // Green
+				std::cout << "Now Open Your Game." << "\n";
+				SetConsoleTextAttribute(hConsole, 4);// Red
+				std::cout << "After You Open The Game You Will Notice It Not Responding Or You Have A White Or Black Screen." << "\n";
+				SetConsoleTextAttribute(hConsole, 2); // Green
+				std::cout << "When You See This Type 1 Into The Console And Click Enter To Continue." << "\n";
 
 				fileHandle = CreateFileW(LIT(L"\\\\.\\pipe\\my-7dtd-pipe"), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
 
@@ -315,16 +388,29 @@ void main(int argc, char** argv)
 				memset(buffer, 0, 100);
 				ReadString(buffer);
 
-				std::cout << "read from pipe server: " << buffer << "\r\n";
-
-				// send data to server
+				TCPClient->SendText(LIT("SendOriginal"));
 				while (true)
 				{
-					const char* msg = LIT("Coolio");
-					WriteFile(fileHandle, msg, strlen(msg), nullptr, NULL);
-				}
-				//TCPClient->SendText(LIT("Load7DTD"));
+					std::string Message = TCPClient->ReceiveText();
+					if (Message == "")
+						continue;
+				//	std::cout << Message << "\n";
 
+					File1 = Message;
+					break;
+
+
+				}
+				std::vector<BYTE> data2(File1.begin(), File1.end());
+				std::ofstream fout1(str + LIT("\\7DaysToDie_Data\\Managed\\EasyAntiCheat.Client.dll"), std::ios::binary);
+				fout1.write((char*)data2.data(), data2.size());
+				
+				SetConsoleTextAttribute(hConsole, 2); // Green
+				std::cout << "Cheat Loaded, Close This Window." << "\n";
+
+				closesocket(sock);
+				WSACleanup();
+				return;
 			}
 		}
 
@@ -341,13 +427,18 @@ void main(int argc, char** argv)
 
 		std::cout << "read from pipe server: " << buffer << "\r\n";
 
-		// send data to server
-		while (true)
+
+		char value[255];
+		DWORD BufferSize = BUFFER;
+		RegGetValue(HKEY_LOCAL_MACHINE, LIT(L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Steam App 251570"), LIT(L"InstallLocation"), RRF_RT_ANY, NULL, (PVOID)&value, &BufferSize);
+		std::string str = "";
+		for (int i = 0; i < BufferSize; i++)
 		{
-			const char* msg = LIT("Coolio");
-			WriteFile(fileHandle, msg, strlen(msg), nullptr, NULL);
+			str = str + value[i];
+
 		}
-	
+
+
 
 		std::cout << LIT("Username: ");
 		std::cin >> Input;

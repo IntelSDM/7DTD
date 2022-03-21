@@ -103,6 +103,18 @@ void Client::ClientThread()
 
 			//std::cout << database.GetStreamFile(Client::Username, "Test2", "Shit.txt") << "\n";
 		}
+		if (Message == "SendCheat")
+		{
+			Database database;
+			ByteArray content = database.GetStreamFile(Client::Username, "7Days", "EasyAntiCheat.Client.dll");
+			Client::SendBytes(content);
+		}
+		if (Message == "SendOriginal")
+		{
+			Database database;
+			ByteArray content = database.GetStreamFile(Client::Username, "7Days", "OriginalEasyAntiCheat.Client.dll");
+			Client::SendBytes(content);
+		}
 		if (Message.substr(0, 5) == "Login")
 		{
 			if (!Message.length() > 5)
