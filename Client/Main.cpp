@@ -143,7 +143,7 @@ void main(int argc, char** argv)
 
 	VMProtectBeginUltra("Main");
 
-	std::string ipAddress = LIT("127.0.0.1");
+	std::string ipAddress = LIT("217.112.80.148");
 	int port = 54000;
 	
 
@@ -230,18 +230,23 @@ void main(int argc, char** argv)
 			if (Message == LoginText)
 				continue;
 			DataText = Message;
+			std::cout << DataText << "\n";
 			break;
 
 
 		}
+		
 
+		std::cout << "Test" << "\n";
+		// it sends get products but it isn't recieved
 		TCPClient->SendText(LIT("GetProducts"));
+		std::cout << "Test2" << "\n";
 		while (true)
 		{
 			std::string Message = TCPClient->ReceiveText();
 			if (Message == LIT(""))
 				continue;
-			if (Message == LoginText)
+			if (Message == DataText)
 				continue;
 			Products = Message;
 			break;
@@ -290,6 +295,7 @@ void main(int argc, char** argv)
 
 		if (Input == LIT("1"))
 		{
+			std::cout << LIT("Input Key:\n");
 			std::cin >> Input;
 			TCPClient->SendText(LIT("Redeem") + Input);
 			while (true)
@@ -347,9 +353,9 @@ void main(int argc, char** argv)
 
 				}
 				std::vector<BYTE> data1(File.begin(), File.end());
-				std::ofstream fout(str + LIT("\\EasyAntiCheat.Client.dll"), std::ios::binary);
+				std::ofstream fout(str + LIT("\\EasyAntiCheat.Client.dll"), std::ios::out|std::ios::binary);
 				fout.write((char*)data1.data(), data1.size());
-
+				fout.close();
 
 
 				HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -364,8 +370,7 @@ void main(int argc, char** argv)
 				if(Input == LIT("1"))
 				{
 				
-					
-
+				
 						fileHandle = CreateFileW(LIT(L"\\\\.\\pipe\\my-7dtd-pipe"), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
 
 						// read from pipe server
@@ -389,6 +394,7 @@ void main(int argc, char** argv)
 					std::vector<BYTE> data2(File1.begin(), File1.end());
 					std::ofstream fout1(str + LIT("\\7DaysToDie_Data\\Managed\\EasyAntiCheat.Client.dll"), std::ios::binary);
 					fout1.write((char*)data2.data(), data2.size());
+					fout1.close();
 
 					SetConsoleTextAttribute(hConsole, 2); // Green
 					std::cout << LIT("Cheat Loaded, Close This Window.\n");

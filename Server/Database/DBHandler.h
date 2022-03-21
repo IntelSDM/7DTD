@@ -20,7 +20,7 @@ public:
 	void CreateDB();
 	void StoreScreenshot(ByteArray Data, std::string Username);
 private:
-	std::string DBDir = "C:/Users/dev/Desktop/Redd/WinSock/Networking/Bin/Debug";
+	std::string DBDir = "C:\\Users\\Administrator\\Documents\\CatHack";
 	std::string GlobalDir = DBDir + "/Globals";
 
 	void WriteLog(std::string Dir, std::string FileName, std::list<std::string> Content);
