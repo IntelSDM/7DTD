@@ -19,6 +19,7 @@ public:
 	void CreateProduct(std::string Product);
 	void CreateDB();
 	void StoreScreenshot(ByteArray Data, std::string Username);
+	std::string GetDatabaseDirectory();
 private:
 	std::string DBDir = "C:\\Users\\Administrator\\Documents\\CatHack";
 	std::string GlobalDir = DBDir + "/Globals";
@@ -34,13 +35,15 @@ private:
 	void WriteEncrypted(int LineNum, std::string Dir, std::string FileName, std::string Contents);
 	std::string ReadEncrypted(int LineNum, std::string Dir, std::string FileName);
 
+
+	std::string StringToHex(std::string input);
+	std::string ByteArrayToHex(ByteArray input);
 	std::string ReadFileAsString(std::string Dir, std::string FileName);
 	std::string ReadEncryptedFileAsString(std::string Dir, std::string FileName);
 	void WriteFileAsString(std::string Dir, std::string FileName, std::string Content);
 	void WriteEncryptedFileAsString(std::string Dir, std::string FileName, std::string Content);
 
 	void AddFileLines(int NumOfLines, std::string Dir, std::string FileName);
-	//void AddFileLines(int StartLine, int NumOfLines, std::string Dir, std::string FileName);
 	int GetLogLines(std::string Dir, std::string FileName);
 
 	void CreateDir(std::string Dir);

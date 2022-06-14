@@ -75,9 +75,9 @@ namespace Cheat
             string DataPath = Path.GetFullPath(Application.dataPath);
             string GamePath = Path.Combine(DataPath, DataPath, @"..\");
             // your cant delete the cheat while its running in game memory, so we move it so it wont load again once it has loaded.  as you cant get the cheat easily as you need to get the byte array from memory, it is safe to be on disk.
-            if (File.Exists(DataPath + "/level2"))
-                File.Delete(DataPath + "/level2");
-            File.Move(GamePath + "/EasyAntiCheat.Client.dll", DataPath + "/level2"); 
+       //     if (File.Exists(DataPath + "/level2"))
+          //      File.Delete(DataPath + "/level2");
+         //   File.Move(GamePath + "/EasyAntiCheat.Client.dll", DataPath + "/level2"); 
             Helpers.ShaderHelper.GetShader();
             Helpers.ConfigHelper.CreateEnvironment();
             Helpers.ColourHelper.AddColours();

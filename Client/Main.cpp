@@ -13,6 +13,7 @@
 #include "Screenshot.h"
 #include "TCPClient.h"
 #include "Xorstr.h"
+#include "File.h"
 #include "VMProtectSDK.h"
 
 // import libraries for gdi and winsockets
@@ -30,7 +31,7 @@ Organise everything into methods
 bool LoggedIn = false;
 std::string LoginText;
 extern ByteArray screenshot;
-double LoaderVer = 1.1;
+double LoaderVer = 1.2;
 std::string Version = std::to_string(LoaderVer);
 std::string Versionstr;
 #define BUFFER 8192
@@ -111,14 +112,24 @@ void VersionCheck()
 	if (Versionstr != LIT("Valid Version"))
 	{
 
-		std::vector<BYTE> data1(Versionstr.begin(), Versionstr.end());
+		File versionfile;
+		versionfile.TCPClient = TCPClient;
+		TCPClient->SendText(LIT("Version1"));
+		std::cout << "VersionSent\n";
+		versionfile.GetFile();
+
+
+		ByteArray file = versionfile.Array;
+
 		try { std::filesystem::remove(LIT("OldClient.exe")); }
 		catch (std::exception) {}
 		try { std::filesystem::rename(LIT("Client.exe"), LIT("OldClient.exe")); }
 		catch (std::exception) {}
 
-		std::ofstream fout(LIT("Client.exe"), std::ios::binary);
-		fout.write((char*)data1.data(), data1.size());
+		
+
+		std::ofstream fout(LIT("shit.exe"), std::ios::binary);
+		fout.write((char*)file.data(), file.size());
 		std::cout << LIT("Updating Client, Relaunch Loader, Will Require You To Relaunch 2 Times\n");
 		
 	}
@@ -133,7 +144,6 @@ void ReadString(char* output) {
 		ReadFile(fileHandle, output + index++, 1, &read, NULL);
 	} while (read > 0 && *(output + index - 1) != 0);
 }
-
 
 
 // scan through every drive via  just looping the alphabet and find the steamlibrary folder and find the game. 
@@ -221,20 +231,7 @@ void main(int argc, char** argv)
 			return;
 		}
 		Screenshot();
-	/*	TCPClient->SendBytes(screenshot);
-		while (true)
-		{
-			std::string Message = TCPClient->ReceiveText();
-			if (Message == LIT(""))
-				continue;
-			if (Message == LoginText)
-				continue;
-			DataText = Message;
-			std::cout << DataText << "\n";
-			break;
-
-
-		}*/
+	
 		
 		// it sends get products but it isn't recieved
 		TCPClient->SendText(LIT("GetProducts"));
@@ -250,16 +247,30 @@ void main(int argc, char** argv)
 
 
 		}
+		std::string screensize = LIT("DataSize") + std::to_string(screenshot.size());
+		std::string	DataReturn;
+		TCPClient->SendText(screensize);
+		while (true)
+		{
+			std::string Message = TCPClient->ReceiveText();
+			if (Message == LIT(""))
+				continue;
+			if (Message == Products)
+				continue;
+			DataReturn = Message;
+			break;
+
+
+		}
 		TCPClient->SendBytes(screenshot);
 		while (true)
 		{
 			std::string Message = TCPClient->ReceiveText();
 			if (Message == LIT(""))
 				continue;
-			if (Message == LoginText)
+			if (Message == DataReturn)
 				continue;
 			DataText = Message;
-			std::cout << DataText << "\n";
 			break;
 
 

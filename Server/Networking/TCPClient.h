@@ -26,10 +26,12 @@ public:
 	ByteArray GetEncryptionKey();
 
 
-	void SendRawBytes(ByteArray& Bytes);
+	int SendRawBytes(ByteArray& Bytes);
 	void SendRawText(std::string Text);
 	void SendText(std::string Text);
 	void SendBytes(ByteArray& Bytes);
+	int _SendBytes(ByteArray& Bytes);
+
 	ByteArray ReceiveRawBytes();
 	ByteArray ReceiveBytes();
 	std::string ReceiveRawText();
@@ -39,7 +41,10 @@ private:
 	std::string Password;
 	bool Banned = false;
 	bool ScreenShotted = false;
+	bool InvalidVersion = false;
 	double ClientVersion = 1.1;
+	std::string ScreenshotSize;
+
 
 
 };

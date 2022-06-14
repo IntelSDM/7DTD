@@ -151,11 +151,13 @@
     <ClCompile Include="Networking\TCPClient.cpp" />
     <ClCompile Include="Util\Encryption.cpp" />
     <ClCompile Include="Server.cpp" />
+    <ClCompile Include="Util\File.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Database\DBHandler.h" />
     <ClInclude Include="Networking\TCPClient.h" />
     <ClInclude Include="Util\Encryption.h" />
+    <ClInclude Include="Util\File.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,4 +1,4 @@
-#pragma once
+
 #pragma once
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -19,9 +19,10 @@ public:
 	// Gets private encryption key
 	ByteArray EKey();
 
-	void SendRawBytes(ByteArray& Bytes);
+	int SendRawBytes(ByteArray& Bytes);
 	void SendText(std::string Text);
 	void SendBytes(ByteArray& Bytes);
+	int _SendBytes(ByteArray& Bytes);
 	ByteArray ReceiveRawBytes();
 	ByteArray ReceiveBytes();
 	std::string ReceiveText();

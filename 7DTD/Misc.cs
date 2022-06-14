@@ -386,7 +386,8 @@ namespace Cheat
         #region Movement
         public static void TeleportToPlayer(EntityPlayer player)
         {
-            Globals.LocalPlayer.transform.position = player.transform.position;
+
+            Globals.LocalPlayer.transform.position = new Vector3(player.transform.position.x, player.transform.position.y + 10, player.transform.position.z);
         }
         void Speedhack()
         {

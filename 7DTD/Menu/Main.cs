@@ -189,7 +189,7 @@ namespace Cheat.Menu
             Button killbtn = new Button("Set Player Kills", "Sets The Amount Of Player Kills Your Player Has", () => Misc.SetKills(Globals.Config.LocalPlayer.Kills));
             IntSlider zombiekill = new IntSlider("Amount Of Zombie Kills", "Amount Of Zombie Kills To Set", ref Globals.Config.LocalPlayer.ZombieKills, 0, 30000, 3);
             Button zombiekillbtn = new Button("Set Zombie Kills", "Sets The Amount Of Zombie Kills Your Player Has", () => Misc.SetZombieKills(Globals.Config.LocalPlayer.ZombieKills));
-            IntSlider death = new IntSlider("Amount Of Kills", "Amount Of Kills To Set", ref Globals.Config.LocalPlayer.Deaths, 0, 30000, 3);
+            IntSlider death = new IntSlider("Amount Of Deaths", "Amount Of Deaths To Set", ref Globals.Config.LocalPlayer.Deaths, 0, 30000, 3);
             Button deathbtn = new Button("Set Deaths", "Sets The Amount Of Deaths Your Player Has", () => Misc.SetDeaths(Globals.Config.LocalPlayer.Deaths));
             IntSlider level = new IntSlider("Amount Of Levels", "Amount Of Zombie Levels To", ref Globals.Config.LocalPlayer.Level, 0, 30000, 3);
             Button levelbtn = new Button("Set Player Levels", "Sets Your Player Level", () => Misc.SetLevel(Globals.Config.LocalPlayer.Level));

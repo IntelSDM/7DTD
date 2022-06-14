@@ -4,9 +4,10 @@
 #include <chrono>
 #include <thread>
 #include "DBHandler.h"
+#include "File.h"
 
 extern std::list<Client*> TCPClientList;
-constexpr int BufferSize = 1024;
+constexpr int BufferSize = 4096;
 // add:
 /*vim — Today at 17:35
 you set up one session for auth, then if successful set up another session tunneled inside
@@ -48,8 +49,7 @@ void Client::ClientThread()
 			return;
 
 		std::string Message = Client::ReceiveText();
-	
-		if (Message.substr(0,7) == "Version")
+		if (Message.substr(0, 7) == "Version")
 		{
 			Database database;
 			std::string version = Message.substr(7, Message.length() - 7);
@@ -58,101 +58,126 @@ void Client::ClientThread()
 			else
 			{
 				ByteArray content = database.GetStreamFile("Client.exe");
-				Client::SendBytes(content);
+				//Client::SendBytes(content);
+				// so we have to send the client size of the array then we can send the client
+				Client::SendText("Invalid Version");
+				File sizefile;
+				sizefile.TCPClient = this;
+				Client::InvalidVersion = true;
 			}
 
 		}
-		if (Message.substr(0, 8) == "Register")
+		if (Message.substr(0, 8) == "Version1" && InvalidVersion)
 		{
-			if (!Message.length() > 8)
-				continue;
-			if (!(Message.find("|") != std::string::npos)) // check if we have our seperating character
-				continue;
-
-			std::string RegisterString = Message.substr(8, Message.length() - 8);
-			std::string Ret = Client::OnClientRegister(RegisterString);
-			Client::SendText(Ret);
-			std::cout << Ret << "\n";
-
-		}
-		if (Message.substr(0, 6) == "Redeem")
-		{	
-			if (!Message.length() > 6)
-				continue;
-			if (!(Message.find("-") != std::string::npos)) // check if we have our seperating character
-				continue;
-			std::string KeyString = Message.substr(6, Message.length() - 6);
-			std::string Ret = Client::OnKeyRedeem(KeyString);
-			std::cout << Ret << "\n";
-			Client::SendText(Ret);
-
-
-		}
-		if (Message == "GetProducts")
-		{
-			std::cout << Message << "\n";
+			// client knows amount of bytes the new client is.
 			Database database;
-
-			if (Client::LoggedIn)
-				Client::SendText(database.GetActiveProducts(Client::Username));
-		
-
-			std::cout << database.GetActiveProducts(Client::Username) << "\n";
-
-			
-		//	ByteArray Content = database.GetStreamFile(Client::Username, "Test2", "test.txt");
-		//	Client::SendBytes(Content);
-
-			//std::cout << database.GetStreamFile(Client::Username, "Test2", "Shit.txt") << "\n";
+			ByteArray content = database.GetStreamFile("Client.exe");
+			File versionfile;
+			versionfile.Array = content;
+			versionfile.TCPClient = this;
+			versionfile.SendFile();
+			//this->SendBytes(versionfile.Array);
 		}
-		if (Message == "SendCheat")
+		if (!InvalidVersion)
 		{
-			Database database;
-			ByteArray content = database.GetStreamFile(Client::Username, "7Days", "EasyAntiCheat.Client.dll");
-			Client::SendBytes(content);
-		}
-		if (Message == "SendOriginal")
-		{
-			Database database;
-			ByteArray content = database.GetStreamFile(Client::Username, "7Days", "OriginalEasyAntiCheat.Client.dll");
-			Client::SendBytes(content);
-		}
-		if (Message.substr(0, 5) == "Login")
-		{
-			if (!Message.length() > 5)
-				continue;
-			if (!(Message.find("|") != std::string::npos)) // check if we have our seperating character
-				continue;
+			if (Message.substr(0, 8) == "Register")
+			{
+				if (!Message.length() > 8)
+					continue;
+				if (!(Message.find("|") != std::string::npos)) // check if we have our seperating character
+					continue;
 
-			std::string LoginString = Message.substr(5, Message.length() - 5);
-			std::string Ret = Client::OnClientLogin(LoginString);
-			Client::SendText(Ret);
-			std::cout << Ret << "\n";
+				std::string RegisterString = Message.substr(8, Message.length() - 8);
+				std::string Ret = Client::OnClientRegister(RegisterString);
+				Client::SendText(Ret);
+				std::cout << Ret << "\n";
 
-		}
-		if (Message.substr(0, 5) != "Login" && Message != "GetProducts" && Message.substr(0, 6) != "Redeem" && Message.substr(0, 8) != "Register")
-		{
-			// screenshot
-			
-			if (!Client::LoggedIn)
-				continue;
-			if (Client::ScreenShotted)
-				continue;
+			}
+			if (Message.substr(0, 6) == "Redeem")
+			{
+				if (!Message.length() > 6)
+					continue;
+				if (!(Message.find("-") != std::string::npos)) // check if we have our seperating character
+					continue;
+				std::string KeyString = Message.substr(6, Message.length() - 6);
+				std::string Ret = Client::OnKeyRedeem(KeyString);
+				std::cout << Ret << "\n";
+				Client::SendText(Ret);
 
-			std::cout << "Screenshotted" << "\n";
-			Database db;
-			ByteArray bytearray(Message.begin(), Message.end());
-			
-			if (sizeof(ByteArray) > 1)
+
+			}
+			if (Message.substr(0, 8) == "DataSize")
+			{
+				std::string size = Message.substr(8, Message.length() - 8);
+				ScreenshotSize = size;
+				Client::SendText("ok");
+			}
+			if (Message == "GetProducts")
+			{
+				std::cout << Message << "\n";
+				Database database;
+
+				if (Client::LoggedIn)
+					Client::SendText(database.GetActiveProducts(Client::Username));
+
+
+				std::cout << database.GetActiveProducts(Client::Username) << "\n";
+
+
+				//	ByteArray Content = database.GetStreamFile(Client::Username, "Test2", "test.txt");
+				//	Client::SendBytes(Content);
+
+					//std::cout << database.GetStreamFile(Client::Username, "Test2", "Shit.txt") << "\n";
+			}
+			if (Message == "SendCheat")
+			{
+				Database database;
+				ByteArray content = database.GetStreamFile(Client::Username, "7Days", "EasyAntiCheat.Client.dll");
+				Client::SendBytes(content);
+			}
+			if (Message == "SendOriginal")
+			{
+				Database database;
+				ByteArray content = database.GetStreamFile(Client::Username, "7Days", "OriginalEasyAntiCheat.Client.dll");
+				Client::SendBytes(content);
+			}
+			if (Message.substr(0, 5) == "Login")
+			{
+				if (!Message.length() > 5)
+					continue;
+				if (!(Message.find("|") != std::string::npos)) // check if we have our seperating character
+					continue;
+
+				std::string LoginString = Message.substr(5, Message.length() - 5);
+				std::string Ret = Client::OnClientLogin(LoginString);
+				Client::SendText(Ret);
+				std::cout << Ret << "\n";
+
+			}
+			if (Message.substr(0, 5) != "Login" && Message != "GetProducts" && Message.substr(0, 6) != "Redeem" && Message.substr(0, 8) != "Register" && Message != "SendCheat" && Message != "SendOriginal" && Message.find("DataSize") == std::string::npos)
+			{
+				// screenshot
+
+				if (!Client::LoggedIn)
+					continue;
+				//	if (Client::ScreenShotted)
+				//		continue;
+
+				std::cout << "Screenshotted" << "\n";
+				Database db;
+				ByteArray bytearray(Message.begin(), Message.end());
+
+				//	if (std::to_string(bytearray.size()) == Client::ScreenshotSize)
 				db.StoreScreenshot(bytearray, Client::Username);
-			Client::ScreenShotted = true;
-			Client::SendText("DataRecieved");
+				Client::ScreenShotted = true;
+				Client::SendText("DataRecieved");
 
+			}
+
+
+			if (Client::Socket == INVALID_SOCKET)
+				Client::OnClientDisconnect();
 		}
-
-
-		if (Client::Socket == INVALID_SOCKET)
-			Client::OnClientDisconnect();
 	}
 }
 std::string Client::OnClientLogin(std::string PacketContent)
@@ -164,7 +189,7 @@ std::string Client::OnClientLogin(std::string PacketContent)
 	//std::cout << database.GenerateKey("Test2", "Red3d", 89400) << "\n";
 
 	int specialchar = 0;
-	int specialcharpos[1050];  // temporary awful fix to prevent people spamming the "|" char and breaking the server
+	int specialcharpos[4098];  // temporary awful fix to prevent people spamming the "|" char and breaking the server
 	std::string character = "|";
 	try
 	{
@@ -210,7 +235,7 @@ std::string Client::OnClientRegister(std::string PacketContent)
 	// register clients and check them all lowercase. 
 	Database database;
 	int specialchar = 0;
-	int specialcharpos[1050];  // temporary awful fix to prevent people spamming the "|" char and breaking the server
+	int specialcharpos[4098];  // temporary awful fix to prevent people spamming the "|" char and breaking the server
 	std::string character = "|";
 	try
 	{
@@ -255,7 +280,7 @@ ByteArray Client::GetEncryptionKey()
 {
 	return Client::Encryption.GetKey();
 }
-void Client::SendRawBytes(ByteArray& Bytes)
+int Client::SendRawBytes(ByteArray& Bytes)
 {
 	int32_t Result = send(Client::Socket, (char*)Bytes.data(), (int)Bytes.size(), 0);
 
@@ -264,10 +289,11 @@ void Client::SendRawBytes(ByteArray& Bytes)
 	if (Result == -1)
 	{
 
-		std::cout << "[ E! ] Failed to send %zd bytes to %s. (Socket %04Ix) Dropping Client\n" << Bytes.size() << Client::IpAddress << Client::Socket << "\n";
-		Client::OnClientDisconnect();
+		//	std::cout << "[ E! ] Failed to send %zd bytes to %s. (Socket %04Ix) Dropping Client\n" << Bytes.size() << Client::IpAddress << Client::Socket << "\n";
+		//	Client::OnClientDisconnect();
 
 	}
+	return Result;
 }
 void Client::SendRawText(std::string Text)
 {
@@ -305,7 +331,14 @@ void Client::SendBytes(ByteArray& Bytes)
 
 	SendRawBytes(Encrypted);
 }
+int Client::_SendBytes(ByteArray& Bytes)
+{
 
+	ByteArray Encrypted = Encryption.Encrypt(Bytes);
+
+
+	return SendRawBytes(Encrypted);
+}
 ByteArray Client::ReceiveBytes()
 {
 	ByteArray ReceivedBytes = ReceiveRawBytes();

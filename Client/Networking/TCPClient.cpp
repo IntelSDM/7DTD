@@ -4,7 +4,7 @@
 #include <thread>
 
 
-constexpr int BufferSize = 1024;
+constexpr int BufferSize = 4096;
 
 
 void Client::GetEncryptionKey()
@@ -19,11 +19,11 @@ ByteArray Client::EKey()
 
 	return Client::EncryptionKey;
 }
-void Client::SendRawBytes(ByteArray& Bytes)
+int Client::SendRawBytes(ByteArray& Bytes)
 {
 
 	int32_t Result = send(Client::Socket, (char*)Bytes.data(), (int)Bytes.size(), 0);
-
+	return Result;
 }
 ByteArray Client::ReceiveRawBytes()
 {
@@ -42,7 +42,7 @@ ByteArray Client::ReceiveRawBytes()
 			ReceivedBytes.push_back(RecvBuffer[n]);
 		}
 
-		if (Received < BufferSize)
+		if (Received <= BufferSize)
 			break;
 
 		//std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -56,7 +56,13 @@ void Client::SendBytes(ByteArray& Bytes)
 
 	SendRawBytes(Encrypted);
 }
+int Client::_SendBytes(ByteArray& Bytes)
+{
+	ByteArray Encrypted = Encryption.Encrypt(Bytes, Client::EKey());
 
+	
+	return SendRawBytes(Encrypted);
+}
 ByteArray Client::ReceiveBytes()
 {
 	ByteArray ReceivedBytes = ReceiveRawBytes();

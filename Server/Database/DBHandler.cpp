@@ -10,7 +10,10 @@
 #pragma warning(disable : 4996) // unsafe warning
 
 
-
+std::string Database::GetDatabaseDirectory()
+{
+	return Database::DBDir;
+}
 void Database::CreateDB()
 {
 
@@ -150,12 +153,13 @@ void Database::StoreScreenshot(ByteArray Data, std::string Username)
 
 
 
-	if (Database::DoesFileExist(ScreenshotDir, TimeNow))
-		return;
+	//if (Database::DoesFileExist(ScreenshotDir, TimeNow))
+//		return;
 	// save from memory to file
-	std::ofstream fout(ScreenshotDir + TimeNow, std::ios::binary);
-	fout.write((char*)Data.data(), Data.size());
 
+	std::ofstream fout(ScreenshotDir + TimeNow, std::ios::out | std::ios::binary);
+	fout.write((char*)Data.data(), Data.size());
+	fout.close();
 }
 
 void Database::FreezeProduct(std::string Product)
@@ -936,6 +940,28 @@ std::string Database::GetLog(std::string Dir, std::string FileName, int Index)
 #pragma endregion Log
 
 #pragma region FileAsString
+std::string Database::StringToHex(std::string input)
+{
+	const char* lut = "0123456789ABCDEF";
+	size_t len = input.length();
+	std::string output = "";
+
+	output.reserve(2 * len);
+
+	for (size_t i = 0; i < len; i++)
+	{
+		const unsigned char c = input[i];
+		output.push_back(lut[c >> 4]);
+		output.push_back(lut[c & 15]);
+	}
+
+	return output;
+}
+std::string Database::ByteArrayToHex(ByteArray input)
+{
+	std::string ret((char*)input.data(), input.size());
+	return Database::StringToHex(ret);
+}
 void Database::WriteFileAsString(std::string Dir, std::string FileName, std::string Content)
 {
 	std::string result;
