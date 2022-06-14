@@ -157,6 +157,9 @@ std::string GetMoboInformation()
 
 std::string ReadableHwid()
 {
+	/*
+	This is used for monitoring hwid changes manually
+	*/
 	VMProtectBeginUltra("ReadableHwid");
 	std::string Ram = LIT("Ram Information: ") + GetRamInformation();
 	std::string Drives = LIT("Drive Information: ") + GetDiskInformation();
@@ -168,6 +171,9 @@ std::string ReadableHwid()
 }
 std::string Hwid()
 {
+	/*
+	Removes unneeded information and uses it all for hwid
+	*/
 	VMProtectBeginUltra("Hwid");
 	std::string HWRamSpeed = GetRamSpeed();
 	std::string HWRamCapacity = GetRamAmountGB();

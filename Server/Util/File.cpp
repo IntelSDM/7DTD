@@ -3,14 +3,6 @@
 #include <iostream>
 #include <ctime>
 #include "DBHandler.h"
-// https://www.codeproject.com/Articles/8701/Network-Transfer-Of-Files-Using-MFC-s-CSocket-Clas
-/*
-Send all the bytes in small amounts 4096 kb to be exact
-once it is all sent we will wait 1 second and then send "FileSent" and this will break the waiting loop on client
-we could calculate size on the client but i don't like the chances of inaccuracy
-we can also take the time it takes to finish the transaction to prevent long connections
-we send the bytes encrypted and recieve them raw, rebuild the byte array in the client and then decrypt the byte array
-*/
 int length;
 
 void File::GetFile()

@@ -15,13 +15,10 @@ void Client::GetEncryptionKey()
 }
 ByteArray Client::EKey()
 {
-
-
 	return Client::EncryptionKey;
 }
 int Client::SendRawBytes(ByteArray& Bytes)
 {
-
 	int32_t Result = send(Client::Socket, (char*)Bytes.data(), (int)Bytes.size(), 0);
 	return Result;
 }
@@ -45,7 +42,6 @@ ByteArray Client::ReceiveRawBytes()
 		if (Received <= BufferSize)
 			break;
 
-		//std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 
 	return ReceivedBytes;

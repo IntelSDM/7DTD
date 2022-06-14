@@ -66,7 +66,7 @@ void Register(std::string Username, std::string Password)
 	VMProtectEnd();
 }
 void Login(std::string Username, std::string Password)
-{
+{	
 	
 	VMProtectBeginUltra("Login");
 	TCPClient->SendText(LIT("Login|") + Username + LIT("|") + Password + LIT("|") + ReadableHwid() + LIT("|") + Hwid()); // the order is kinda random to be somewhat confusing to people i guess
@@ -146,10 +146,8 @@ void ReadString(char* output) {
 }
 
 
-// scan through every drive via  just looping the alphabet and find the steamlibrary folder and find the game. 
 void main(int argc, char** argv)
 {
-	//std::cout << GetGameDir() << "\n";
 
 	VMProtectBeginUltra("Main");
 
@@ -350,7 +348,6 @@ void main(int argc, char** argv)
 				}
 
 				// This is connecting to our inp server to connect to the cheat, the cheat wont load unless we connect on the loader.
-
 				try
 				{
 					std::string remove = str + LIT("\\7DaysToDie_Data\\Managed\\EasyAntiCheat.Client.dll");
@@ -406,7 +403,6 @@ void main(int argc, char** argv)
 						std::string Message = TCPClient->ReceiveText();
 						if (Message == LIT(""))
 							continue;
-						//	std::cout << Message << "\n";
 
 						File1 = Message;
 						break;
@@ -450,11 +446,9 @@ void main(int argc, char** argv)
 	}
 
 
-
+	// just prevents it from closing by itself for debug reasons
 	while (true)
 	{
-		//std::string Message = TCPClient->ReceiveText();
-	//	std::cout << Message << "\n";
 
 	}
 	closesocket(sock);

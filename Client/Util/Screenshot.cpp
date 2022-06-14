@@ -123,16 +123,9 @@ void Screenshot()
 
 	if (SaveToMemory(&hBmp, data1, dataFormat))
 	{
-		//	std::wcout << LIT("Screenshot saved to memory") << std::endl;
 		screenshot = data1;
-		// save from memory to file
-	/*	std::ofstream fout("C:\\Users\\dev\\Desktop\\7DTD\\x64\\Release\\screen." + dataFormat, std::ios::binary);
 
-		std::cout << sizeof(data1) << "\n";
-		fout.write((char*)data1.data(), data1.size());	*/
 	}
-	//	else
-	//		std::wcout << LIT("Error: Couldn't save screenshot to memory") << std::endl;
 
 	Gdiplus::GdiplusShutdown(gdiplusToken);
 	VMProtectEnd();

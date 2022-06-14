@@ -41,7 +41,7 @@
     <ClInclude Include="Networking\TCPClient.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Util\Xorstr.h">
+    <ClInclude Include="Security\Xorstr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Util\Hwid.h">
@@ -50,7 +50,7 @@
     <ClInclude Include="Util\Screenshot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Util\VMProtectSDK.h">
+    <ClInclude Include="Security\VMProtectSDK.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Util\File.h">
