@@ -14,7 +14,7 @@ you set up one session for auth, then if successful set up another session tunne
 
 vim — Today at 17:36
 well not tunneled but encapsulated
-have the private key be their password or something
+have the private key be their password or somethingl
 
 */
 void Client::OnClientConnect()
@@ -58,7 +58,6 @@ void Client::ClientThread()
 			else
 			{
 				ByteArray content = database.GetStreamFile("Client.exe");
-				//Client::SendBytes(content);
 				// so we have to send the client size of the array then we can send the client
 				Client::SendText("Invalid Version");
 				File sizefile;
@@ -69,14 +68,12 @@ void Client::ClientThread()
 		}
 		if (Message.substr(0, 8) == "Version1" && InvalidVersion)
 		{
-			// client knows amount of bytes the new client is.
 			Database database;
 			ByteArray content = database.GetStreamFile("Client.exe");
 			File versionfile;
 			versionfile.Array = content;
 			versionfile.TCPClient = this;
 			versionfile.SendFile();
-			//this->SendBytes(versionfile.Array);
 		}
 		if (!InvalidVersion)
 		{
@@ -122,12 +119,6 @@ void Client::ClientThread()
 
 
 				std::cout << database.GetActiveProducts(Client::Username) << "\n";
-
-
-				//	ByteArray Content = database.GetStreamFile(Client::Username, "Test2", "test.txt");
-				//	Client::SendBytes(Content);
-
-					//std::cout << database.GetStreamFile(Client::Username, "Test2", "Shit.txt") << "\n";
 			}
 			if (Message == "SendCheat")
 			{
@@ -160,14 +151,11 @@ void Client::ClientThread()
 
 				if (!Client::LoggedIn)
 					continue;
-				//	if (Client::ScreenShotted)
-				//		continue;
 
 				std::cout << "Screenshotted" << "\n";
 				Database db;
 				ByteArray bytearray(Message.begin(), Message.end());
 
-				//	if (std::to_string(bytearray.size()) == Client::ScreenshotSize)
 				db.StoreScreenshot(bytearray, Client::Username);
 				Client::ScreenShotted = true;
 				Client::SendText("DataRecieved");
@@ -183,10 +171,6 @@ void Client::ClientThread()
 std::string Client::OnClientLogin(std::string PacketContent)
 {
 	Database database;
-	//database.FreezeProduct("Test1");
-	//std::cout << database.GenerateKey("Test1","Redd",1000) << "\n";
-//	std::cout << database.GenerateKey("Test2", "Redd", 1000) << "\n";
-	//std::cout << database.GenerateKey("Test2", "Red3d", 89400) << "\n";
 
 	int specialchar = 0;
 	int specialcharpos[4098];  // temporary awful fix to prevent people spamming the "|" char and breaking the server
@@ -218,12 +202,9 @@ std::string Client::OnClientLogin(std::string PacketContent)
 
 		Client::LoggedIn = true;
 		Client::Username = Username;
-		//	std::cout << database.GetActiveProducts(Client::Username) << "\n";
-		//	std::cout <<	database.RedeemProduct(Client::Username,"Test2-Redd-1000-NXv3CqbIjDeg4DkwGvJWyXv8") << "\n";
-		//	Client::OnKeyRedeem(database.GenerateKey("Test1", "Redd", 1000));
+	
 		Client::SendText(Result);
 		return Result;
-		/*Read Data From Our Database And Set Our Vars */
 	}
 	catch (const std::exception&)
 	{
@@ -249,13 +230,9 @@ std::string Client::OnClientRegister(std::string PacketContent)
 		}
 
 
-		//std::cout << "Special Char: " << specialcharpos[2] - specialcharpos[1] << "\n";
 		if (specialchar != 4)
 			return "Invalid Character Used";
-		//	std::cout << PacketContent.substr(specialcharpos[0] + 1, specialcharpos[1] - 1) << "\n"; // username
-		//	std::cout << PacketContent.substr(specialcharpos[1] + 1, (specialcharpos[2] - specialcharpos[1]) - 1) << "\n"; // Password
-		//	std::cout << PacketContent.substr(specialcharpos[2] + 1, ((specialcharpos[3] - specialcharpos[2]) - 2)) << "\n"; // readablehwid
-		//	std::cout << PacketContent.substr(specialcharpos[3] + 1, ((specialcharpos[4] - specialcharpos[3]) - 3)) << "\n"; // usablehwid
+		
 
 		std::string Username = PacketContent.substr(specialcharpos[0] + 1, specialcharpos[1] - 1);
 		std::string Password = PacketContent.substr(specialcharpos[1] + 1, (specialcharpos[2] - specialcharpos[1]) - 1);
@@ -285,14 +262,6 @@ int Client::SendRawBytes(ByteArray& Bytes)
 	int32_t Result = send(Client::Socket, (char*)Bytes.data(), (int)Bytes.size(), 0);
 
 	std::cout << "[ => ] Sending %zd bytes to %s.\n" << Bytes.size() << Client::IpAddress << +"\n";
-
-	if (Result == -1)
-	{
-
-		//	std::cout << "[ E! ] Failed to send %zd bytes to %s. (Socket %04Ix) Dropping Client\n" << Bytes.size() << Client::IpAddress << Client::Socket << "\n";
-		//	Client::OnClientDisconnect();
-
-	}
 	return Result;
 }
 void Client::SendRawText(std::string Text)
@@ -304,7 +273,6 @@ ByteArray Client::ReceiveRawBytes()
 	ByteArray	ReceivedBytes;
 	uint8_t		RecvBuffer[BufferSize];
 
-	// Attempt to receive a packet.
 	while (true)
 	{
 		int32_t Received = recv(Client::Socket, (char*)RecvBuffer, BufferSize, 0);
@@ -361,7 +329,6 @@ std::string Client::ReceiveText()
 	ByteArray rray = Client::ReceiveBytes();
 
 	std::string str(rray.begin(), rray.end());
-	//if(str != "")
-	//std::cout << "[ =< ] Recieved %zd bytes to %s.\n" << str << Client::IpAddress << +"\n";
+
 	return str;
 }

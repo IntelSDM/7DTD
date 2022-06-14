@@ -19,10 +19,6 @@ void main()
 {
 	Database db;
 	db.CreateDB();
-	//db.UnFreezeProduct("Test2");
-	//db.FreezeProduct("Test2");
-	
-//	db.FreezeProduct("dd");
 	WSADATA wsData;
 	WORD ver = MAKEWORD(2, 2);
 	int wsOk = WSAStartup(ver, &wsData);
@@ -59,6 +55,10 @@ void main()
 
 void TakeInput()
 {
+	/*
+	This is just basic for now, eventually i will add more commands but this serves only as a 7 days to die cheat so we have basic phrases to generate keys.
+	M creates a month key, W Creates a week key and 3 creates a 3 day key. Create key is currently broken.
+	*/
 	while (true)
 	{
 		Database database;
@@ -93,8 +93,6 @@ void TakeInput()
 				}
 
 				std::string Product = Text.substr(specialcharpos[0] + 1, specialcharpos[0] - 1);
-				//	std::string Time;
-				//	std::string Vendor;
 				std::cout << Product << "\n";
 			}
 			catch (std::exception)
@@ -102,13 +100,16 @@ void TakeInput()
 				std::cout << "Invalid Command\n";
 			}
 		}
-		//database.GenerateKey();
 	}
 }
 
 void AcceptClients(SOCKET listening, sockaddr_in client, sockaddr_in hint)
 {
-
+/*
+This thread will wait for any incomming clients and then accept them. 
+It also drops any clients that are assumed dead.
+It calls starting function for the client as well which creates the client thread.
+*/
 	while (true)
 	{
 
@@ -138,7 +139,7 @@ void AcceptClients(SOCKET listening, sockaddr_in client, sockaddr_in hint)
 			if (CreateTCPClient->Socket != INVALID_SOCKET)
 				TCPClientList.push_back(CreateTCPClient);
 
-
+			// call our init function for the client
 			CreateTCPClient->OnClientConnect();
 
 		}

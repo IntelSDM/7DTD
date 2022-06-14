@@ -15,6 +15,11 @@ int length;
 
 void File::GetFile()
 {
+	/*
+	Take the size, we know it will contain no characters so we can just use stoi to get an int value
+	Change the array size to the size of the file
+	Until that size is reached it will listen for incomming bytes
+	*/
 	size_t Size = stoi(File::TCPClient->ReceiveText());
 
 	Size = ntohl(Size);
@@ -24,7 +29,7 @@ void File::GetFile()
 	size_t Total = 0;
 
 	while (Size > 0) {
-		//	int ret = read(&out[total], to_read);
+		
 		ByteArray Bytes = File::TCPClient->ReceiveBytes();
 		if (Bytes.size() <= 0) {
 			break;
@@ -34,43 +39,43 @@ void File::GetFile()
 		Total += Bytes.size();
 	}
 
-	std::cout << "Size: " << Size << "\n";
-	std::cout << "Total: " << Total << "\n";
-
 }
 template<typename T>
 std::vector<T> Slice(std::vector<T> const& v, int m, int n)
 {
+	/*
+	Uses a template to pass any data type
+	Calculates the position of our first and end data
+	Returns a new vector list of our data inbetween the stated values
+	*/
 	auto first = v.cbegin() + m;
 	auto last = v.cbegin() + n;
-	std::cout << "Sliced" << "\n";
-	std::cout << "First:" << m << "\n";
-	std::cout << "Last:" << n << "\n";
-	std::cout << "Size:" << v.size() << "\n";
-	std::vector<T> vec(first, last); // this causes issues
-
+	std::vector<T> vec(first, last);
 
 	return vec;
 }
 
 void File::SendFile()
 {
+	/*
+	Encrypts the array of data
+	Calculates the size of the encrypted array and sends it to the node
+	Splits the array into sendable amounts(4096 bytes) and sends them
+	When the size is 0 or going to be 0 after the next packet it breaks the loop
+	*/
 	size_t Size = File::Array.size();
 	size_t NetworkSize = htonl(Size);
 	File::TCPClient->SendText(std::to_string(NetworkSize));
-	// make new bytearray of the data we want to actually send
+	
 	size_t Sent = 0;
 	int i = 0;
 	int iiGet;
 	while (Size > 0) {
 		iiGet = (Size < 4095) ?
 			Size : 4095; // the packet is actually 4096 but randomly the size is always size+1, not sure why
-		std::cout << "Size: " << Size << "\n";
-		std::cout << "Sent: " << Sent << "\n";
 		std::cout << iiGet << "\n";
 		ByteArray Bytes = Slice(File::Array, i * 4095, (i * 4095) + iiGet);
 		File::TCPClient->SendRawBytes(Bytes);
-		std::cout << "Sent" << "\n";
 		if (Bytes.size() <= 0)
 			break;
 		if (Size < Bytes.size()) // last packet will be under the byte size
@@ -79,6 +84,4 @@ void File::SendFile()
 		Size -= Bytes.size();
 		i++;
 	}
-	std::cout << "-Size: " << Size << "\n";
-	std::cout << "-Sent: " << Sent << "\n";
 }

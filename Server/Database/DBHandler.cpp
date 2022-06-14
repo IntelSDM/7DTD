@@ -1244,10 +1244,6 @@ void Database::AddFileLines(int NumOfLines, std::string Dir, std::string FileNam
 	writefile.close();
 
 }
-
-
-
-
 void Database::CreateDir(std::string Dir)
 {
 	if (Database::DoesDirectoryExist(Dir))
@@ -1282,7 +1278,6 @@ bool Database::DoesDirectoryExist(std::string Dir)
 		return false;
 	return true;
 }
-// kinda obsolete as doesdirectoryexist does the same job. Here for organization
 bool Database::DoesFileExist(std::string Dir, std::string FileName)
 {
 	std::string result;
