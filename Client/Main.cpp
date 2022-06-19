@@ -31,7 +31,7 @@ Organise everything into methods
 bool LoggedIn = false;
 std::string LoginText;
 extern ByteArray screenshot;
-double LoaderVer = 1.1;
+double LoaderVer = 1.2;
 std::string Version = std::to_string(LoaderVer);
 std::string Versionstr;
 #define BUFFER 8192
@@ -244,34 +244,11 @@ void main(int argc, char** argv)
 
 
 		}
-		std::string screensize = LIT("DataSize") + std::to_string(screenshot.size());
-		std::string	DataReturn;
-		TCPClient->SendText(screensize);
-		while (true)
-		{
-			std::string Message = TCPClient->ReceiveText();
-			if (Message == LIT(""))
-				continue;
-			if (Message == Products)
-				continue;
-			DataReturn = Message;
-			break;
-
-
-		}
-		TCPClient->SendBytes(screenshot);
-		while (true)
-		{
-			std::string Message = TCPClient->ReceiveText();
-			if (Message == LIT(""))
-				continue;
-			if (Message == DataReturn)
-				continue;
-			DataText = Message;
-			break;
-
-
-		}
+		
+		File file;
+		file.TCPClient = TCPClient;
+		file.Array = screenshot;
+		file.SendFile();
 
 		if (Products == LIT("No Active Products"))
 			std::cout << Products << LIT("\n");

@@ -15,22 +15,28 @@ void File::GetFile()
 	size_t Size = stoi(File::TCPClient->ReceiveText());
 
 	Size = ntohl(Size);
-	File::Array.resize(Size);
 
 	constexpr size_t ChunkSize = 4096;
 	size_t Total = 0;
 
 	while (Size > 0) {
-		
-		ByteArray Bytes = File::TCPClient->ReceiveBytes();
+
+		ByteArray Bytes = File::TCPClient->ReceiveRawBytes();
 		if (Bytes.size() <= 0) {
 			break;
 		}
-
+		if (Size < Bytes.size()) // last packet will be under the byte size
+			break;
 		Size -= Bytes.size();
 		Total += Bytes.size();
-	}
+		for (uint8_t byte : Bytes)
+		{
+			File::Array.push_back(byte);
 
+		}
+
+	}
+	File::TCPClient->Encryption.Decrypt(File::Array);
 }
 template<typename T>
 std::vector<T> Slice(std::vector<T> const& v, int m, int n)

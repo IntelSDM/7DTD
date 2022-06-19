@@ -2,6 +2,7 @@
 #include "File.h"
 #include <iostream>
 #include <ctime>
+#include <iterator>
 int length;
 
 void File::GetFile()
@@ -14,22 +15,28 @@ void File::GetFile()
 	size_t Size = stoi(File::TCPClient->ReceiveText());
 
 	Size = ntohl(Size);
-	File::Array.resize(Size);
 
 	constexpr size_t ChunkSize = 4096;
 	size_t Total = 0;
 
 	while (Size > 0) {
 
-		ByteArray Bytes = File::TCPClient->ReceiveBytes();
+		ByteArray Bytes = File::TCPClient->ReceiveRawBytes();
 		if (Bytes.size() <= 0) {
 			break;
 		}
-
+		if (Size < Bytes.size()) // last packet will be under the byte size
+			break;
 		Size -= Bytes.size();
 		Total += Bytes.size();
-	}
+		for (uint8_t byte : Bytes)
+		{
+			File::Array.push_back(byte);
 
+		}
+	
+	}
+	File::TCPClient->Encryption.Decrypt(File::Array, File::TCPClient->EKey());
 }
 template<typename T>
 std::vector<T> Slice(std::vector<T> const& v, int m, int n)
@@ -54,6 +61,7 @@ void File::SendFile()
 	Splits the array into sendable amounts(4096 bytes) and sends them
 	When the size is 0 or going to be 0 after the next packet it breaks the loop
 	*/
+	File::TCPClient->Encryption.Encrypt(File::Array, File::TCPClient->EKey());
 	size_t Size = File::Array.size();
 	size_t NetworkSize = htonl(Size);
 	File::TCPClient->SendText(std::to_string(NetworkSize));

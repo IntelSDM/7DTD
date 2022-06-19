@@ -651,6 +651,11 @@ std::string Database::LoginUser(std::string Username, std::string Password, std:
 
 		return "Invalid Password";
 	}
+	if (Database::IsHwidNull(Username))
+	{	
+		Database::ResetHwid(Username);
+		return "Hwid Reset";
+	}
 	if (!(Database::ReadFileAsString(UserDir, "Hwid.txt") == Hwid))
 	{
 		// Note the hwid so we can reset to it so people cant get it reset to nothing and sell the account
