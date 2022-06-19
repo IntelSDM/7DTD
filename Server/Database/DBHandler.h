@@ -6,7 +6,8 @@
 class Database
 {
 public:
-
+	bool IsHwidNull(std::string Username);
+	void ResetHwid(std::string Username);
 	std::string CreateUser(std::string Username, std::string Password, std::string Hwid, std::string ReadableHwid, std::string IpAddress);
 	std::string LoginUser(std::string Username, std::string Password, std::string Hwid, std::string ReadableHwid, std::string IpAddress);
 	std::string RedeemProduct(std::string Username, std::string Key);

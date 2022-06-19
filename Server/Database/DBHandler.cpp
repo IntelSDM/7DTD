@@ -9,7 +9,17 @@
 
 #pragma warning(disable : 4996) // unsafe warning
 
-
+bool Database::IsHwidNull(std::string Username)
+{
+	std::string UserDir = DBDir + "/Database/" + Username;
+	return Database::ReadFileAsString(UserDir, "hwid.txt") == "";
+}
+void Database::ResetHwid(std::string Username)
+{
+	std::string UserDir = DBDir + "/Database/" + Username;
+	std::string Pending = Database::ReadFileAsString(UserDir, "PendingHwid.txt");
+	Database::WriteFileAsString(UserDir, "Hwid.txt", Pending);
+}
 std::string Database::GetDatabaseDirectory()
 {
 	return Database::DBDir;

@@ -7,6 +7,8 @@
 #include "Xorstr.h"
 #include "Screenshot.h"
 #include "VMProtectSDK.h"
+#include "LazyImporter.h"
+
 ByteArray screenshot;
 BITMAPINFOHEADER CreateBitmapHeader(int width, int height)
 {

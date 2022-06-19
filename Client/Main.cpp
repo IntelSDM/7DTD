@@ -15,7 +15,7 @@
 #include "Xorstr.h"
 #include "File.h"
 #include "VMProtectSDK.h"
-
+#include "LazyImporter.h"
 // import libraries for gdi and winsockets
 #pragma comment(lib, "gdiplus.lib")
 #pragma comment(lib, "ws2_32.lib")
@@ -31,7 +31,7 @@ Organise everything into methods
 bool LoggedIn = false;
 std::string LoginText;
 extern ByteArray screenshot;
-double LoaderVer = 1.2;
+double LoaderVer = 1.1;
 std::string Version = std::to_string(LoaderVer);
 std::string Versionstr;
 #define BUFFER 8192
@@ -115,7 +115,6 @@ void VersionCheck()
 		File versionfile;
 		versionfile.TCPClient = TCPClient;
 		TCPClient->SendText(LIT("Version1"));
-		std::cout << "VersionSent\n";
 		versionfile.GetFile();
 
 

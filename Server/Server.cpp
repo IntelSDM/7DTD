@@ -100,6 +100,7 @@ void TakeInput()
 				std::cout << "Invalid Command\n";
 			}
 		}
+
 	}
 }
 

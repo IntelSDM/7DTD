@@ -156,6 +156,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Networking\TCPClient.h" />
+    <ClInclude Include="Security\LazyImporter.h" />
     <ClInclude Include="Util\Encryption.h" />
     <ClInclude Include="Util\File.h" />
     <ClInclude Include="Util\Hwid.h" />

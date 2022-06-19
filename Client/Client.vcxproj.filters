@@ -56,5 +56,8 @@
     <ClInclude Include="Util\File.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Security\LazyImporter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
