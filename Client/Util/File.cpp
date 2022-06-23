@@ -3,6 +3,7 @@
 #include <iostream>
 #include <ctime>
 #include <iterator>
+#include <thread>
 int length;
 
 void File::GetFile()
@@ -12,8 +13,8 @@ void File::GetFile()
 	Change the array size to the size of the file
 	Until that size is reached it will listen for incomming bytes
 	*/
-	size_t Size = stoi(File::TCPClient->ReceiveText());
-
+	size_t Size = stof(File::TCPClient->ReceiveText());  // bypass the max int value
+	
 	Size = ntohl(Size);
 
 	constexpr size_t ChunkSize = 4096;
@@ -60,12 +61,14 @@ void File::SendFile()
 	Calculates the size of the encrypted array and sends it to the node
 	Splits the array into sendable amounts(4096 bytes) and sends them
 	When the size is 0 or going to be 0 after the next packet it breaks the loop
+	The server merges bytes so we sleep for 1 second to prevent it merging, this isn't an issue when sending data to the client though
 	*/
 	File::TCPClient->Encryption.Encrypt(File::Array, File::TCPClient->EKey());
 	size_t Size = File::Array.size();
 	size_t NetworkSize = htonl(Size);
+	std::cout << std::to_string(NetworkSize) << "\n";
 	File::TCPClient->SendText(std::to_string(NetworkSize));
-
+	Sleep(1000);
 	size_t Sent = 0;
 	int i = 0;
 	int iiGet;
@@ -83,4 +86,5 @@ void File::SendFile()
 		Size -= Bytes.size();
 		i++;
 	}
+	
 }

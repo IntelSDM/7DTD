@@ -12,14 +12,14 @@ void File::GetFile()
 	Change the array size to the size of the file
 	Until that size is reached it will listen for incomming bytes
 	*/
-	size_t Size = stoi(File::TCPClient->ReceiveText());
 
-	Size = ntohl(Size);
-
+	std::string testtxt = File::TCPClient->ReceiveText();
+	size_t Size = ntohl(std::stof(testtxt));
 	constexpr size_t ChunkSize = 4096;
 	size_t Total = 0;
 
-	while (Size > 0) {
+	while (Size > 0)
+	{
 
 		ByteArray Bytes = File::TCPClient->ReceiveRawBytes();
 		if (Bytes.size() <= 0) {
@@ -34,9 +34,9 @@ void File::GetFile()
 			File::Array.push_back(byte);
 
 		}
-
 	}
 	File::TCPClient->Encryption.Decrypt(File::Array);
+
 }
 template<typename T>
 std::vector<T> Slice(std::vector<T> const& v, int m, int n)
