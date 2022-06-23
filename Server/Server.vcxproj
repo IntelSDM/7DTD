@@ -152,12 +152,14 @@
     <ClCompile Include="Util\Encryption.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="Util\File.cpp" />
+    <ClCompile Include="Util\SHA256.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Database\DBHandler.h" />
     <ClInclude Include="Networking\TCPClient.h" />
     <ClInclude Include="Util\Encryption.h" />
     <ClInclude Include="Util\File.h" />
+    <ClInclude Include="Util\SHA256.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

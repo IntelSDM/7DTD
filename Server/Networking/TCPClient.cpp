@@ -5,6 +5,7 @@
 #include <thread>
 #include "DBHandler.h"
 #include "File.h"
+#include "SHA256.h"
 
 extern std::list<Client*> TCPClientList;
 constexpr int BufferSize = 4096;
@@ -202,7 +203,7 @@ std::string Client::OnClientLogin(std::string PacketContent)
 		std::string Hwid = PacketContent.substr(specialcharpos[3] + 1, ((specialcharpos[4] - specialcharpos[3]) - 3));
 		std::string ReadableHwid = PacketContent.substr(specialcharpos[2] + 1, ((specialcharpos[3] - specialcharpos[2]) - 2));
 
-		std::string Result = database.LoginUser(Username, Password, Hwid, ReadableHwid, Client::IpAddress);
+		std::string Result = database.LoginUser(Username, sha256(Password), Hwid, ReadableHwid, Client::IpAddress);
 		if (Result != "Successful Login")
 			return Result;
 
@@ -244,7 +245,7 @@ std::string Client::OnClientRegister(std::string PacketContent)
 		std::string Password = PacketContent.substr(specialcharpos[1] + 1, (specialcharpos[2] - specialcharpos[1]) - 1);
 		std::string Hwid = PacketContent.substr(specialcharpos[3] + 1, ((specialcharpos[4] - specialcharpos[3]) - 3));
 		std::string ReadableHwid = PacketContent.substr(specialcharpos[2] + 1, ((specialcharpos[3] - specialcharpos[2]) - 2));
-		return database.CreateUser(Username, Password, Hwid, ReadableHwid, Client::IpAddress);
+		return database.CreateUser(Username, sha256(Password), Hwid, ReadableHwid, Client::IpAddress);
 	}
 	catch (const std::exception&)
 	{

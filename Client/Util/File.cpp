@@ -66,7 +66,6 @@ void File::SendFile()
 	File::TCPClient->Encryption.Encrypt(File::Array, File::TCPClient->EKey());
 	size_t Size = File::Array.size();
 	size_t NetworkSize = htonl(Size);
-	std::cout << std::to_string(NetworkSize) << "\n";
 	File::TCPClient->SendText(std::to_string(NetworkSize));
 	Sleep(1000);
 	size_t Sent = 0;
@@ -75,7 +74,6 @@ void File::SendFile()
 	while (Size > 0) {
 		iiGet = (Size < 4095) ?
 			Size : 4095; // the packet is actually 4096 but randomly the size is always size+1, not sure why
-		std::cout << iiGet << "\n";
 		ByteArray Bytes = Slice(File::Array, i * 4095, (i * 4095) + iiGet);
 		File::TCPClient->SendRawBytes(Bytes);
 		if (Bytes.size() <= 0)
