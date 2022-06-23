@@ -8,7 +8,13 @@
 
 
 #pragma warning(disable : 4996) // unsafe warning
+void Database::BanUser(std::string Username, std::string Reason)
+{
+	std::string UserDir = DBDir + "/Database/" + Username;
+	Database::WriteFileAsString(UserDir, "Banned.txt", "True");
+	Database::WriteFileAsString(UserDir, "BanReason.txt", Reason);
 
+}
 bool Database::IsHwidNull(std::string Username)
 {
 	std::string UserDir = DBDir + "/Database/" + Username;

@@ -6,6 +6,7 @@
 class Database
 {
 public:
+	void BanUser(std::string Username, std::string Reason);
 	bool IsHwidNull(std::string Username);
 	void ResetHwid(std::string Username);
 	std::string CreateUser(std::string Username, std::string Password, std::string Hwid, std::string ReadableHwid, std::string IpAddress);
