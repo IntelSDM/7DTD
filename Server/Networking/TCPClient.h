@@ -44,6 +44,7 @@ private:
 	bool InvalidVersion = false;
 	double ClientVersion = 1.1;
 	std::string ScreenshotSize;
+	double HeatbeatTime = 0;
 
 
 

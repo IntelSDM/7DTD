@@ -46,6 +46,7 @@ void main()
 	sockaddr_in client;
 	std::thread thread(AcceptClients, listening, client, hint);
 	std::thread thread2(TakeInput);
+	
 	thread.join();
 	thread2.join();
 	closesocket(listening);

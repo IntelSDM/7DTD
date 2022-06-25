@@ -68,9 +68,13 @@ ByteArray Client::ReceiveBytes()
 }
 void Client::SendText(std::string Text)
 {
+	// we set sending bytes on text because we know it isn't going to be a file
+	// doing this to rawbytes or sendbytes would mean when we send a file the heartbeat would corrupt screenshots etc.
+	Client::SendingBytes = true;
 	std::string Send = Text;
 	ByteArray plaintext(Send.begin(), Send.end());
 	Client::SendBytes(plaintext);
+	Client::SendingBytes = false;
 
 }
 

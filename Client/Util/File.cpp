@@ -63,6 +63,7 @@ void File::SendFile()
 	When the size is 0 or going to be 0 after the next packet it breaks the loop
 	The server merges bytes so we sleep for 1 second to prevent it merging, this isn't an issue when sending data to the client though
 	*/
+	TCPClient->SendingBytes = true;
 	File::TCPClient->Encryption.Encrypt(File::Array, File::TCPClient->EKey());
 	size_t Size = File::Array.size();
 	size_t NetworkSize = htonl(Size);
@@ -84,5 +85,7 @@ void File::SendFile()
 		Size -= Bytes.size();
 		i++;
 	}
+	Sleep(700);
+	TCPClient->SendingBytes = false;
 	
 }

@@ -12,7 +12,7 @@ public:
 	SOCKET Socket;
 	std::string IpAddress;
 	Encryption Encryption;
-
+	bool SendingBytes = false;
 
 	// Gets encryption key from server
 	void GetEncryptionKey();

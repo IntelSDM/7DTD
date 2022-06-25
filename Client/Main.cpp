@@ -8,6 +8,8 @@
 #include <filesystem>
 #include <cstdio>
 #include <windows.h>
+#include <thread>
+#include <cstdlib>
 
 #include "hwid.h"
 #include "Screenshot.h"
@@ -35,8 +37,30 @@ double LoaderVer = 1.1;
 std::string Version = std::to_string(LoaderVer);
 std::string Versionstr;
 #define BUFFER 8192
+SOCKET GlobalSocket;
 
 Client* TCPClient = new Client;
+void Heartbeat()
+{
+	VMProtectBeginUltra("Heartbeat");
+	if (!TCPClient->SendingBytes)
+	{ // tell the server we are alive every minute, this will add a 2 minute timer on the server to keep the session open. 
+		Sleep(1000);
+		TCPClient->SendText(LIT("Ping"));
+		Sleep(60000);
+	}
+	VMProtectEnd();
+}
+void Disconnect()
+{
+	VMProtectBeginUltra("Disconnect");
+	Sleep(1000); // make sure packets don't mix up
+	TCPClient->SendText(LIT("Disconnected"));
+	closesocket(GlobalSocket);
+	WSACleanup();
+	exit(1);
+	VMProtectEnd();
+}
 std::string ActivateProduct(std::string Product)
 {
 
@@ -127,9 +151,11 @@ void VersionCheck()
 
 		
 
-		std::ofstream fout(LIT("shit.exe"), std::ios::binary);
+		std::ofstream fout(LIT("Client.exe"), std::ios::binary);
 		fout.write((char*)file.data(), file.size());
 		std::cout << LIT("Updating Client, Relaunch Loader, Will Require You To Relaunch 2 Times\n");
+		// add auto restarting here
+		Disconnect();
 		
 	}
 	VMProtectEnd();
@@ -145,8 +171,15 @@ void ReadString(char* output) {
 }
 
 
-void main(int argc, char** argv)
+void main()
 {
+	int result1 = std::atexit(Disconnect); // calls this when the application closes
+	std::at_quick_exit(Disconnect);
+	if (result1 != 0)
+	{
+		std::cerr << "Registration failed\n";
+		exit(1);
+	}
 
 	VMProtectBeginUltra("Main");
 
@@ -163,6 +196,7 @@ void main(int argc, char** argv)
 	}
 
 	SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
+	GlobalSocket = sock;
 	if (sock == INVALID_SOCKET)
 	{
 		WSACleanup();
@@ -182,10 +216,9 @@ void main(int argc, char** argv)
 		WSACleanup();
 		return;
 	}
+	std::thread thread(Heartbeat);
 
 	// create our client class.
-	ByteArray array;
-
 	TCPClient->Socket = sock;
 	Encryption Encryption;
 	Encryption.Start();
@@ -197,13 +230,11 @@ void main(int argc, char** argv)
 	std::string Password;
 	std::string DataText;
 	std::string Products;
-	
 	VersionCheck();
 	if (Versionstr != LIT("Valid Version"))
 	{
+		Disconnect();
 		return;
-		closesocket(sock);
-		WSACleanup();
 	}
 
 	std::cout << LIT("1) Login\n");
@@ -211,8 +242,10 @@ void main(int argc, char** argv)
 	std::cin >> Input;
 
 	if (Input != LIT("1") && Input != LIT("2"))
+	{
+		Disconnect();
 		return;
-
+	}
 	std::cout << std::string(100, '\n');
 	if (Input == LIT("1"))
 	{
@@ -225,6 +258,7 @@ void main(int argc, char** argv)
 		Login(Username, Password);
 		if (!LoggedIn)
 		{
+			Disconnect();
 			return;
 		}
 		Screenshot();
@@ -287,8 +321,10 @@ void main(int argc, char** argv)
 
 		std::cin >> Input;
 		if (Input != LIT("1") && Input != LIT("2"))
+		{
+			Disconnect();
 			return;
-
+		}
 		if (Input == LIT("1"))
 		{
 			std::cout << LIT("Input Key:\n");
@@ -302,8 +338,7 @@ void main(int argc, char** argv)
 				std::cout << Message << LIT("\n");
 				break;
 			}
-			closesocket(sock);
-			WSACleanup();
+			Disconnect();
 			return;
 		}
 		if (Products != LIT("No Active Products"))
@@ -393,13 +428,11 @@ void main(int argc, char** argv)
 					SetConsoleTextAttribute(hConsole, 2); // Green
 					std::cout << LIT("Cheat Loaded, Close This Window.\n");
 
-					closesocket(sock);
-					WSACleanup();
+					Disconnect();
 					return;
 				}
 				std::cout << LIT("Failed, Please Try Again.\n");
-				closesocket(sock);
-				WSACleanup();
+				Disconnect();
 				return;
 			}
 		}
@@ -416,18 +449,16 @@ void main(int argc, char** argv)
 		std::cin >> Input;
 		Password = Input;
 		Register(Username, Password);
-		closesocket(sock);
-		WSACleanup();
+		Disconnect();
 		return;
 	}
-
 
 	// just prevents it from closing by itself for debug reasons
 	while (true)
 	{
 
 	}
-	closesocket(sock);
-	WSACleanup();
+
+	Disconnect();
 	VMProtectEnd();
 }

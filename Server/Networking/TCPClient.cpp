@@ -48,8 +48,23 @@ void Client::ClientThread()
 			return;
 		if (Client::Dead)
 			return;
-
+		if (Client::Dead)
+			break;
 		std::string Message = Client::ReceiveText();
+		if (Message == "Ping")
+		{
+			std::cout << time(0) << " \n";
+			Client::HeatbeatTime = time(0) + 75;
+			std::cout << Client::HeatbeatTime << "\n";
+		}
+		if (time(0) > Client::HeatbeatTime)
+		{
+			std::cout << "Heartbeat Dead" << "\n";
+			Client::OnClientDisconnect();
+
+		}
+		if (Message == "Disconnected")
+			Client::OnClientDisconnect();
 		if (Message.substr(0, 7) == "Version")
 		{
 			Database database;
