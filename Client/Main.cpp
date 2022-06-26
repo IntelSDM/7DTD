@@ -42,22 +42,22 @@ SOCKET GlobalSocket;
 Client* TCPClient = new Client;
 void Heartbeat()
 {
-	VMProtectBeginUltra("Heartbeat");
+	VMProtectBeginUltra(LIT("Heartbeat"));
 	if (!TCPClient->SendingBytes)
 	{ // tell the server we are alive every minute, this will add a 2 minute timer on the server to keep the session open. 
-		Sleep(1000);
+		LI_FN(Sleep).in(LI_MODULE("Kernel32.dll").cached())(1000);
 		TCPClient->SendText(LIT("Ping"));
-		Sleep(60000);
+		LI_FN(Sleep).in(LI_MODULE("Kernel32.dll").cached())(60000);
 	}
 	VMProtectEnd();
 }
 void Disconnect()
 {
-	VMProtectBeginUltra("Disconnect");
-	Sleep(1000); // make sure packets don't mix up
+	VMProtectBeginUltra(LIT("Disconnect"));
+	LI_FN(Sleep).in(LI_MODULE("Kernel32.dll").cached())(1000); // make sure packets don't mix up
 	TCPClient->SendText(LIT("Disconnected"));
-	closesocket(GlobalSocket);
-	WSACleanup();
+	LI_FN(closesocket).in(LI_MODULE("Ws2_32.dll").cached())(GlobalSocket);
+	LI_FN(WSACleanup).in(LI_MODULE("Ws2_32.dll").cached())();
 	exit(1);
 	VMProtectEnd();
 }
@@ -67,7 +67,7 @@ std::string ActivateProduct(std::string Product)
 }
 void Register(std::string Username, std::string Password)
 {
-	VMProtectBeginUltra("Register");
+	VMProtectBeginUltra(LIT("Register"));
 
 	TCPClient->SendText(LIT("Register|") + Username + LIT("|") + Password + LIT("|") + ReadableHwid() + LIT("|") + Hwid());
 
@@ -92,7 +92,7 @@ void Register(std::string Username, std::string Password)
 void Login(std::string Username, std::string Password)
 {	
 	
-	VMProtectBeginUltra("Login");
+	VMProtectBeginUltra(LIT("Login"));
 	TCPClient->SendText(LIT("Login|") + Username + LIT("|") + Password + LIT("|") + ReadableHwid() + LIT("|") + Hwid()); // the order is kinda random to be somewhat confusing to people i guess
 	while (true)
 	{
@@ -116,7 +116,7 @@ void Login(std::string Username, std::string Password)
 std::string exec(const char* cmd);
 void VersionCheck()
 {
-	VMProtectBeginUltra("VersionCheck");
+	VMProtectBeginUltra(LIT("VersionCheck"));
 	TCPClient->SendText(LIT("Version") + Version);
 	while (true)
 	{
@@ -183,7 +183,7 @@ void main()
 	}
 	try { std::filesystem::remove(LIT("OldClient.exe")); }
 	catch (std::exception) {}
-	VMProtectBeginUltra("Main");
+	VMProtectBeginUltra(LIT("Main"));
 
 	std::string ipAddress = LIT("217.112.80.148");
 	int port = 54000;
@@ -191,31 +191,31 @@ void main()
 
 	WSAData data;
 	WORD ver = MAKEWORD(2, 2);
-	int wsResult = WSAStartup(ver, &data);
+	int wsResult = LI_FN(WSAStartup).in(LI_MODULE("Ws2_32.dll").cached())(ver, &data);
 	if (wsResult != 0)
 	{
 		return;
 	}
 
-	SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
+	SOCKET sock = LI_FN(socket).in(LI_MODULE("Ws2_32.dll").cached())(AF_INET, SOCK_STREAM, 0);
 	GlobalSocket = sock;
 	if (sock == INVALID_SOCKET)
 	{
-		WSACleanup();
+		LI_FN(WSACleanup).in(LI_MODULE("Ws2_32.dll").cached())();
 		return;
 	}
 
 	sockaddr_in hint;
 	hint.sin_family = AF_INET;
 	hint.sin_port = htons(port);
-	inet_pton(AF_INET, ipAddress.c_str(), &hint.sin_addr);
+	LI_FN(inet_pton).in(LI_MODULE("Ws2_32.dll").cached())(AF_INET, ipAddress.c_str(), &hint.sin_addr);
 
 	int connResult = connect(sock, (sockaddr*)&hint, sizeof(hint));
 	if (connResult == SOCKET_ERROR)
 	{
 		std::cerr << LIT("Can't connect to server") << std::endl;
-		closesocket(sock);
-		WSACleanup();
+		LI_FN(closesocket).in(LI_MODULE("Ws2_32.dll").cached())(sock);
+		LI_FN(WSACleanup).in(LI_MODULE("Ws2_32.dll").cached())();
 		return;
 	}
 	std::thread thread(Heartbeat);
@@ -390,12 +390,12 @@ void main()
 				fout.close();
 
 
-				HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-				SetConsoleTextAttribute(hConsole, 2); // Green
+				HANDLE hConsole = LI_FN(GetStdHandle).in(LI_MODULE("Kernel32.dll").cached())(STD_OUTPUT_HANDLE);
+				LI_FN(SetConsoleTextAttribute).in(LI_MODULE("kernel32.dll"))(hConsole, 2); // Green
 				std::cout << LIT("Now Open Your Game.\n");
-				SetConsoleTextAttribute(hConsole, 4);// Red
+				LI_FN(SetConsoleTextAttribute).in(LI_MODULE("kernel32.dll"))(hConsole, 4);// Red
 				std::cout << LIT("After You Open The Game You Will Notice It Not Responding Or You Have A White Or Black Screen.\n");
-				SetConsoleTextAttribute(hConsole, 2); // Green
+				LI_FN(SetConsoleTextAttribute).in(LI_MODULE("kernel32.dll"))(hConsole, 2); // Green
 				std::cout << LIT("When You See This Type 1 Into The Console And Click Enter To Continue.\n");
 
 				std::cin >> Input;
@@ -427,7 +427,7 @@ void main()
 					fout1.write((char*)data2.data(), data2.size());
 					fout1.close();
 
-					SetConsoleTextAttribute(hConsole, 2); // Green
+					LI_FN(SetConsoleTextAttribute).in(LI_MODULE("kernel32.dll"))(hConsole, 2); // Green
 					std::cout << LIT("Cheat Loaded, Close This Window.\n");
 
 					Disconnect();

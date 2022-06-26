@@ -10,13 +10,14 @@
 #include <cstdio>
 #include <sstream>
 #include <Windows.h>
+
 #include "Xorstr.h"
 #include "Hwid.h"
 #include "VMProtectSDK.h"
 
 
 std::string exec(const char* cmd) {
-	VMProtectBeginUltra("ExecuteSystem");
+	VMProtectBeginUltra(LIT("ExecuteSystem"));
 	std::array<char, 128> buffer;
 	std::string result;
 	std::shared_ptr<FILE> pipe(_popen(cmd, "r"), _pclose);
@@ -82,7 +83,7 @@ std::string GetRamSpeed()
 }
 std::string GetDiskSerials()
 {
-	VMProtectBeginUltra("GetDiskSerials");
+	VMProtectBeginUltra(LIT("GetDiskSerials"));
 	std::string val = exec(LIT("wmic diskdrive get serialnumber"));
 	val = val.substr(12, val.length() - 13); // Remove serial number part, gets all serials
 	std::string str;
@@ -160,7 +161,7 @@ std::string ReadableHwid()
 	/*
 	This is used for monitoring hwid changes manually
 	*/
-	VMProtectBeginUltra("ReadableHwid");
+	VMProtectBeginUltra(LIT("ReadableHwid"));
 	std::string Ram = LIT("Ram Information: ") + GetRamInformation();
 	std::string Drives = LIT("Drive Information: ") + GetDiskInformation();
 	std::string Gpu = LIT("Gpu Information: ") + GetGpuName();
@@ -174,7 +175,7 @@ std::string Hwid()
 	/*
 	Removes unneeded information and uses it all for hwid
 	*/
-	VMProtectBeginUltra("Hwid");
+	VMProtectBeginUltra(LIT("Hwid"));
 	std::string HWRamSpeed = GetRamSpeed();
 	std::string HWRamCapacity = GetRamAmountGB();
 	std::string HWRamPartNum = GetRamPartNumber();

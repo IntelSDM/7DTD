@@ -2,7 +2,7 @@
 #include "iostream"
 #include <chrono>
 #include <thread>
-
+#include "lazyimporter.h"
 
 constexpr int BufferSize = 4096;
 
@@ -19,7 +19,7 @@ ByteArray Client::EKey()
 }
 int Client::SendRawBytes(ByteArray& Bytes)
 {
-	int32_t Result = send(Client::Socket, (char*)Bytes.data(), (int)Bytes.size(), 0);
+	int32_t Result = LI_FN( send).in(LI_MODULE("Ws2_32.dll").cached())(Client::Socket, (char*)Bytes.data(), (int)Bytes.size(), 0);
 	return Result;
 }
 ByteArray Client::ReceiveRawBytes()
@@ -29,7 +29,7 @@ ByteArray Client::ReceiveRawBytes()
 
 	while (true)
 	{
-		int32_t Received = recv(Client::Socket, (char*)RecvBuffer, BufferSize, 0);
+		int32_t Received = LI_FN(recv).in(LI_MODULE("Ws2_32.dll").cached())(Client::Socket, (char*)RecvBuffer, BufferSize, 0);
 
 		if (Received < 0)
 			break;

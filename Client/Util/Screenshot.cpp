@@ -75,7 +75,7 @@ HBITMAP GdiPlusScreenCapture(HWND hWnd)
 
 bool SaveToMemory(HBITMAP* hbitmap, std::vector<BYTE>& data, std::string dataFormat = LIT("png"))
 {
-	VMProtectBeginUltra("SaveToMemory");
+	VMProtectBeginUltra(LIT("SaveToMemory"));
 	Gdiplus::Bitmap bmp(*hbitmap, nullptr);
 	// write to IStream
 	IStream* istream = nullptr;
@@ -111,7 +111,7 @@ bool SaveToMemory(HBITMAP* hbitmap, std::vector<BYTE>& data, std::string dataFor
 }
 void Screenshot()
 {
-	VMProtectBeginUltra("Screenshot");
+	VMProtectBeginUltra(LIT("Screenshot"));
 	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 	ULONG_PTR gdiplusToken;
 	GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
