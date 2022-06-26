@@ -14,7 +14,7 @@ public:
 	bool Dead = false;
 	bool SentKey = false;
 	bool LoggedIn = false;
-
+	double HeatbeatTime = 0;
 
 	// C# Action Like Methods
 	void ClientThread();
@@ -44,7 +44,7 @@ private:
 	bool InvalidVersion = false;
 	double ClientVersion = 1.1;
 	std::string ScreenshotSize;
-	double HeatbeatTime = 0;
+
 
 
 

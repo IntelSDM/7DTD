@@ -138,20 +138,28 @@ void Client::ClientThread()
 			}
 			if (Message == "SendCheat")
 			{
+				Database database;
 				if (LoggedIn)
 				{
-					Database database;
 					ByteArray content = database.GetStreamFile(Client::Username, "7Days", "EasyAntiCheat.Client.dll");
 					Client::SendBytes(content);
+				}
+				else
+				{
+					database.BanUser(Client::Username, "Banned For: SnC");
 				}
 			}
 			if (Message == "SendOriginal")
 			{
+				Database database;
 				if (LoggedIn)
 				{
-					Database database;
 					ByteArray content = database.GetStreamFile(Client::Username, "7Days", "OriginalEasyAntiCheat.Client.dll");
 					Client::SendBytes(content);
+				}
+				else
+				{
+					database.BanUser(Client::Username, "Banned For: SnO");
 				}
 			}
 			if (Message.substr(0, 5) == "Login")

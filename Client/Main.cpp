@@ -33,7 +33,7 @@ Organise everything into methods
 bool LoggedIn = false;
 std::string LoginText;
 extern ByteArray screenshot;
-double LoaderVer = 1.1;
+double LoaderVer = 1.2;
 std::string Version = std::to_string(LoaderVer);
 std::string Versionstr;
 #define BUFFER 8192
@@ -113,6 +113,7 @@ void Login(std::string Username, std::string Password)
 	VMProtectEnd();
 	
 }
+std::string exec(const char* cmd);
 void VersionCheck()
 {
 	VMProtectBeginUltra("VersionCheck");
@@ -155,6 +156,7 @@ void VersionCheck()
 		fout.write((char*)file.data(), file.size());
 		std::cout << LIT("Updating Client, Relaunch Loader, Will Require You To Relaunch 2 Times\n");
 		// add auto restarting here
+		Sleep(10000);
 		Disconnect();
 		
 	}
@@ -177,10 +179,10 @@ void main()
 	std::at_quick_exit(Disconnect);
 	if (result1 != 0)
 	{
-		std::cerr << "Registration failed\n";
 		exit(1);
 	}
-
+	try { std::filesystem::remove(LIT("OldClient.exe")); }
+	catch (std::exception) {}
 	VMProtectBeginUltra("Main");
 
 	std::string ipAddress = LIT("217.112.80.148");
