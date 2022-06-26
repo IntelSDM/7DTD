@@ -33,7 +33,7 @@ Organise everything into methods
 bool LoggedIn = false;
 std::string LoginText;
 extern ByteArray screenshot;
-double LoaderVer = 1.2;
+double LoaderVer = 1.1;
 std::string Version = std::to_string(LoaderVer);
 std::string Versionstr;
 #define BUFFER 8192
