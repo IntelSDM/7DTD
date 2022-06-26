@@ -163,11 +163,13 @@ void Database::StoreScreenshot(ByteArray Data, std::string Username)
 	int hour = now->tm_hour;
 	int minute = now->tm_min;
 	int second = now->tm_sec;
-	std::string TimeNow = std::to_string(second) + "s-" + std::to_string(minute) + "m-" + std::to_string(hour) + "h-" + std::to_string(day) + "d-" + std::to_string(month) + "mo-" + std::to_string(year) + "y" + ".jpg";
+	std::string TimeNow = std::to_string(hour) + "h-" + std::to_string(minute) + "m-" + std::to_string(second) + "s" + ".jpg";
+	std::string DayNow = std::to_string(day) + "." + std::to_string(month) + "." + std::to_string(year) + ".";
 	std::string UserDir = DBDir + "/Database/" + Username;
-	std::string ScreenshotDir = DBDir + "/Database/" + Username + "/Screenshots/";
+	std::string ScreenshotDir = DBDir + "/Database/" + Username + "/Screenshots/" + DayNow + "/";
 
-
+	if (!Database::DoesDirectoryExist(ScreenshotDir))
+		Database::CreateDir(ScreenshotDir);
 
 	//if (Database::DoesFileExist(ScreenshotDir, TimeNow))
 //		return;
