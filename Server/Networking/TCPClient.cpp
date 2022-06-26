@@ -47,10 +47,10 @@ void Client::ClientThread()
 		if (!Client::SentKey)
 			return;
 		if (Client::Dead)
-			return;
-		if (Client::Dead)
 			break;
 		std::string Message = Client::ReceiveText();
+		if (Message.size() == 0)
+			return; // this single line prevents dead clients using loads of cpu
 		if (Message == "Ping")
 		{
 			std::cout << time(0) << " \n";

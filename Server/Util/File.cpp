@@ -13,7 +13,7 @@ void File::GetFile()
 	Until that size is reached it will listen for incomming bytes
 	*/
 
-	File::TCPClient->HeatbeatTime = time(0) + 75;
+	File::TCPClient->HeatbeatTime = time(0) + 95;
 	std::string testtxt = File::TCPClient->ReceiveText();
 	size_t Size = ntohl(std::stof(testtxt));
 	constexpr size_t ChunkSize = 4096;
@@ -62,7 +62,7 @@ void File::SendFile()
 	Splits the array into sendable amounts(4096 bytes) and sends them
 	When the size is 0 or going to be 0 after the next packet it breaks the loop
 	*/
-	File::TCPClient->HeatbeatTime = time(0) + 75;
+	File::TCPClient->HeatbeatTime = time(0) + 95;
 	size_t Size = File::Array.size();
 	size_t NetworkSize = htonl(Size);
 	File::TCPClient->SendText(std::to_string(NetworkSize));
