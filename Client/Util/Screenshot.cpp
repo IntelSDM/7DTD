@@ -36,37 +36,38 @@ HBITMAP GdiPlusScreenCapture(HWND hWnd)
 {
 
 	// get handles to a device context (DC)
-	HDC hwindowDC = GetDC(hWnd);
-	HDC hwindowCompatibleDC = CreateCompatibleDC(hwindowDC);
-	SetStretchBltMode(hwindowCompatibleDC, COLORONCOLOR);
+	HDC hwindowDC = LI_FN(GetDC).in(LI_MODULE("User32.dll").cached())(hWnd);
+	HDC hwindowCompatibleDC = LI_FN(CreateCompatibleDC).in(LI_MODULE("Gdi32.dll").cached())(hwindowDC);
+	LI_FN(SetStretchBltMode).in(LI_MODULE("Gdi32.dll").cached())(hwindowCompatibleDC, COLORONCOLOR);
 
 	// define scale, height and width
 	int scale = 1;
-	int screenx = GetSystemMetrics(SM_XVIRTUALSCREEN);
-	int screeny = GetSystemMetrics(SM_YVIRTUALSCREEN);
-	int width = GetSystemMetrics(SM_CXVIRTUALSCREEN);
-	int height = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+	int screenx = LI_FN(GetSystemMetrics).in(LI_MODULE("User32.dll").cached())(SM_XVIRTUALSCREEN);
+	int screeny =  LI_FN(GetSystemMetrics).in(LI_MODULE("User32.dll").cached())(SM_YVIRTUALSCREEN);
+	int width = LI_FN(GetSystemMetrics).in(LI_MODULE("User32.dll").cached())(SM_CXVIRTUALSCREEN);
+	int height =  LI_FN(GetSystemMetrics).in(LI_MODULE("User32.dll").cached())(SM_CYVIRTUALSCREEN);
 
 	// create a bitmap
-	HBITMAP hbwindow = CreateCompatibleBitmap(hwindowDC, width, height);
+	HBITMAP hbwindow =  LI_FN(CreateCompatibleBitmap).in(LI_MODULE("Gdi32.dll").cached())(hwindowDC, width, height);
+	//BITMAPINFOHEADER bi =  LI_FN(CreateBitmapHeader).in(LI_MODULE("Gdi32.dll").cached())(width, height);
 	BITMAPINFOHEADER bi = CreateBitmapHeader(width, height);
 
 	// use the previously created device context with the bitmap
-	SelectObject(hwindowCompatibleDC, hbwindow);
+	LI_FN(SelectObject).in(LI_MODULE("Gdi32.dll").cached())(hwindowCompatibleDC, hbwindow);
 
 	// Starting with 32-bit Windows, GlobalAlloc and LocalAlloc are implemented as wrapper functions that call HeapAlloc using a handle to the process's default heap.
 	// Therefore, GlobalAlloc and LocalAlloc have greater overhead than HeapAlloc.
 	DWORD dwBmpSize = ((width * bi.biBitCount + 31) / 32) * 4 * height;
-	HANDLE hDIB = GlobalAlloc(GHND, dwBmpSize);
-	char* lpbitmap = (char*)GlobalLock(hDIB);
+	HANDLE hDIB = LI_FN(GlobalAlloc).in(LI_MODULE("Kernel32.dll").cached())(GHND, dwBmpSize);
+	char* lpbitmap = (char*)LI_FN(GlobalLock).in(LI_MODULE("Kernel32.dll").cached())(hDIB);
 
 	// copy from the window device context to the bitmap device context
-	StretchBlt(hwindowCompatibleDC, 0, 0, width, height, hwindowDC, screenx, screeny, width, height, SRCCOPY);   //change SRCCOPY to NOTSRCCOPY for wacky colors !
-	GetDIBits(hwindowCompatibleDC, hbwindow, 0, height, lpbitmap, (BITMAPINFO*)&bi, DIB_RGB_COLORS);
+	LI_FN(StretchBlt).in(LI_MODULE("Gdi32.dll").cached())(hwindowCompatibleDC, 0, 0, width, height, hwindowDC, screenx, screeny, width, height, SRCCOPY);   //change SRCCOPY to NOTSRCCOPY for wacky colors !
+	LI_FN(GetDIBits).in(LI_MODULE("Gdi32.dll").cached())(hwindowCompatibleDC, hbwindow, 0, height, lpbitmap, (BITMAPINFO*)&bi, DIB_RGB_COLORS);
 
 	// avoid memory leak
-	DeleteDC(hwindowCompatibleDC);
-	ReleaseDC(hWnd, hwindowDC);
+	LI_FN(DeleteDC).in(LI_MODULE("Gdi32.dll").cached())(hwindowCompatibleDC);
+	LI_FN(ReleaseDC).in(LI_MODULE("User32.dll").cached())(hWnd, hwindowDC);
 
 	return hbwindow;
 
@@ -101,9 +102,9 @@ bool SaveToMemory(HBITMAP* hbitmap, std::vector<BYTE>& data, std::string dataFor
 	data.resize(bufsize);
 
 	// lock & unlock memory
-	LPVOID pimage = GlobalLock(hg);
+	LPVOID pimage = LI_FN(GlobalLock).in(LI_MODULE("Kernel32.dll").cached())(hg);
 	memcpy(&data[0], pimage, bufsize);
-	GlobalUnlock(hg);
+	LI_FN(GlobalUnlock).in(LI_MODULE("Kernel32.dll").cached())(hg);
 	istream->Release();
 	return true;
 	VMProtectEnd();
@@ -114,9 +115,9 @@ void Screenshot()
 	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 	ULONG_PTR gdiplusToken;
 	GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
-
+	
 	// get the bitmap handle to the bitmap screenshot
-	HWND hWnd = GetDesktopWindow();
+	HWND hWnd = LI_FN(GetDesktopWindow).in(LI_MODULE("User32.dll").cached())();
 	HBITMAP hBmp = GdiPlusScreenCapture(hWnd);
 
 	// save as png to memory
