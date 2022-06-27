@@ -391,11 +391,11 @@ void main()
 
 
 				HANDLE hConsole = LI_FN(GetStdHandle).in(LI_MODULE("Kernel32.dll").cached())(STD_OUTPUT_HANDLE);
-				LI_FN(SetConsoleTextAttribute).in(LI_MODULE("kernel32.dll"))(hConsole, 2); // Green
+				LI_FN(SetConsoleTextAttribute).in(LI_MODULE("kernel32.dll").cached())(hConsole, 2); // Green
 				std::cout << LIT("Now Open Your Game.\n");
-				LI_FN(SetConsoleTextAttribute).in(LI_MODULE("kernel32.dll"))(hConsole, 4);// Red
+				LI_FN(SetConsoleTextAttribute).in(LI_MODULE("kernel32.dll").cached())(hConsole, 4);// Red
 				std::cout << LIT("After You Open The Game You Will Notice It Not Responding Or You Have A White Or Black Screen.\n");
-				LI_FN(SetConsoleTextAttribute).in(LI_MODULE("kernel32.dll"))(hConsole, 2); // Green
+				LI_FN(SetConsoleTextAttribute).in(LI_MODULE("kernel32.dll").cached())(hConsole, 2); // Green
 				std::cout << LIT("When You See This Type 1 Into The Console And Click Enter To Continue.\n");
 
 				std::cin >> Input;
@@ -427,7 +427,7 @@ void main()
 					fout1.write((char*)data2.data(), data2.size());
 					fout1.close();
 
-					LI_FN(SetConsoleTextAttribute).in(LI_MODULE("kernel32.dll"))(hConsole, 2); // Green
+					LI_FN(SetConsoleTextAttribute).in(LI_MODULE("kernel32.dll").cached())(hConsole, 2); // Green
 					std::cout << LIT("Cheat Loaded, Close This Window.\n");
 
 					Disconnect();
