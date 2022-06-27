@@ -52,12 +52,13 @@ namespace Cheat
                 _blockValue.Block.FallDamage = 0;
             }
             if (Globals.Config.LocalPlayer.InstantBreak2)
-            { 
-            _entityIdThatDamaged = 0;
+            {
+                System.Random rand = new System.Random();
+           _entityIdThatDamaged = rand.Next(0,10000);
             _bBypassMaxDamage = true;
-            _blockValue.Block.UpgradeExp = float.MaxValue;
-            _blockValue.Block.Damage = float.MaxValue;
-              
+                _damagePoints = int.MaxValue;
+                // _blockValue.Block.IsCollideMelee // setting this would be good
+             //   _blockValue.damage = 0;
             }
             if (Globals.Config.LocalPlayer.InstantBreak3)
                 _blockValue.Block.MaxDamage = 1;

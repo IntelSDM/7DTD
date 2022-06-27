@@ -411,7 +411,7 @@ namespace Cheat.Menu
         }
         void OnGUI1()
         {
-            Drawing.DrawString(new Vector2(5,0), "Cat Hack! By: Many Cats#3392", Helpers.ColourHelper.GetColour("Menu Primary Colour"), false, 14, FontStyle.Normal, 0);
+            Drawing.DrawString(new Vector2(5,0), "R3 Cheat By: R3#1380", Helpers.ColourHelper.GetColour("Menu Primary Colour"), false, 14, FontStyle.Normal, 0);
             Globals.MainCamera = Camera.main;
 
             string text = string.Empty;
