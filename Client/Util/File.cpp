@@ -14,7 +14,7 @@ void File::GetFile()
 	Until that size is reached it will listen for incomming bytes
 	*/
 	size_t Size = stof(File::TCPClient->ReceiveText());  // bypass the max int value
-	
+	std::cout << "started\n";
 	Size = ntohl(Size);
 
 	constexpr size_t ChunkSize = 4096;
@@ -22,7 +22,7 @@ void File::GetFile()
 
 	while (Size > 0) {
 
-		ByteArray Bytes = File::TCPClient->ReceiveRawBytes();
+		ByteArray Bytes = File::TCPClient->ReceiveRawBytes(); 
 		if (Bytes.size() <= 0) {
 			break;
 		}
@@ -37,6 +37,7 @@ void File::GetFile()
 		}
 	
 	}
+	std::cout << "finished\n";
 	File::TCPClient->Encryption.Decrypt(File::Array, File::TCPClient->EKey());
 }
 template<typename T>

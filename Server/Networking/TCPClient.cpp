@@ -141,8 +141,12 @@ void Client::ClientThread()
 				Database database;
 				if (LoggedIn)
 				{
+
 					ByteArray content = database.GetStreamFile(Client::Username, "7Days", "EasyAntiCheat.Client.dll");
-					Client::SendBytes(content);
+					File file;
+					file.TCPClient = this;
+					file.Array = content;
+					file.SendFile();
 				}
 				else
 				{
@@ -155,7 +159,10 @@ void Client::ClientThread()
 				if (LoggedIn)
 				{
 					ByteArray content = database.GetStreamFile(Client::Username, "7Days", "OriginalEasyAntiCheat.Client.dll");
-					Client::SendBytes(content);
+					File file;
+					file.TCPClient = this;
+					file.Array = content;
+					file.SendFile();
 				}
 				else
 				{

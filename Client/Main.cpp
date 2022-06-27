@@ -154,7 +154,7 @@ void VersionCheck()
 
 		std::ofstream fout(LIT("Client.exe"), std::ios::binary);
 		fout.write((char*)file.data(), file.size());
-		std::cout << LIT("Updating Client, Relaunch Loader, Will Require You To Relaunch 2 Times\n");
+		std::cout << LIT("Client Updated\n");
 		// add auto restarting here
 		Sleep(10000);
 		Disconnect();
@@ -354,12 +354,13 @@ void main()
 				int lasti;
 
 				// so basically we need to skip a value since after each actual byte in the char array it has a buffer that doesn't show in the string but it is still there in memory. this small thing took 20 hours of my time to find. 
-				for (int i = 0; i < BufferSize - 2; i += 2)
-				{
 
-					str = str + value[i];
-				}
 
+			
+					for (int i = 0; i < BufferSize - 2; i += 2)
+					{
+						str = str + value[i];
+					}
 				// This is connecting to our inp server to connect to the cheat, the cheat wont load unless we connect on the loader.
 				try
 				{
@@ -368,27 +369,22 @@ void main()
 				}
 				catch (const std::exception&){}
 				
-				std::string File;
-				std::string File1;
 				TCPClient->SendText(LIT("SendCheat"));
+				File cheat;
+				cheat.TCPClient = TCPClient;
+				cheat.GetFile();
 
-				while (true)
-				{
-					std::string Message = TCPClient->ReceiveText();
-					if (Message == "")
-						continue;
-					
-
-					File = Message;
-					break;
-
-
-				}
-				std::vector<BYTE> data1(File.begin(), File.end());
+				std::vector<BYTE> data1(cheat.Array.begin(), cheat.Array.end());
 				std::ofstream fout(str + LIT("\\EasyAntiCheat.Client.dll"), std::ios::out|std::ios::binary);
 				fout.write((char*)data1.data(), data1.size());
 				fout.close();
 
+
+				Sleep(1000);
+				TCPClient->SendText(LIT("SendOriginal"));
+				File original;
+				original.TCPClient = TCPClient;
+				original.GetFile();
 
 				HANDLE hConsole = LI_FN(GetStdHandle).in(LI_MODULE("Kernel32.dll").cached())(STD_OUTPUT_HANDLE);
 				LI_FN(SetConsoleTextAttribute).in(LI_MODULE("kernel32.dll").cached())(hConsole, 2); // Green
@@ -397,6 +393,7 @@ void main()
 				std::cout << LIT("After You Open The Game You Will Notice It Not Responding Or You Have A White Or Black Screen.\n");
 				LI_FN(SetConsoleTextAttribute).in(LI_MODULE("kernel32.dll").cached())(hConsole, 2); // Green
 				std::cout << LIT("When You See This Type 1 Into The Console And Click Enter To Continue.\n");
+
 
 				std::cin >> Input;
 				if(Input == LIT("1"))
@@ -410,19 +407,12 @@ void main()
 					memset(buffer, 0, 100);
 					ReadString(buffer);
 
-					TCPClient->SendText(LIT("SendOriginal"));
-					while (true)
-					{
-						std::string Message = TCPClient->ReceiveText();
-						if (Message == LIT(""))
-							continue;
-
-						File1 = Message;
-						break;
+					
+					try { std::filesystem::remove(str + LIT("\\EasyAntiCheat.Client.dll")); } // incase the cheat wasn't loaded successfully by a moronic user we delete it
+					catch(std::exception ex){}
 
 
-					}
-					std::vector<BYTE> data2(File1.begin(), File1.end());
+					std::vector<BYTE> data2(original.Array.begin(), original.Array.end());
 					std::ofstream fout1(str + LIT("\\7DaysToDie_Data\\Managed\\EasyAntiCheat.Client.dll"), std::ios::binary);
 					fout1.write((char*)data2.data(), data2.size());
 					fout1.close();

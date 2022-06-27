@@ -66,7 +66,6 @@ void File::SendFile()
 	size_t Size = File::Array.size();
 	size_t NetworkSize = htonl(Size);
 	File::TCPClient->SendText(std::to_string(NetworkSize));
-	
 	size_t Sent = 0;
 	int i = 0;
 	int iiGet;
