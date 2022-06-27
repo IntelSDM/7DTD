@@ -95,8 +95,8 @@ namespace Cheat.Esp
 
                    if (Globals.Config.Player.Chams)
                         Helpers.ShaderHelper.ApplyShader(Helpers.ShaderHelper.Shaders["Chams"], player.gameObject, Helpers.ColourHelper.GetColour("Player Chams Visible Colour"), Helpers.ColourHelper.GetColour("Player Chams Invisible Colour"));
-                    else
-                        Helpers.ShaderHelper.RemoveShaders(player.gameObject);
+                 //   else
+                   //     Helpers.ShaderHelper.RemoveShaders(player.gameObject);
 
                     float height = Mathf.Abs(ScreenPosition.y - HeadPosition.y);
                     if (Globals.Config.Player.Box && Distance < 200)
