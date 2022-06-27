@@ -18,10 +18,13 @@ namespace Cheat
         [ObfuscationAttribute(Exclude = true)]
         public static void Start()
         {
-           
 
+            Start1();
+          
+        }
+        public static void Start1()
+        {
             Globals.Auth();
         }
-     
     }
 }

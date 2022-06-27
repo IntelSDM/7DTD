@@ -61,8 +61,10 @@ namespace Cheat
              //   _blockValue.damage = 0;
             }
             if (Globals.Config.LocalPlayer.InstantBreak3)
+            {
+                _bBypassMaxDamage = true;
                 _blockValue.Block.MaxDamage = 1;
-
+            }
             ChunkCluster chunkCluster = _world.ChunkClusters[_clrIdx];
             if (chunkCluster == null)
             {
@@ -74,11 +76,7 @@ namespace Cheat
                 BlockValue block = chunkCluster.GetBlock(parentPos);
                 if (block.ischild)
                 {
-                    /*    Log.Error("Block on position {0} with name '{1}' should be a parent but is not! (6)", new object[]
-                        {
-                        parentPos,
-                        block.Block.blockName
-                        });*/
+                   
                     return 0;
                 }
                 return block.Block.OnBlockDamaged(_world, _clrIdx, parentPos, block, _damagePoints, _entityIdThatDamaged, _bUseHarvestTool, _bBypassMaxDamage, _recDepth + 1);
@@ -291,7 +289,7 @@ namespace Cheat
             Speedhack();
             SetProperties();
            Noclip();
-        //    Worlds();
+            Worlds();
             #region Hooks
             // some of these should just be done in a start function but i kinda want them all in 1 area so i am not splitting them up
             if (Globals.Config.LocalPlayer.NoRecoil && !FireAnimationHooked) // allows us to hook it on config load
@@ -607,29 +605,40 @@ namespace Cheat
         {
             if (Globals.LocalPlayer == null)
                 return;
-            if (Globals.Config.LocalPlayer.CreativeMenu)
+            try
             {
-       
-            }
-            if (Globals.Config.LocalPlayer.DebugMenu)
-            {
-            
-            }
-            if (Globals.Config.LocalPlayer.FarInteract)
-            {
-                Constants.cDigAndBuildDistance = Globals.Config.LocalPlayer.FarInteractDistance;
-                Constants.cCollectItemDistance = Globals.Config.LocalPlayer.FarInteractDistance;
-            //    Constants.cBuildIntervall = 0.1f;
-            }
-            if (Globals.Config.LocalPlayer.LandClaim)
-            {
-                if (!GameStats.GetBool(EnumGameStats.LandClaimOnlineDurabilityModifier))
-                    GameStats.Set(EnumGameStats.LandClaimOnlineDurabilityModifier, 1);
-                if (!GameStats.GetBool(EnumGameStats.LandClaimOfflineDurabilityModifier))
-                    GameStats.Set(EnumGameStats.LandClaimOfflineDurabilityModifier, 1);
+                if (Globals.Config.LocalPlayer.CreativeMenu)
+                {
+                    if (!GamePrefs.GetBool(EnumGamePrefs.CreativeMenuEnabled))
+                        GamePrefs.Set(EnumGamePrefs.CreativeMenuEnabled, true);
+                    if (!GameStats.GetBool(EnumGameStats.IsCreativeMenuEnabled))
+                        GameStats.Set(EnumGameStats.IsCreativeMenuEnabled, true);
+                }
+                if (Globals.Config.LocalPlayer.DebugMenu)
+                {
+                    if (!GameStats.GetBool(EnumGameStats.IsFlyingEnabled))
+                        GameStats.Set(EnumGameStats.IsFlyingEnabled, true);
+                    if (!GamePrefs.GetBool(EnumGamePrefs.DebugMenuEnabled))
+                        GamePrefs.Set(EnumGamePrefs.DebugMenuEnabled, true);
+                    if (!GameStats.GetBool(EnumGameStats.IsPlayerCollisionEnabled))
+                        GameStats.Set(EnumGameStats.IsPlayerCollisionEnabled, false);
+                }
+                if (Globals.Config.LocalPlayer.FarInteract)
+                {
+                    Constants.cDigAndBuildDistance = Globals.Config.LocalPlayer.FarInteractDistance;
+                    Constants.cCollectItemDistance = Globals.Config.LocalPlayer.FarInteractDistance;
+                    //    Constants.cBuildIntervall = 0.1f;
+                }
+                if (Globals.Config.LocalPlayer.LandClaim)
+                {
+                    if (!GameStats.GetBool(EnumGameStats.LandClaimOnlineDurabilityModifier))
+                        GameStats.Set(EnumGameStats.LandClaimOnlineDurabilityModifier, 1);
+                    if (!GameStats.GetBool(EnumGameStats.LandClaimOfflineDurabilityModifier))
+                        GameStats.Set(EnumGameStats.LandClaimOfflineDurabilityModifier, 1);
 
+                }
             }
-
+            catch { }
         }
         public static void CreativeMenu()
         {

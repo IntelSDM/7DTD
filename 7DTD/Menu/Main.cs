@@ -45,11 +45,13 @@ namespace Cheat.Menu
             Config.Items.Add(Save);
             Config.Items.Add(Load);
             #region Save Config
+            Button Default = new Button("Default", "", () => Helpers.ConfigHelper.SaveConfig("Default"));
             Button Cfg1 = new Button("Config 1", "", () => Helpers.ConfigHelper.SaveConfig("Config1"));
             Button Cfg2 = new Button("Config 2", "", () => Helpers.ConfigHelper.SaveConfig("Config2"));
             Button Cfg3 = new Button("Config 3", "", () => Helpers.ConfigHelper.SaveConfig("Config3"));
             Button Cfg4 = new Button("Config 4", "", () => Helpers.ConfigHelper.SaveConfig("Config4"));
             Button Cfg5 = new Button("Config 5", "", () => Helpers.ConfigHelper.SaveConfig("Config5"));
+            Save.Items.Add(Default);
             Save.Items.Add(Cfg1);
             Save.Items.Add(Cfg2);
             Save.Items.Add(Cfg3);
@@ -57,11 +59,13 @@ namespace Cheat.Menu
             Save.Items.Add(Cfg5);
             #endregion
             #region Load Config
+            Button Default2 = new Button("Default", "", () => Helpers.ConfigHelper.LoadConfig("Default"));
             Button Cfg6 = new Button("Config 1", "", () => Helpers.ConfigHelper.LoadConfig("Config1"));
             Button Cfg7 = new Button("Config 2", "", () => Helpers.ConfigHelper.LoadConfig("Config2"));
             Button Cfg8 = new Button("Config 3", "", () => Helpers.ConfigHelper.LoadConfig("Config3"));
             Button Cfg9 = new Button("Config 4", "", () => Helpers.ConfigHelper.LoadConfig("Config4"));
             Button Cfg10 = new Button("Config 5", "", () => Helpers.ConfigHelper.LoadConfig("Config5"));
+            Load.Items.Add(Default2);
             Load.Items.Add(Cfg6);
             Load.Items.Add(Cfg7);
             Load.Items.Add(Cfg8);
@@ -275,8 +279,10 @@ namespace Cheat.Menu
             Button craft = new Button("Instant Free Craft", "Craft Items Instantly With No Resources", () => Misc.InstantCraft());
             Button nuke = new Button("Kill Everyone Excluding Yourself", "Kills Everyone But You", () => Misc.KillEveryoneElse());
             Button nuke2 = new Button("Kill Everyone Including Yourself", "Kills Everyone", () => Misc.KillEveryone());
-            Button creative = new Button("Creative Menu", "Allows You To Spawn Items", () => Misc.CreativeMenu());
-            Button debug = new Button("Debug Menu", "Allows You To Fly And Teleport On Map", () => Misc.DebugMenu());
+            Toggle creative = new Toggle("Creative Menu", "Allows You To Spawn Items(Admins Can See Spawned Items)", ref Globals.Config.LocalPlayer.CreativeMenu);
+            Toggle debug = new Toggle("Debug Menu", "Allows You To Fly And Teleport On Map(Noclip And Godmode Which Is On The Q Key Will Insta Ban You)", ref Globals.Config.LocalPlayer.DebugMenu);
+            //Button creative = new Button("Creative Menu Button", "Allows You To Spawn Items", () => Misc.CreativeMenu());
+            // Button debug = new Button("Debug Menu Button", "Allows You To Fly And Teleport On Map", () => Misc.DebugMenu());
             Toggle farinteract = new Toggle("Far Interact", "Allows You To Place And Pickup Blocks Further Away", ref Globals.Config.LocalPlayer.FarInteract);
             IntSlider interactdistance = new IntSlider("Far Interact Distance", "How Far You Can Interact", ref Globals.Config.LocalPlayer.FarInteractDistance, 25, 1000, 5);
             World.Items.Add(cmd);

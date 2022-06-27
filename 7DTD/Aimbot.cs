@@ -140,10 +140,6 @@ namespace Cheat
                 if (Globals.LocalPlayer == null)
                     return;
 
-                if (Zombie == null)
-                {
-                    Drawing.DrawCircle(Color.blue, new Vector2(Screen.width / 2, Screen.height / 2), 30);
-                }
                 if (Globals.Config.Aimbot.DrawFov)
                     Drawing.DrawCircle(Helpers.ColourHelper.GetColour("Aimbot Fov Colour"), new Vector2(Screen.width / 2, Screen.height / 2), Globals.Config.Aimbot.Fov);
 

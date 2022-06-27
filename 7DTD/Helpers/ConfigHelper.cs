@@ -11,9 +11,9 @@ namespace Cheat.Helpers
 {
     class ConfigHelper
     {
-        public static string SelectedConfig = "1";
-        private static string ConfigPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Hag\\");
-        private static string GetConfigPath(string name = "1") { return ConfigPath + name + ".cfg"; }
+        public static string SelectedConfig = "Default";
+        private static string ConfigPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "R3Cheat\\");
+        private static string GetConfigPath(string name = "Default") { return ConfigPath + name + ".cfg"; }
         public static void CreateEnvironment()
         {
             if (!Directory.Exists(ConfigPath))
@@ -79,7 +79,7 @@ namespace Cheat.Helpers
             }
             return _clearText;
         }
-        public static void SaveConfig(string name = "1", bool setconfig = false)
+        public static void SaveConfig(string name = "Default", bool setconfig = false)
         {
             string path = GetConfigPath(name);
             string json = JsonConvert.SerializeObject(Globals.Config, Formatting.Indented);
@@ -89,7 +89,7 @@ namespace Cheat.Helpers
             // draw something after this to show the user something happened or do a beep boop :triumph:
 
         }
-        public static void LoadConfig(string name = "1")
+        public static void LoadConfig(string name = "Default")
         {
             if (File.Exists(GetConfigPath(name)))
             {
