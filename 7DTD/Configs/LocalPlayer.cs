@@ -38,6 +38,7 @@ namespace Cheat.Configs
         public bool UnlimitedThirtst = true;
         public bool InstantHealth = true;
         public bool SpoofName = false;
+        public bool RandomlySpoofName = false;
 
         public bool LandClaim = true;
         public bool InstantBreak1 = true;
@@ -47,5 +48,6 @@ namespace Cheat.Configs
         public bool CreativeMenu = true;
         public bool FarInteract = false;
         public int FarInteractDistance = 35;
+
     }
 }

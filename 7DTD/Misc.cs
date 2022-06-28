@@ -36,33 +36,48 @@ namespace Cheat
         public bool UnlimitedRangeHooked = false;
         public static DumbHook BlockDamage;
         public bool BlockDamageHooked = false;
+       private static List<EntityPlayer> KillList = new List<EntityPlayer>();
 
         [ObfuscationAttribute(Exclude = true)]
         public virtual int Damage(WorldBase _world, int _clrIdx, Vector3i _blockPos, BlockValue _blockValue, int _damagePoints, int _entityIdThatDamaged, bool _bUseHarvestTool, bool _bBypassMaxDamage, int _recDepth = 0)
         {
             return Dam(_world, _clrIdx, _blockPos, _blockValue, _damagePoints, _entityIdThatDamaged, _bUseHarvestTool, _bBypassMaxDamage, _recDepth);
         }
-
+        public static int ClaimedByWho(Vector3i _position)
+        {
+       //     GameManager.Instance.persistentLocalPlayer.AddLandProtectionBlock
+            PersistentPlayerList persistentPlayerList = GameManager.Instance.persistentPlayers;
+            if (persistentPlayerList != null)
+            {
+                return persistentPlayerList.GetLandProtectionBlockOwner(_position).EntityId;
+            }
+            return 0;
+        }
         public int Dam(WorldBase _world, int _clrIdx, Vector3i _blockPos, BlockValue _blockValue, int _damagePoints, int _entityIdThatDamaged, bool _bUseHarvestTool, bool _bBypassMaxDamage, int _recDepth = 0)
         {
             if (Globals.Config.LocalPlayer.InstantBreak1)
             {
+                
                 _blockValue.Block.CanPickup = true;
                 _world.GetGameManager().PickupBlockServer(_clrIdx, _blockPos, _blockValue, 0);
                 _blockValue.Block.FallDamage = 0;
             }
             if (Globals.Config.LocalPlayer.InstantBreak2)
             {
-                System.Random rand = new System.Random();
-           _entityIdThatDamaged = rand.Next(0,10000);
-            _bBypassMaxDamage = true;
-                _damagePoints = int.MaxValue;
+                //  _entityIdThatDamaged = ClaimedByWho(_blockPos);
+                //    ClaimedByWho(_blockPos);
+                _entityIdThatDamaged = 0;
+                 _bBypassMaxDamage = true;
+                  _damagePoints = _blockValue.Block.MaxDamage;
                 // _blockValue.Block.IsCollideMelee // setting this would be good
-             //   _blockValue.damage = 0;
+                //   _blockValue.damage = 0;
+                //    GameManager.Instance.persistentLocalPlayer.AddLandProtectionBlock(_blockPos);
+                //  GameManager.Instance.persistentLocalPlayer.UserIdentifier.PlatformIdentifier = Platform.EPlatformIdentifier.XBL;
             }
             if (Globals.Config.LocalPlayer.InstantBreak3)
             {
                 _bBypassMaxDamage = true;
+                _damagePoints = 1;
                 _blockValue.Block.MaxDamage = 1;
             }
             ChunkCluster chunkCluster = _world.ChunkClusters[_clrIdx];
@@ -286,6 +301,21 @@ namespace Cheat
         }
         void Update1()
         {
+            try
+            {
+                System.Random rand = new System.Random();
+                GameManager.Instance.persistentLocalPlayer.EntityId = rand.Next(0, 1000000);
+                GameManager.Instance.persistentLocalPlayer.PlayerName = rand.Next(0, 1000000).ToString();
+                
+            }
+            catch { }
+            try
+            {
+                DamageSource source = new DamageSource(EnumDamageSource.Internal, EnumDamageTypes.BloodLoss);
+                foreach(EntityPlayer player in KillList)
+                player.DamageEntity(source, 100000000, false, 1);
+            }
+            catch { }
             Speedhack();
             SetProperties();
            Noclip();
@@ -382,6 +412,19 @@ namespace Cheat
             DamageSource source = new DamageSource(EnumDamageSource.Internal, EnumDamageTypes.BloodLoss);
             player.DamageEntity(source, 100000000, false, 1);
         }
+        public static void StartConstantlyKillPlayer(EntityPlayer player)
+        {
+            KillList.Add(player);
+        }
+        public static void StopConstantlyKillPlayer(EntityPlayer player)
+        {
+            KillList.Remove(player);
+        }
+        public static void SpoofName(EntityPlayer player)
+        {
+            Name = player.EntityName;
+        }
+
         #region Movement
         public static void TeleportToPlayer(EntityPlayer player)
         {
@@ -526,11 +569,17 @@ namespace Cheat
             }
             try
             {
+                if (Globals.Config.LocalPlayer.RandomlySpoofName)
+                {
+                    foreach (EntityPlayer player in Esp.Player.PlayerList)
+                        Name = player.EntityName;
+                }
                 if (Globals.Config.LocalPlayer.SpoofName)
                 {
                     if(Globals.LocalPlayer.EntityName != Name)
                     Globals.LocalPlayer.SetEntityName(Name);
                 }
+                
             }
             catch { }
           
@@ -631,9 +680,9 @@ namespace Cheat
                 }
                 if (Globals.Config.LocalPlayer.LandClaim)
                 {
-                    if (!GameStats.GetBool(EnumGameStats.LandClaimOnlineDurabilityModifier))
+                  //  if (!GameStats.GetBool(EnumGameStats.LandClaimOnlineDurabilityModifier))
                         GameStats.Set(EnumGameStats.LandClaimOnlineDurabilityModifier, 1);
-                    if (!GameStats.GetBool(EnumGameStats.LandClaimOfflineDurabilityModifier))
+                 //   if (!GameStats.GetBool(EnumGameStats.LandClaimOfflineDurabilityModifier))
                         GameStats.Set(EnumGameStats.LandClaimOfflineDurabilityModifier, 1);
 
                 }

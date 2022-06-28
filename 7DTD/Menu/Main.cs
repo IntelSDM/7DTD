@@ -15,6 +15,7 @@ namespace Cheat.Menu
         private Entity Selected;
         private double NextPlayerTime;
         private KeyCode KeyToBind;
+        bool ShowMenu = true;
         int itemamount = 1;
         SubMenu MainMenu = new SubMenu("Main","Menu");
 
@@ -252,8 +253,9 @@ namespace Cheat.Menu
             Toggle unlimitedwater = new Toggle("Unlimited Water", "Never Run Out Of Water Like A Camel", ref Globals.Config.LocalPlayer.UnlimitedThirtst);
             Toggle unlimitedhealth = new Toggle("Instant Health Regeneration", "You Health Instantly Regenerates To Max", ref Globals.Config.LocalPlayer.InstantHealth);
             Button cleardebuff = new Button("Clear Debuffs", "Removes Injuries Such As Broken Legs", () => Misc.ClearDebuff());
-            Toggle spoofname = new Toggle("Spoof name", "Spoofs Your Name", ref Globals.Config.LocalPlayer.SpoofName);
+            Toggle spoofname = new Toggle("Spoof Name", "Spoofs Your Name", ref Globals.Config.LocalPlayer.SpoofName);
             Button name = new Button("Copy Name From Clipboard", "Copies Name From Clipboard And Spoofs Name To It", () => Misc.ClipboardToString(out Misc.Name));
+            Toggle namechanger = new Toggle("Name Changer", "Requires Spoof Name! Automatically Changes Name To Player Names", ref Globals.Config.LocalPlayer.RandomlySpoofName);
             PlayerProperties.Items.Add(unlimitedstamina);
             PlayerProperties.Items.Add(unlimitedhunger);
             PlayerProperties.Items.Add(unlimitedwater);
@@ -419,7 +421,8 @@ namespace Cheat.Menu
         {
             Drawing.DrawString(new Vector2(5,0), "R3 Cheat By: R3#1380", Helpers.ColourHelper.GetColour("Menu Primary Colour"), false, 14, FontStyle.Normal, 0);
             Globals.MainCamera = Camera.main;
-
+            if (!ShowMenu)
+                return;
             string text = string.Empty;
             if (MenuHistory.Count > 0)
             {
@@ -455,8 +458,11 @@ namespace Cheat.Menu
                             continue;
                         SubMenu playermenu = new SubMenu(player.EntityName,"");
                         PlayerMenu.Items.Add(playermenu);
-                        playermenu.Items.Add(new Button("Kill Player", "JFKs The Player", () => Cheat.Misc.KillPlayer(player)));
                         playermenu.Items.Add(new Button("Teleport To Player", "Teleports You To Player", () => Misc.TeleportToPlayer(player)));
+                        playermenu.Items.Add(new Button("Kill Player", "JFKs The Player", () => Cheat.Misc.KillPlayer(player)));
+                        playermenu.Items.Add(new Button("Start Constantly Kill Player", "Keeps Killing Player Constantly", () => Cheat.Misc.StartConstantlyKillPlayer(player)));
+                        playermenu.Items.Add(new Button("Stop Constantly Kill Player", "Stops Constantly Killing Player", () => Cheat.Misc.StopConstantlyKillPlayer(player)));
+                        playermenu.Items.Add(new Button("Spoof Name To Player", $"Changes Your Name This Players Name: {player.EntityName}", () => Cheat.Misc.SpoofName(player)));
                     }
                     NextPlayerTime = Time.time + 2;
                 }
@@ -530,6 +536,10 @@ namespace Cheat.Menu
         {
 
             #region Controls
+            if (Input.GetKeyDown(KeyCode.Insert))
+                ShowMenu = !ShowMenu;
+            if (!ShowMenu)
+                return;
             if (Input.GetKeyDown(KeyCode.DownArrow) && CurrentMenu.index < CurrentMenu.Items.Count)
                 CurrentMenu.index++;
             if (Input.GetKeyDown(KeyCode.UpArrow) && CurrentMenu.index > 0)
