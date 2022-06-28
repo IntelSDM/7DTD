@@ -263,6 +263,7 @@ namespace Cheat.Menu
             PlayerProperties.Items.Add(cleardebuff);
             PlayerProperties.Items.Add(spoofname);
             PlayerProperties.Items.Add(name);
+            PlayerProperties.Items.Add(namechanger);
             LocalPlayer.Items.Add(PlayerProperties);
         
         }
@@ -463,6 +464,7 @@ namespace Cheat.Menu
                         playermenu.Items.Add(new Button("Start Constantly Kill Player", "Keeps Killing Player Constantly", () => Cheat.Misc.StartConstantlyKillPlayer(player)));
                         playermenu.Items.Add(new Button("Stop Constantly Kill Player", "Stops Constantly Killing Player", () => Cheat.Misc.StopConstantlyKillPlayer(player)));
                         playermenu.Items.Add(new Button("Spoof Name To Player", $"Changes Your Name This Players Name: {player.EntityName}", () => Cheat.Misc.SpoofName(player)));
+                        playermenu.Items.Add(new Button("Spoof Stats To Player", $"Changes Your Stats To Copy The Player", () => Cheat.Misc.SpoofStats(player)));
                     }
                     NextPlayerTime = Time.time + 2;
                 }

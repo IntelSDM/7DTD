@@ -424,7 +424,25 @@ namespace Cheat
         {
             Name = player.EntityName;
         }
+        public static void SpoofStats(EntityPlayer player)
+        {
+            Globals.LocalPlayer.Progression.Level = player.Progression.Level;
+            Globals.LocalPlayer.Progression.SkillPoints = player.Progression.SkillPoints;
+            Globals.LocalPlayer.Progression.ExpToNextLevel = player.Progression.ExpToNextLevel;
+            Globals.LocalPlayer.KilledPlayers = player.KilledPlayers;
+            Globals.LocalPlayer.KilledZombies = player.KilledZombies;
+            EntityAlive alive = Globals.LocalPlayer as EntityAlive;
+            EntityAlive alive2 = player as EntityAlive;
+            alive.Died = alive2.Died;
+            Globals.LocalPlayer.distanceWalked = player.distanceWalked;
+            Globals.LocalPlayer.distanceWalked = player.distanceSwam;
+            Globals.LocalPlayer.distanceClimbed = player.distanceClimbed;
+            Globals.LocalPlayer.totalTimePlayed = player.totalTimePlayed;
+            Globals.LocalPlayer.totalItemsCrafted = player.totalItemsCrafted;
+        
 
+
+        }
         #region Movement
         public static void TeleportToPlayer(EntityPlayer player)
         {
