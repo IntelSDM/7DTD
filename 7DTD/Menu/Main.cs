@@ -143,6 +143,8 @@ namespace Cheat.Menu
             Toggle UnlimitedRange = new Toggle("Unlimited Range", "Allows You To Shoot Further", ref Globals.Config.LocalPlayer.UnlimitedRange);
             Toggle FovChanger = new Toggle("Weapon Fov Changer", "Changes Distance Of Weapon From Camera", ref Globals.Config.LocalPlayer.WeaponFovChanger);
             IntSlider FovSlider = new IntSlider("Weapon Fov", "Amount Of Fov The Fov Changer Will Change", ref Globals.Config.LocalPlayer.WeaponFov, 10, 190, 5);
+            Toggle CamFovChanger = new Toggle("Camera Fov Changer", "Changes Your Camera's perception Of Distance", ref Globals.Config.LocalPlayer.CameraFovChanger);
+            IntSlider CamFovSlider = new IntSlider("Camera Fov", "Amount Of Fov The Fov Changer Will Change", ref Globals.Config.LocalPlayer.CameraFov, 10, 190, 5);
             Weapon.Items.Add(RemoveRecoil);
             Weapon.Items.Add(NoRecoil);
             Weapon.Items.Add(RemoveSpread);
@@ -151,6 +153,8 @@ namespace Cheat.Menu
             Weapon.Items.Add(UnlimitedAmmo);
             Weapon.Items.Add(FovChanger);
             Weapon.Items.Add(FovSlider);
+            Weapon.Items.Add(CamFovChanger);
+            Weapon.Items.Add(CamFovSlider);
             LocalPlayer.Items.Add(Weapon);
         }
         #endregion
@@ -254,6 +258,7 @@ namespace Cheat.Menu
             Toggle unlimitedhealth = new Toggle("Instant Health Regeneration", "You Health Instantly Regenerates To Max", ref Globals.Config.LocalPlayer.InstantHealth);
             Button cleardebuff = new Button("Clear Debuffs", "Removes Injuries Such As Broken Legs", () => Misc.ClearDebuff());
             Toggle spoofname = new Toggle("Spoof Name", "Spoofs Your Name", ref Globals.Config.LocalPlayer.SpoofName);
+            Toggle spoofid = new Toggle("Spoof ID", "Allows You To Use IDS In PlayerList", ref Globals.Config.LocalPlayer.SpoofID);
             Button name = new Button("Copy Name From Clipboard", "Copies Name From Clipboard And Spoofs Name To It", () => Misc.ClipboardToString(out Misc.Name));
             Toggle namechanger = new Toggle("Name Changer", "Requires Spoof Name! Automatically Changes Name To Player Names", ref Globals.Config.LocalPlayer.RandomlySpoofName);
             PlayerProperties.Items.Add(unlimitedstamina);
@@ -262,6 +267,7 @@ namespace Cheat.Menu
             PlayerProperties.Items.Add(unlimitedhealth);
             PlayerProperties.Items.Add(cleardebuff);
             PlayerProperties.Items.Add(spoofname);
+            PlayerProperties.Items.Add(spoofid);
             PlayerProperties.Items.Add(name);
             PlayerProperties.Items.Add(namechanger);
             LocalPlayer.Items.Add(PlayerProperties);
@@ -288,6 +294,7 @@ namespace Cheat.Menu
             // Button debug = new Button("Debug Menu Button", "Allows You To Fly And Teleport On Map", () => Misc.DebugMenu());
             Toggle farinteract = new Toggle("Far Interact", "Allows You To Place And Pickup Blocks Further Away", ref Globals.Config.LocalPlayer.FarInteract);
             IntSlider interactdistance = new IntSlider("Far Interact Distance", "How Far You Can Interact", ref Globals.Config.LocalPlayer.FarInteractDistance, 25, 1000, 5);
+            Toggle allahmode = new Toggle("Allah Mode", "You Prayed 5 Times Today, Now You Can Terrorize Servers. ALWAYS USE FLYHACK! DONT USE CHAT!", ref Globals.Config.LocalPlayer.AllahMode);
             World.Items.Add(cmd);
             World.Items.Add(itmamount);
             World.Items.Add(giveitem);
@@ -302,6 +309,7 @@ namespace Cheat.Menu
             World.Items.Add(debug);
             World.Items.Add(farinteract);
             World.Items.Add(interactdistance);
+            World.Items.Add(allahmode);
         }
         #endregion
         // if entity is keybind. keybind = keycode.none, if any keybind == keycode.null make it = setkey
@@ -465,6 +473,7 @@ namespace Cheat.Menu
                         playermenu.Items.Add(new Button("Stop Constantly Kill Player", "Stops Constantly Killing Player", () => Cheat.Misc.StopConstantlyKillPlayer(player)));
                         playermenu.Items.Add(new Button("Spoof Name To Player", $"Changes Your Name This Players Name: {player.EntityName}", () => Cheat.Misc.SpoofName(player)));
                         playermenu.Items.Add(new Button("Spoof Stats To Player", $"Changes Your Stats To Copy The Player", () => Cheat.Misc.SpoofStats(player)));
+                        playermenu.Items.Add(new Button("Spoof To Player ID", $"Dont Use With ALLAHMODE! Allows You To Change IDS To Break Their Blocks On Some PVE Servers. Restart After Leaving Server", () => Cheat.Misc.SpoofID(player)));
                     }
                     NextPlayerTime = Time.time + 2;
                 }

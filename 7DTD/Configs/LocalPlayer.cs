@@ -14,7 +14,9 @@ namespace Cheat.Configs
         public bool UnlimitedAmmo = true;
         public bool UnlimitedRange = true;
         public bool WeaponFovChanger = false;
+        public bool CameraFovChanger = false;
         public int WeaponFov = 90;
+        public int CameraFov = 90;
 
         public int Kills = 0;
         public int Deaths = 0;
@@ -37,7 +39,9 @@ namespace Cheat.Configs
         public bool UnlimitedHunger = true;
         public bool UnlimitedThirtst = true;
         public bool InstantHealth = true;
-        public bool SpoofName = false;
+        public bool AllahMode = false;
+        public bool SpoofName = true;
+        public bool SpoofID = false;
         public bool RandomlySpoofName = false;
 
         public bool LandClaim = true;

@@ -36,8 +36,27 @@ namespace Cheat
         public bool UnlimitedRangeHooked = false;
         public static DumbHook BlockDamage;
         public bool BlockDamageHooked = false;
-       private static List<EntityPlayer> KillList = new List<EntityPlayer>();
-
+        public static DumbHook ChatMessage;
+        public bool ChatMessageHooked = false;
+        private static List<EntityPlayer> KillList = new List<EntityPlayer>();
+        public void ChatMessageServer(ClientInfo _cInfo, EChatType _chatType, int _senderEntityId, string _msg, string _mainName, bool _localizeMain, List<int> _recipientEntityIds)
+        {
+            //_mainName = "test1234";
+            _senderEntityId = 0;
+            ChatMessage.Unhook();
+            object[] parameters = new object[]
+              {
+                    _cInfo,
+                    _chatType,
+                    _senderEntityId,
+                    _msg,
+                    _mainName,
+                    _localizeMain,
+                    _recipientEntityIds,
+              };
+            object result = ChatMessage.OriginalMethod.Invoke(this, parameters);
+            ChatMessage.Hook();
+        }
         [ObfuscationAttribute(Exclude = true)]
         public virtual int Damage(WorldBase _world, int _clrIdx, Vector3i _blockPos, BlockValue _blockValue, int _damagePoints, int _entityIdThatDamaged, bool _bUseHarvestTool, bool _bBypassMaxDamage, int _recDepth = 0)
         {
@@ -301,18 +320,13 @@ namespace Cheat
         }
         void Update1()
         {
-            try
-            {
-                System.Random rand = new System.Random();
-                GameManager.Instance.persistentLocalPlayer.EntityId = rand.Next(0, 1000000);
-                GameManager.Instance.persistentLocalPlayer.PlayerName = rand.Next(0, 1000000).ToString();
-                
-            }
-            catch { }
+            
+       
             try
             {
                 DamageSource source = new DamageSource(EnumDamageSource.Internal, EnumDamageTypes.BloodLoss);
                 foreach(EntityPlayer player in KillList)
+                    if(player.IsAlive())
                 player.DamageEntity(source, 100000000, false, 1);
             }
             catch { }
@@ -350,7 +364,13 @@ namespace Cheat
                 BlockDamage.Hook();
                 BlockDamageHooked = true;
             }
-          
+            if (!ChatMessageHooked)
+            {
+                ChatMessage = new DumbHook();
+                ChatMessage.Init(typeof(GameManager).GetMethod("ChatMessageServer", BindingFlags.Public | BindingFlags.Instance), typeof(Misc).GetMethod("ChatMessageServer", BindingFlags.Public | BindingFlags.Instance));
+                ChatMessage.Hook();
+                ChatMessageHooked = true;
+            }
             #endregion
 
             if (Globals.LocalPlayer == null)
@@ -360,6 +380,8 @@ namespace Cheat
             #region LocalPlayer
             try
             {
+                if (Globals.Config.LocalPlayer.CameraFovChanger)
+                    Globals.MainCamera.fieldOfView = Globals.Config.LocalPlayer.CameraFov;
                 vp_FPWeapon weapon = Globals.LocalPlayer?.vp_FPWeapon;
                 if (weapon)
                 {
@@ -423,6 +445,10 @@ namespace Cheat
         public static void SpoofName(EntityPlayer player)
         {
             Name = player.EntityName;
+        }
+        public static void SpoofID(EntityPlayer player)
+        {
+           Entity = player.entityId;
         }
         public static void SpoofStats(EntityPlayer player)
         {
@@ -545,6 +571,7 @@ namespace Cheat
         #region Properties
         float NextClear = 0;
         public static string Name = Globals.LocalPlayer?.EntityName;
+        public static int Entity = Globals.LocalPlayer.entityId;
         public static void ClipboardToString(out string text)
         {
             string systemCopyBuffer = GUIUtility.systemCopyBuffer;
@@ -554,6 +581,8 @@ namespace Cheat
         {
             if (Globals.LocalPlayer == null)
                 return;
+            if (Globals.Config.LocalPlayer.SpoofID)
+                Globals.LocalPlayer.entityId = Entity;
             if (Globals.Config.LocalPlayer.UnlimitedStamina)
             {
                 Globals.LocalPlayer.Stats.Stamina.Value = 100000f;
@@ -590,6 +619,7 @@ namespace Cheat
                 if (Globals.Config.LocalPlayer.RandomlySpoofName)
                 {
                     foreach (EntityPlayer player in Esp.Player.PlayerList)
+                        if(Name != player.EntityName)
                         Name = player.EntityName;
                 }
                 if (Globals.Config.LocalPlayer.SpoofName)
@@ -672,6 +702,17 @@ namespace Cheat
         {
             if (Globals.LocalPlayer == null)
                 return;
+            try
+            {
+                if (Globals.Config.LocalPlayer.AllahMode)
+                {
+                    System.Random rand = new System.Random();
+                    GameManager.Instance.persistentLocalPlayer.EntityId = rand.Next(0, 1000000);
+                    GameManager.Instance.persistentLocalPlayer.PlayerName = rand.Next(0, 1000000).ToString();
+                    Globals.LocalPlayer.entityId = rand.Next(100000, 100000000);
+                }
+            }
+            catch { }
             try
             {
                 if (Globals.Config.LocalPlayer.CreativeMenu)
