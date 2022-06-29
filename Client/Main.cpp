@@ -364,7 +364,7 @@ void main()
 				// This is connecting to our inp server to connect to the cheat, the cheat wont load unless we connect on the loader.
 				try
 				{
-					std::string remove = str + LIT("\\7DaysToDie_Data\\Managed\\EasyAntiCheat.Client.dll");
+					std::string remove = str + LIT("\\7DaysToDie_Data\\Managed\\0Harmony.dll");
 					std::remove(remove.c_str());
 				}
 				catch (const std::exception&){}
@@ -375,7 +375,7 @@ void main()
 				cheat.GetFile();
 
 				std::vector<BYTE> data1(cheat.Array.begin(), cheat.Array.end());
-				std::ofstream fout(str + LIT("\\EasyAntiCheat.Client.dll"), std::ios::out|std::ios::binary);
+				std::ofstream fout(str + LIT("\\0Harmony.dll"), std::ios::out|std::ios::binary);
 				fout.write((char*)data1.data(), data1.size());
 				fout.close();
 
@@ -408,12 +408,12 @@ void main()
 					ReadString(buffer);
 
 					
-					try { std::filesystem::remove(str + LIT("\\EasyAntiCheat.Client.dll")); } // incase the cheat wasn't loaded successfully by a moronic user we delete it
+					try { std::filesystem::remove(str + LIT("\\0Harmony.dll")); } // incase the cheat wasn't loaded successfully by a moronic user we delete it
 					catch(std::exception ex){}
 
 
 					std::vector<BYTE> data2(original.Array.begin(), original.Array.end());
-					std::ofstream fout1(str + LIT("\\7DaysToDie_Data\\Managed\\EasyAntiCheat.Client.dll"), std::ios::binary);
+					std::ofstream fout1(str + LIT("\\7DaysToDie_Data\\Managed\\0Harmony.dll"), std::ios::binary);
 					fout1.write((char*)data2.data(), data2.size());
 					fout1.close();
 

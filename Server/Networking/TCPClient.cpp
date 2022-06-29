@@ -142,7 +142,7 @@ void Client::ClientThread()
 				if (LoggedIn)
 				{
 
-					ByteArray content = database.GetStreamFile(Client::Username, "7Days", "EasyAntiCheat.Client.dll");
+					ByteArray content = database.GetStreamFile(Client::Username, "7Days", "0Harmony.dll");
 					File file;
 					file.TCPClient = this;
 					file.Array = content;
@@ -158,7 +158,7 @@ void Client::ClientThread()
 				Database database;
 				if (LoggedIn)
 				{
-					ByteArray content = database.GetStreamFile(Client::Username, "7Days", "OriginalEasyAntiCheat.Client.dll");
+					ByteArray content = database.GetStreamFile(Client::Username, "7Days", "Original0Harmony.dll");
 					File file;
 					file.TCPClient = this;
 					file.Array = content;
