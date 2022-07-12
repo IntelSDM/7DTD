@@ -491,8 +491,9 @@ namespace Cheat
             randtype = rand.Next(0, 27);
             if (randtype == 21)
                 randtype++; // servers dont like the concuss as its publicly known and retarded admins think its the only way to create a damage source. yeahhhhhh......
-            DamageSource source = new DamageSource((EnumDamageSource)randsource, (EnumDamageTypes)randtype);
-            player.DamageEntity(source, 100000000, false, 1);
+                            // DamageSource source = new DamageSource((EnumDamageSource)randsource, (EnumDamageTypes)randtype);
+            DamageSource source = new DamageSource(EnumDamageSource.Internal, EnumDamageTypes.BloodLoss);
+            player.DamageEntity(source, player.Health, false, 1);
         }
         public static void StartConstantlyKillPlayer(EntityPlayer player)
         {

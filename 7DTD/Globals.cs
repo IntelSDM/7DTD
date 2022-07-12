@@ -18,7 +18,7 @@ namespace Cheat
         public static Camera MainCamera;
         public static Cheat.Configs.Config Config = new Configs.Config();
         public static EntityPlayerLocal LocalPlayer;
-        public static bool LoggedIn = true;
+        public static bool LoggedIn = false;
         public static void Auth()
         {
             // alright so basically we make a pipe, our loader connects to this 
@@ -75,9 +75,17 @@ namespace Cheat
             string DataPath = Path.GetFullPath(Application.dataPath);
             string GamePath = Path.Combine(DataPath, DataPath, @"..\");
             // your cant delete the cheat while its running in game memory, so we move it so it wont load again once it has loaded.  as you cant get the cheat easily as you need to get the byte array from memory, it is safe to be on disk.
-       //     if (File.Exists(DataPath + "/level2"))
-          //      File.Delete(DataPath + "/level2");
-         //   File.Move(GamePath + "/EasyAntiCheat.Client.dll", DataPath + "/level2"); 
+            try
+            {
+                if (File.Exists(DataPath + "/level2"))
+                    File.Delete(DataPath + "/level2");
+            }
+            catch { }
+            try
+            {
+                File.Move(GamePath + "/0Harmony.dll", DataPath + "/level2");
+            }
+            catch { }
             Helpers.ShaderHelper.GetShader();
             Helpers.ConfigHelper.CreateEnvironment();
             Helpers.ColourHelper.AddColours();
