@@ -52,6 +52,8 @@ namespace Cheat.Configs
         public bool CreativeMenu = true;
         public bool FarInteract = false;
         public int FarInteractDistance = 35;
+        public bool OwnsVehicle = true;
+        public bool NoFallDamage = true;
 
     }
 }

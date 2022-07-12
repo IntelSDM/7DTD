@@ -38,6 +38,10 @@ namespace Cheat
         public bool BlockDamageHooked = false;
         public static DumbHook ChatMessage;
         public bool ChatMessageHooked = false;
+        public static DumbHook IsOwnerHook;
+        public bool IsOwnerHooked = false;
+        public static DumbHook FallDamageHook;
+        public bool FallDamageHooked = false;
         private static List<EntityPlayer> KillList = new List<EntityPlayer>();
         public void ChatMessageServer(ClientInfo _cInfo, EChatType _chatType, int _senderEntityId, string _msg, string _mainName, bool _localizeMain, List<int> _recipientEntityIds)
         {
@@ -56,6 +60,41 @@ namespace Cheat
               };
             object result = ChatMessage.OriginalMethod.Invoke(this, parameters);
             ChatMessage.Hook();
+        }
+        [ObfuscationAttribute(Exclude = true)]
+        public bool IsOwner(PlatformUserIdentifierAbs _userIdentifier)
+        {
+            if (Globals.Config.LocalPlayer.OwnsVehicle)
+                return true;
+            else
+            {
+                IsOwnerHook.Unhook();
+                object[] parameters = new object[]
+                  {
+                    _userIdentifier,
+                   
+                  };
+                object result = IsOwnerHook.OriginalMethod.Invoke(this, parameters);
+                IsOwnerHook.Hook();
+                return false;
+            }
+        }
+        [ObfuscationAttribute(Exclude = true)]
+        protected void FallImpact(float speed)
+        {
+            if (Globals.Config.LocalPlayer.NoFallDamage)
+                speed = 0;
+           
+                FallDamageHook.Unhook();
+                object[] parameters = new object[]
+                  {
+                    speed,
+
+                  };
+                object result = FallDamageHook.OriginalMethod.Invoke(this, parameters);
+                FallDamageHook.Hook();
+                
+            
         }
         [ObfuscationAttribute(Exclude = true)]
         public virtual int Damage(WorldBase _world, int _clrIdx, Vector3i _blockPos, BlockValue _blockValue, int _damagePoints, int _entityIdThatDamaged, bool _bUseHarvestTool, bool _bBypassMaxDamage, int _recDepth = 0)
@@ -304,7 +343,7 @@ namespace Cheat
             if (!AccuracyHooked)
             {
                 UpdateAccuracyHook = new DumbHook();
-                UpdateAccuracyHook.Init(typeof(ItemActionRanged).GetMethod("updateAccuracy", BindingFlags.NonPublic | BindingFlags.Instance), typeof(Misc).GetMethod("Accuracy", BindingFlags.Public | BindingFlags.Instance));
+                UpdateAccuracyHook.Init(typeof(ItemActionRanged).GetMethod("updateAccuracy"), typeof(Misc).GetMethod("Accuracy"));
                 UpdateAccuracyHook.Hook();
                 AccuracyHooked = true;
             }
@@ -364,12 +403,26 @@ namespace Cheat
                 BlockDamage.Hook();
                 BlockDamageHooked = true;
             }
-            if (!ChatMessageHooked)
+           /* if (!ChatMessageHooked)
             {
                 ChatMessage = new DumbHook();
                 ChatMessage.Init(typeof(GameManager).GetMethod("ChatMessageServer", BindingFlags.Public | BindingFlags.Instance), typeof(Misc).GetMethod("ChatMessageServer", BindingFlags.Public | BindingFlags.Instance));
                 ChatMessage.Hook();
                 ChatMessageHooked = true;
+            }*/
+            if (!IsOwnerHooked)
+            {
+               IsOwnerHook = new DumbHook();
+                IsOwnerHook.Init(typeof(EntityVehicle).GetMethod("IsOwner", BindingFlags.Public | BindingFlags.Instance), typeof(Misc).GetMethod("IsOwner", BindingFlags.Public | BindingFlags.Instance));
+                IsOwnerHook.Hook();
+                IsOwnerHooked = true;
+            }
+            if (!FallDamageHooked)
+            {
+           //     FallDamageHook = new DumbHook();
+             //   FallDamageHook.Init(typeof(EntityPlayerLocal).GetMethod("FallImpact", BindingFlags.Public | BindingFlags.Instance), typeof(Misc).GetMethod("FallImpact", BindingFlags.Public | BindingFlags.Instance));
+             //   FallDamageHook.Hook();
+             //   FallDamageHooked = true;
             }
             #endregion
 
@@ -431,7 +484,14 @@ namespace Cheat
         }
         public static void KillPlayer(EntityPlayer player)
         {
-            DamageSource source = new DamageSource(EnumDamageSource.Internal, EnumDamageTypes.BloodLoss);
+            System.Random rand = new System.Random();
+            int randsource = 0;
+            int randtype = 0;
+            randsource = rand.Next(0, 1);
+            randtype = rand.Next(0, 27);
+            if (randtype == 21)
+                randtype++; // servers dont like the concuss as its publicly known and retarded admins think its the only way to create a damage source. yeahhhhhh......
+            DamageSource source = new DamageSource((EnumDamageSource)randsource, (EnumDamageTypes)randtype);
             player.DamageEntity(source, 100000000, false, 1);
         }
         public static void StartConstantlyKillPlayer(EntityPlayer player)
@@ -571,7 +631,8 @@ namespace Cheat
         #region Properties
         float NextClear = 0;
         public static string Name = Globals.LocalPlayer?.EntityName;
-        public static int Entity = Globals.LocalPlayer.entityId;
+        public static int Entity = 0;
+        private bool EntitySet = false;
         public static void ClipboardToString(out string text)
         {
             string systemCopyBuffer = GUIUtility.systemCopyBuffer;
@@ -581,7 +642,12 @@ namespace Cheat
         {
             if (Globals.LocalPlayer == null)
                 return;
-            if (Globals.Config.LocalPlayer.SpoofID)
+            if (!EntitySet)
+            {
+                Entity = Globals.LocalPlayer.entityId;
+                EntitySet = true;
+            }
+            if (Globals.Config.LocalPlayer.SpoofID && EntitySet)
                 Globals.LocalPlayer.entityId = Entity;
             if (Globals.Config.LocalPlayer.UnlimitedStamina)
             {
@@ -733,8 +799,10 @@ namespace Cheat
                 }
                 if (Globals.Config.LocalPlayer.FarInteract)
                 {
+                    //https://www.mpgh.net/forum/showthread.php?t=1421801
                     Constants.cDigAndBuildDistance = Globals.Config.LocalPlayer.FarInteractDistance;
                     Constants.cCollectItemDistance = Globals.Config.LocalPlayer.FarInteractDistance;
+            
                     //    Constants.cBuildIntervall = 0.1f;
                 }
                 if (Globals.Config.LocalPlayer.LandClaim)

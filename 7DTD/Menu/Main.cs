@@ -256,6 +256,7 @@ namespace Cheat.Menu
             Toggle unlimitedhunger = new Toggle("Unlimited Hunger", "You Are Too Chonky To Lose Hunger", ref Globals.Config.LocalPlayer.UnlimitedHunger);
             Toggle unlimitedwater = new Toggle("Unlimited Water", "Never Run Out Of Water Like A Camel", ref Globals.Config.LocalPlayer.UnlimitedThirtst);
             Toggle unlimitedhealth = new Toggle("Instant Health Regeneration", "You Health Instantly Regenerates To Max", ref Globals.Config.LocalPlayer.InstantHealth);
+           // Toggle nofall = new Toggle("No Fall Damage", "Never Skipping Leg Day", ref Globals.Config.LocalPlayer.NoFallDamage);
             Button cleardebuff = new Button("Clear Debuffs", "Removes Injuries Such As Broken Legs", () => Misc.ClearDebuff());
             Toggle spoofname = new Toggle("Spoof Name", "Spoofs Your Name", ref Globals.Config.LocalPlayer.SpoofName);
             Toggle spoofid = new Toggle("Spoof ID", "Allows You To Use IDS In PlayerList", ref Globals.Config.LocalPlayer.SpoofID);
@@ -265,6 +266,7 @@ namespace Cheat.Menu
             PlayerProperties.Items.Add(unlimitedhunger);
             PlayerProperties.Items.Add(unlimitedwater);
             PlayerProperties.Items.Add(unlimitedhealth);
+         //   PlayerProperties.Items.Add(nofall);
             PlayerProperties.Items.Add(cleardebuff);
             PlayerProperties.Items.Add(spoofname);
             PlayerProperties.Items.Add(spoofid);
@@ -295,6 +297,8 @@ namespace Cheat.Menu
             Toggle farinteract = new Toggle("Far Interact", "Allows You To Place And Pickup Blocks Further Away", ref Globals.Config.LocalPlayer.FarInteract);
             IntSlider interactdistance = new IntSlider("Far Interact Distance", "How Far You Can Interact", ref Globals.Config.LocalPlayer.FarInteractDistance, 25, 1000, 5);
             Toggle allahmode = new Toggle("Allah Mode", "You Prayed 5 Times Today, Now You Can Terrorize Servers. ALWAYS USE FLYHACK! DONT USE CHAT!", ref Globals.Config.LocalPlayer.AllahMode);
+            Toggle vehicles = new Toggle("Unlock Vehicles", "You Own All Vehicles", ref Globals.Config.LocalPlayer.OwnsVehicle);
+           
             World.Items.Add(cmd);
             World.Items.Add(itmamount);
             World.Items.Add(giveitem);
@@ -310,6 +314,7 @@ namespace Cheat.Menu
             World.Items.Add(farinteract);
             World.Items.Add(interactdistance);
             World.Items.Add(allahmode);
+            World.Items.Add(vehicles);
         }
         #endregion
         // if entity is keybind. keybind = keycode.none, if any keybind == keycode.null make it = setkey
