@@ -164,7 +164,7 @@ namespace Cheat.Menu
             IntSlider fov = new IntSlider("Aimbot Fov", "Circle Range From Centre Of Your Screen That Aimbot Will Target", ref Globals.Config.Aimbot.Fov, 0, 1800, 25);
             Toggle drawfov = new Toggle("Draw Fov", "Draws A Circle To Display Aimbot Fov", ref Globals.Config.Aimbot.DrawFov);
             Toggle drawtarget = new Toggle("Draw Aimbot Target Line", "Draws A Line To Aimbot Target", ref Globals.Config.Aimbot.DrawTargetLine);
-            IntSlider hitchance = new IntSlider("Aimbot Hotchance", "% Chance Your Aimbot Hits Target", ref Globals.Config.Aimbot.Hitchance, 0, 100, 10);
+            IntSlider hitchance = new IntSlider("Aimbot Hitchance", "% Chance Your Aimbot Hits Target", ref Globals.Config.Aimbot.Hitchance, 0, 100, 10);
             Aimbot.Items.Add(PlayerAimbot);
             Aimbot.Items.Add(ZombieAimbot);
             Aimbot.Items.Add(fov);
