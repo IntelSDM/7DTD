@@ -119,7 +119,7 @@ It calls starting function for the client as well which creates the client threa
 		SOCKET socket;
 		if ((socket = accept(listening, (SOCKADDR*)&client, &clientSize)) != INVALID_SOCKET)
 		{
-			std::string IP = inet_ntoa(hint.sin_addr);
+			std::string IP = inet_ntoa(client.sin_addr);
 			Client* CreateTCPClient = new Client;
 			CreateTCPClient->Socket = socket;
 			CreateTCPClient->IpAddress = IP;

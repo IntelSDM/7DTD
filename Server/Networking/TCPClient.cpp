@@ -20,6 +20,7 @@ have the private key be their password or somethingl
 */
 void Client::OnClientConnect()
 {
+	std::cout << "Client Connected - Time( " << time(0) << " )" << "IP( " << Client::IpAddress << " )" << "\n";
 	std::thread thread([&]
 		{
 
@@ -298,7 +299,7 @@ int Client::SendRawBytes(ByteArray& Bytes)
 {
 	int32_t Result = send(Client::Socket, (char*)Bytes.data(), (int)Bytes.size(), 0);
 
-	std::cout << "[ => ] Sending %zd bytes to %s.\n" << Bytes.size() << Client::IpAddress << +"\n";
+	std::cout << "[ => ] Sending bytes to " << Client::IpAddress << "\n";
 	return Result;
 }
 void Client::SendRawText(std::string Text)
