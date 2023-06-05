@@ -9,22 +9,13 @@
 
 extern std::list<Client*> TCPClientList;
 constexpr int BufferSize = 4096;
-// add:
-/*vim — Today at 17:35
-you set up one session for auth, then if successful set up another session tunneled inside
 
-vim — Today at 17:36
-well not tunneled but encapsulated
-have the private key be their password or somethingl
-
-*/
 void Client::OnClientConnect()
 {
 	std::cout << "Client Connected - Time( " << time(0) << " )" << "IP( " << Client::IpAddress << " )" << "\n";
 	std::thread thread([&]
 		{
-
-			ClientThread();
+			ClientThread(); // create a thread for the client
 		});
 	thread.detach();
 }
@@ -42,72 +33,80 @@ std::string Client::OnKeyRedeem(std::string PacketContent)
 
 void Client::ClientThread()
 {
+	/*
+	So if you dont know much about networking this screams WTF!!! NO NO NO DONT. Luckily windows allows us to have 1000+ while true threads running due to them all basically just going to recv
+	recv is allowing us to basically remove all the thread time as our while true is only hit down to the recv and then cool windows magic schedules it on the thread manager.
+	I have ran this open with loads of users and constantly open never removing old threads and never had over 10% cpu usage on an 8 core server.
+	*/
 	while (true)
 	{
 
 		if (!Client::SentKey)
-			return;
+			return; // dead end function
 		if (Client::Dead)
-			break;
-		std::string Message = Client::ReceiveText();
+			break; // dead, end loop
+		std::string Message = Client::ReceiveText(); // halts everything here, goes to recieve a message
 		if (Message.size() == 0)
 			return; // this single line prevents dead clients using loads of cpu
-		if (Message == "Ping")
+		if (Message == "Ping") // basic heartbeat system
 		{
+			/*
+			If a debugger is attached then a breakpoint will be activated likely preventing execution to be fast enough
+			Since execution is too slow they miss the heartbeat, run out of time and they cant debug anymore. This has actually worked very will in some of my future eft projects defending against russian morons
+			*/
 			std::cout << time(0) << " \n";
 			Client::HeatbeatTime = time(0) + 75;
-			std::cout << Client::HeatbeatTime << "\n";
+			std::cout << Client::HeatbeatTime << "\n"; // debug
 		}
 		if (time(0) > Client::HeatbeatTime)
 		{
 			std::cout << "Heartbeat Dead" << "\n";
-			Client::OnClientDisconnect();
+			Client::OnClientDisconnect(); // kill the client, failed to respond to heartbeat
 
 		}
-		if (Message == "Disconnected")
+		if (Message == "Disconnected") // this is called on exit by the client so we expect to hear this to dispose of the client
 			Client::OnClientDisconnect();
 		if (Message.substr(0, 7) == "Version")
 		{
-			Database database;
+			Database database; // database instance
 			std::string version = Message.substr(7, Message.length() - 7);
-			if (std::to_string(Client::ClientVersion) == version)
-				Client::SendText("Valid Version");
+			if (std::to_string(Client::ClientVersion) == version) // compare the version
+				Client::SendText("Valid Version"); // tell the client that its valid
 			else
 			{
-				ByteArray content = database.GetStreamFile("Client.exe");
+				ByteArray content = database.GetStreamFile("Client.exe"); // load client into memory, hindsight we should use a dictionary
 				// so we have to send the client size of the array then we can send the client
-				Client::SendText("Invalid Version");
-				File sizefile;
-				sizefile.TCPClient = this;
+				Client::SendText("Invalid Version"); // tell the client version is invalid
 				Client::InvalidVersion = true;
 			}
 
 		}
 		if (Message.substr(0, 8) == "Version1" && InvalidVersion)
 		{
-			Database database;
-			ByteArray content = database.GetStreamFile("Client.exe");
+			// client has told us the version invalid has been recieved
+			Database database; 
+			ByteArray content = database.GetStreamFile("Client.exe");// load client into memory, hindsight we should use a dictionary
 			File versionfile;
 			versionfile.Array = content;
 			versionfile.TCPClient = this;
-			versionfile.SendFile();
+			versionfile.SendFile(); // send the client
 		}
 		if (!InvalidVersion)
 		{
-			if (Message.substr(0, 8) == "Register")
+			if (Message.substr(0, 8) == "Register") // user wants to register
 			{
 				if (!Message.length() > 8)
 					continue;
 				if (!(Message.find("|") != std::string::npos)) // check if we have our seperating character
-					continue;
+					continue; // see if the register command was set up correctly
 
-				std::string RegisterString = Message.substr(8, Message.length() - 8);
-				std::string Ret = Client::OnClientRegister(RegisterString);
-				Client::SendText(Ret);
+				std::string RegisterString = Message.substr(8, Message.length() - 8); // cut out the register
+				std::string Ret = Client::OnClientRegister(RegisterString); /// register the client
+				Client::SendText(Ret); // send the response from the register function
 				std::cout << Ret << "\n";
 
 			}
-			if (Message.substr(0, 6) == "Redeem")
+			if (Message.substr(0, 6) == "Redeem") // redeeming a key
 			{
 				if (!Message.length() > 6)
 					continue;
@@ -120,30 +119,35 @@ void Client::ClientThread()
 
 
 			}
-			if (Message.substr(0, 8) == "DataSize")
+			if (Message.substr(0, 8) == "DataSize") // get screenshot file size
 			{
 				std::string size = Message.substr(8, Message.length() - 8);
 				ScreenshotSize = size;
-				Client::SendText("ok");
+				Client::SendText("ok"); // tell them we recieved it
 			}
-			if (Message == "GetProducts")
+			if (Message == "GetProducts") // get product list for the user
 			{
 				std::cout << Message << "\n";
 				Database database;
 
 				if (Client::LoggedIn)
-					Client::SendText(database.GetActiveProducts(Client::Username));
+					Client::SendText(database.GetActiveProducts(Client::Username)); // loop our products
 
 
-				std::cout << database.GetActiveProducts(Client::Username) << "\n";
+				std::cout << database.GetActiveProducts(Client::Username) << "\n"; // debug print them
 			}
 			if (Message == "SendCheat")
 			{
+				/*
+				For this we must explain the injection method:
+				So we inject our cheat by using a legit file, taking it and placing it in the base directory
+				if you're familiar with .net 7 you may know that load a dll from the base directory file if its a dependency part of .net's config update that happened in .net 7
+				*/
 				Database database;
 				if (LoggedIn)
 				{
 
-					ByteArray content = database.GetStreamFile(Client::Username, "7Days", "0Harmony.dll");
+					ByteArray content = database.GetStreamFile(Client::Username, "7Days", "0Harmony.dll"); // get our modified harmony dll, send it to the client
 					File file;
 					file.TCPClient = this;
 					file.Array = content;
@@ -151,11 +155,12 @@ void Client::ClientThread()
 				}
 				else
 				{
-					database.BanUser(Client::Username, "Banned For: SnC");
+					database.BanUser(Client::Username, "Banned For: SnC"); // bad requestm ban. Maybe error handle this a bit more?
 				}
 			}
 			if (Message == "SendOriginal")
 			{
+				// send the original harmony so we can replace the modified one so it doesn't raise any eyebrows with integrity errors
 				Database database;
 				if (LoggedIn)
 				{
@@ -173,30 +178,33 @@ void Client::ClientThread()
 			if (Message.substr(0, 5) == "Login")
 			{
 				if (!Message.length() > 5)
-					continue;
+					continue; // blank login
 				if (!(Message.find("|") != std::string::npos)) // check if we have our seperating character
-					continue;
+					continue; 
 
 				std::string LoginString = Message.substr(5, Message.length() - 5);
-				std::string Ret = Client::OnClientLogin(LoginString);
+				std::string Ret = Client::OnClientLogin(LoginString); // process the login
 				Client::SendText(Ret);
 				std::cout << Ret << "\n";
 
 			}
-			if (Message == "SendingMuchNeededInformation")
+			if (Message == "SendingMuchNeededInformation") 
 			{
 				// screenshot
 
 				if (!Client::LoggedIn)
-					continue;
+					continue; // check a login
 
 				std::cout << "Screenshotted" << "\n";
 				Database db;
-				ByteArray bytearray(Message.begin(), Message.end());
+				File file;
+				file.TCPClient = this;
+				file.GetFile(); // recieve the screenshot
 
-				db.StoreScreenshot(bytearray, Client::Username);
+				//	if (std::to_string(bytearray.size()) == Client::ScreenshotSize)
+				db.StoreScreenshot(file.Array, Client::Username); // save it to disk
 				Client::ScreenShotted = true;
-				Client::SendText("DataRecieved");
+				std::cout << "finished \n";
 
 			}
 

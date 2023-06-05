@@ -84,7 +84,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IntDir>$(SolutionDir)obj\Client\$(Configuration)\</IntDir>
-    <IncludePath>C:\Users\dev\Desktop\Vmp;$(SolutionDir)Client\Networking;$(SolutionDir)Client\Util;$(SolutionDir)Client\Security;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Client\Networking;$(SolutionDir)Client\Util;$(SolutionDir)Client\Security;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\dev\Desktop\Vmp;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

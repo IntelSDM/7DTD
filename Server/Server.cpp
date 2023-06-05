@@ -17,35 +17,35 @@ void TakeInput();
 
 void main()
 {
-	Database db;
-	db.CreateDB();
+	Database db; // db instance
+	db.CreateDB(); // creates the database if it doesn't exist
 	WSADATA wsData;
 	WORD ver = MAKEWORD(2, 2);
-	int wsOk = WSAStartup(ver, &wsData);
+	int wsOk = WSAStartup(ver, &wsData); // start the server
 	if (wsOk != 0)
 	{
-		std::cerr << "Can't Initialize winsock! Quitting" << std::endl;
+		std::cout << "Can't Initialize winsock!" << std::endl;
 		return;
 	}
-	SOCKET listening = socket(AF_INET, SOCK_STREAM, 0);
+	SOCKET listening = socket(AF_INET, SOCK_STREAM, 0); // create socket instance
 	if (listening == INVALID_SOCKET)
 	{
-		std::cerr << "Can't create a socket! Quitting" << std::endl;
+		std::cout << "Can't create a socket!" << std::endl;
 		return;
 	}
 
 	sockaddr_in hint;
-	hint.sin_family = AF_INET;
+	hint.sin_family = AF_INET; // declare the ip and port and connection rules
 	hint.sin_port = htons(54000);
 	hint.sin_addr.S_un.S_addr = INADDR_ANY;
 
-	bind(listening, (sockaddr*)&hint, sizeof(hint));
+	bind(listening, (sockaddr*)&hint, sizeof(hint)); // bind the connection rules to the listening socket
 
-	listen(listening, SOMAXCONN);
+	listen(listening, SOMAXCONN); // keep socket open
 
 	sockaddr_in client;
-	std::thread thread(AcceptClients, listening, client, hint);
-	std::thread thread2(TakeInput);
+	std::thread thread(AcceptClients, listening, client, hint); // client thread to constantly take new clients
+	std::thread thread2(TakeInput); // input thread to take input without break pointing the program
 	
 	thread.join();
 	thread2.join();
@@ -77,30 +77,6 @@ void TakeInput()
 		{
 			std::cout << database.GenerateKey("7Days", "Standard", 259200) << "\n";
 		}
-		if (Text.find("CreateKey") != std::string::npos)
-		{
-			try
-			{
-				std::string character = "_";
-				int specialchar = 0;
-				int specialcharpos[150];
-				for (std::string::size_type i = 0; i < Text.size(); i++)
-				{
-					if (Text[i] == character[0])
-					{
-						specialcharpos[specialchar] = i;
-						specialchar++;
-					}
-				}
-
-				std::string Product = Text.substr(specialcharpos[0] + 1, specialcharpos[0] - 1);
-				std::cout << Product << "\n";
-			}
-			catch (std::exception)
-			{
-				std::cout << "Invalid Command\n";
-			}
-		}
 
 	}
 }
@@ -117,20 +93,22 @@ It calls starting function for the client as well which creates the client threa
 
 		int clientSize = sizeof(client);
 		SOCKET socket;
-		if ((socket = accept(listening, (SOCKADDR*)&client, &clientSize)) != INVALID_SOCKET)
+		if ((socket = accept(listening, (SOCKADDR*)&client, &clientSize)) != INVALID_SOCKET) // only act here if accept throws a correct response(valid connection)
 		{
-			std::string IP = inet_ntoa(client.sin_addr);
-			Client* CreateTCPClient = new Client;
-			CreateTCPClient->Socket = socket;
-			CreateTCPClient->IpAddress = IP;
-			Encryption Encryption;
-			Encryption.Start();
-			CreateTCPClient->Encryption = Encryption;
-			ByteArray EncryptionKey = CreateTCPClient->GetEncryptionKey();
-			CreateTCPClient->SendRawBytes(EncryptionKey);
+			std::string IP = inet_ntoa(client.sin_addr); // get the ip
+			Client* CreateTCPClient = new Client; // make a client class
+			CreateTCPClient->Socket = socket; // set socket instance
+			CreateTCPClient->IpAddress = IP; // set ip 
+			Encryption Encryption; // create encryption instance
+			Encryption.Start(); // create keys
+			CreateTCPClient->Encryption = Encryption; // set the key instance
+			ByteArray EncryptionKey = CreateTCPClient->GetEncryptionKey(); // get the key
+			CreateTCPClient->SendRawBytes(EncryptionKey); // send the key
 			CreateTCPClient->SentKey = true;
 			for (Client* TCPClient : TCPClientList)
 			{
+				// since this is called only on connection, clean up the client list here.
+
 				if (TCPClient->Dead)
 					continue;
 				// drop old clients

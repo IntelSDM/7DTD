@@ -16,7 +16,6 @@ public:
 	bool LoggedIn = false;
 	double HeatbeatTime = 0;
 
-	// C# Action Like Methods
 	void ClientThread();
 	void OnClientConnect();
 	std::string OnClientRegister(std::string PacketContents);
