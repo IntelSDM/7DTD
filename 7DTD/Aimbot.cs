@@ -18,6 +18,8 @@ namespace Cheat
         public static Vector3 PlayerHitPos;
         public static bool TargettingPlayer = false;
         public static bool TargettingZombie = false;
+
+        // We sort closest to crosshair so we will get the first target which is closest
         private static List<EntityZombie> ZombieClosestToCrosshair(List<EntityZombie> p)
         {
             return (from tempPlayer in p
@@ -37,9 +39,9 @@ namespace Cheat
             {
             
             if (!Globals.Config.Aimbot.ZombieAimbot)
-                return result;
+                return result; // returns null
             if (Globals.LocalPlayer == null)
-                return result;
+                return result; // returns null, checks if the player is null, something might break if its null
            
            
 
@@ -48,27 +50,25 @@ namespace Cheat
                   
                         if (!(zombie.IsAlive()) || zombie == null)
                         continue;
-                    Vector3 Pos = Vector3.zero;
 
-                    Pos = zombie.emodel.GetHeadTransform().position;
+                    Vector3 Pos = zombie.emodel.GetHeadTransform().position;
                     if (!Globals.IsScreenPointVisible(Globals.WorldPointToScreenPoint(Pos)))
-                        continue;
+                        continue; // check if the zombie is on screen
                     int fov = (int)Vector2.Distance(new Vector2(Screen.width / 2, Screen.height / 2), new Vector2(Globals.WorldPointToScreenPoint(Pos).x, Globals.WorldPointToScreenPoint(Pos).y));
                     if (fov > Globals.Config.Aimbot.Fov)
-                        continue;
+                        continue; // are they in fov?
 
                     if (Globals.Config.Aimbot.ZombieVisibilityChecks && !Helpers.RaycastHelper.ZombiePos(zombie, Pos))
-                        continue;
-                    
+                        continue; // if visibility checks are enabled then check if they are visible.
 
-                   
-                    result = zombie;
-                    break; // break so it wont loop through the list again and get a further from crosshair entity
+
+
+                    return zombie;
                 }
 
             }
             catch { }
-            return result;
+            return result; // must have a return, so return null
 
         }
         EntityPlayer TargetPlayer()
@@ -89,30 +89,29 @@ namespace Cheat
                     if (Globals.LocalPlayer.IsFriendsWith(player) && Globals.Config.Aimbot.PlayerAimbotTargetFriends) // make check so they can turn off this check
                         continue;
 
-                    if (player.Health <= 0)
-                        continue;
-                    if (player.IsAlive() == false)
-                        continue;
                     if (player == null)
-                        continue;
+                        continue; // check if the player is real
+                    if (player.Health <= 0)
+                        continue; // are they alive
+                    if (player.IsAlive() == false)
+                        continue; // another alive check
                     if (player.IsSleeping)
-                        continue;
-                    Vector3 Pos = Vector3.zero;
+                        continue; // checking if the player is alive
 
-                    Pos = player.emodel.GetHeadTransform().position;
+
+                    Vector3 Pos = player.emodel.GetHeadTransform().position;
 
                     if (!Globals.IsScreenPointVisible(Globals.WorldPointToScreenPoint(Pos)))
-                        continue;
+                        continue; // is the player on screen
 
                     int fov = (int)Vector2.Distance(new Vector2(Screen.width / 2, Screen.height / 2), new Vector2(Globals.WorldPointToScreenPoint(Pos).x, Globals.WorldPointToScreenPoint(Pos).y));
                     if (fov > Globals.Config.Aimbot.Fov)
-                        continue;
+                        continue; // is the user in the aimbot fov
 
                     if (Globals.Config.Aimbot.PlayerVisibilityChecks && !Helpers.RaycastHelper.PlayerPos(player, Pos))
-                        continue;
+                        continue; // if vis checks are on then vis check them
 
-                    result = player;
-                    break; // break so it wont loop through the list again and get a further from crosshair entity
+                    return player;
                 }
 
             }
@@ -132,8 +131,6 @@ namespace Cheat
         }
         void OnGUI1()
         {
-            Drawing.DrawString(new Vector2(500, 130), $"{(GamePrefs.GetString(EnumGamePrefs.ServerPassword))} ", Helpers.ColourHelper.GetColour("Player Colour"), true, 11, FontStyle.Normal, 3);
-
             // so basically we cant target a player and zombie at the same time as we exit the function in the silentaim method when we have a target
             try
             {
@@ -141,7 +138,7 @@ namespace Cheat
                     return;
 
                 if (Globals.Config.Aimbot.DrawFov)
-                    Drawing.DrawCircle(Helpers.ColourHelper.GetColour("Aimbot Fov Colour"), new Vector2(Screen.width / 2, Screen.height / 2), Globals.Config.Aimbot.Fov);
+                    Drawing.DrawCircle(Helpers.ColourHelper.GetColour("Aimbot Fov Colour"), new Vector2(Screen.width / 2, Screen.height / 2), Globals.Config.Aimbot.Fov); // draw fov circle
 
                 if ((Zombie == null) && Player == null)
                     return;
@@ -152,30 +149,30 @@ namespace Cheat
                 if (TargettingZombie)
                     pos = ZombieHitPos;
                 pos = Globals.WorldPointToScreenPoint(pos);
+                // get the aimbot pos, w2s it
 
 
-
-                if (Globals.Config.Aimbot.DrawTargetLine && Globals.IsScreenPointVisible(pos) && pos != Vector3.zero && pos != null)
-                    Drawing.DrawLine(new Vector2(Screen.width / 2, Screen.height / 2), new Vector2(pos.x, pos.y), Helpers.ColourHelper.GetColour("Aimbot Target Line Colour"), 1);
+                if (Globals.Config.Aimbot.DrawTargetLine && Globals.IsScreenPointVisible(pos) && pos != Vector3.zero && pos != null) // check if the target position is on screen and not null, check if target line is enabled
+                    Drawing.DrawLine(new Vector2(Screen.width / 2, Screen.height / 2), new Vector2(pos.x, pos.y), Helpers.ColourHelper.GetColour("Aimbot Target Line Colour"), 1); // draw a line to target
             }
             catch { }
         }
         void SilentAim()
         {
             if (Globals.LocalPlayer == null || Globals.MainCamera == null)
-                return;
+                return; // check if we should be aimbotting
             System.Random rand = new System.Random();
             if (rand.Next(0, 100) >= Globals.Config.Aimbot.Hitchance)
-                return;
+                return; // random value is over hitchance?
 
             if (Aimbot.Player != null)
             {
                
                 TargettingPlayer = true;
                 if (!Input.GetKey(Globals.Config.Aimbot.PlayerKey))
-                    return;
-                Globals.LocalPlayer.transform.eulerAngles = new Vector3(0f, Globals.LocalPlayer.transform.rotation.eulerAngles.y, 0f);
-                Camera.main.transform.LookAt(PlayerHitPos);
+                    return; // player aimbot key being held?
+                Globals.LocalPlayer.transform.eulerAngles = new Vector3(0f, Globals.LocalPlayer.transform.rotation.eulerAngles.y, 0f); // null x and y
+                Camera.main.transform.LookAt(PlayerHitPos); // set lookat angles to hitpos
                 return; // stop it changing target to zombie(proritising players)
             }
             TargettingPlayer = false;
@@ -184,9 +181,9 @@ namespace Cheat
                
                 TargettingZombie = true;
                 if (!Input.GetKey(Globals.Config.Aimbot.ZombieKey))
-                    return;
-                Globals.LocalPlayer.transform.eulerAngles = new Vector3(0f, Globals.LocalPlayer.transform.rotation.eulerAngles.y, 0f);
-                Camera.main.transform.LookAt(ZombieHitPos);
+                    return; // Zombie key being held?
+                Globals.LocalPlayer.transform.eulerAngles = new Vector3(0f, Globals.LocalPlayer.transform.rotation.eulerAngles.y, 0f); // null x and y
+                Camera.main.transform.LookAt(ZombieHitPos); // set looking at angles to hitpos
                 return;
             }
             TargettingZombie = false;
@@ -194,11 +191,11 @@ namespace Cheat
         public bool IsFriend(EntityPlayer player)
         {
             if (player.Party?.PartyID == 0)
-                return false;
+                return false; // null or not in party?
             if (Globals.LocalPlayer?.Party?.PartyID == 0)
-                return false;
+                return false; // is it null? not in a party?
             if (Globals.LocalPlayer.Party.PartyID == player.Party.PartyID)
-                return true;
+                return true; // check if the partyid is the same as the local player
          
             return false;
 

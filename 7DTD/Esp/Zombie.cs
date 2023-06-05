@@ -19,25 +19,27 @@ namespace Cheat.Esp
         }
         void Update1()
         {
+            // caching zombies
             try
             {
                 if (GameManager.Instance.World == null)
-                    return;
+                    return; // check if world is active
                 if (!(Time.time > CacheTime))
-                    return;
+                    return; // check if cache time has passed
                 ZombieList.Clear();
                 foreach (EntityZombie zombie in FindObjectsOfType<EntityZombie>().ToList())
                 {
-                    if (zombie.Health <= 0)
-                        continue;
-                    if (zombie.IsAlive() == false)
-                        continue;
                     if (zombie == null)
-                        continue;
+                        continue; // check is zombie is null or not
+                    if (zombie.Health <= 0)
+                        continue; // is the zombie alive
+                    if (zombie.IsAlive() == false)
+                        continue; // another alive check
 
-                    ZombieList.Add(zombie);
+
+                    ZombieList.Add(zombie); // add the zombie to the zombie list
                 }
-                CacheTime = Time.time + 3;
+                CacheTime = Time.time + 3; // set the next time we will cache
             }
             catch 
             { 
@@ -54,27 +56,28 @@ namespace Cheat.Esp
             try
             {
                 if (GameManager.Instance.World == null)
-                    return;
+                    return; // check if world is active
                 foreach (EntityZombie zombie in ZombieList)
                 {
-                    if (zombie.Health <= 0)
-                        continue;
-                    if (zombie.IsAlive() == false)
-                        continue;
                     if (zombie == null)
-                        continue;
+                        continue; // check if zombie is valid pointer
+                    if (zombie.Health <= 0)
+                        continue; // check alive
+                    if (zombie.IsAlive() == false)
+                        continue; // check alive
 
-                    Vector3 ScreenPosition = Globals.WorldPointToScreenPoint(zombie.transform.position);
-                    if (!(Globals.IsScreenPointVisible(ScreenPosition)))
+
+                    Vector3 screenposition = Globals.WorldPointToScreenPoint(zombie.transform.position);
+                    if (!(Globals.IsScreenPointVisible(screenposition)))
                         continue;
-                    int Distance = (int)Vector3.Distance(Globals.MainCamera.transform.position, zombie.transform.position);
-                    int Health = zombie.Health;
-                    string DistanceStr = Globals.Config.Zombie.Distance ? $"({Distance.ToString()}m)" : "";
-                    string nameStr = Globals.Config.Zombie.Name ? $"{zombie.EntityName}" : "";
-                    string HealthStr = Globals.Config.Zombie.Health ? $"({Health}hp)" : "";
+                    int distance = (int)Vector3.Distance(Globals.MainCamera.transform.position, zombie.transform.position);
+                    int health = zombie.Health;
+                    string distancestr = Globals.Config.Zombie.Distance ? $"({distance.ToString()}m)" : "";
+                    string namestr = Globals.Config.Zombie.Name ? $"{zombie.EntityName}" : "";
+                    string healthstr = Globals.Config.Zombie.Health ? $"({health}hp)" : "";
                     if (Distance > Globals.Config.Zombie.MaxDistance)
                         continue;
-                    Drawing.DrawString(new Vector2(ScreenPosition.x, ScreenPosition.y), $"{nameStr}{DistanceStr}{HealthStr}", Helpers.ColourHelper.GetColour("Zombie Colour"), true, 12, FontStyle.Normal, 0);
+                    Drawing.DrawString(new Vector2(screenposition.x, screenposition.y), $"{namestr}{distancestr}{healthstr}", Helpers.ColourHelper.GetColour("Zombie Colour"), true, 12, FontStyle.Normal, 0);
                 }
             }
             catch { }

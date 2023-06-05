@@ -15,16 +15,15 @@ namespace Cheat.Helpers
         public static Dictionary<string, Shader> Shaders = new Dictionary<string, Shader>();
         public static void GetShader()
         {
-            using (WebClient webClient = new WebClient())
+            using (WebClient webclient = new WebClient())
             { // yes i do just stream a shader from github. 
-                AssetBundle Bundle = AssetBundle.LoadFromMemory(webClient.DownloadData("https://github.com/Coopyy/EgguWare-Unturned/blob/master/Assets/EgguWareV1.assets?raw=true"));
+                AssetBundle bundle = AssetBundle.LoadFromMemory(webclient.DownloadData("https://github.com/Coopyy/EgguWare-Unturned/blob/master/Assets/EgguWareV1.assets?raw=true")); // steal it from egguware
 
-                foreach (Shader s in Bundle.LoadAllAssets<Shader>())
+                foreach (Shader s in bundle.LoadAllAssets<Shader>())
                     Shaders.Add(s.name, s);
             }
         }
-        [ObfuscationAttribute(Exclude = true)]
-        public static void ApplyShader(Shader shader, GameObject pgo, Color32 VisibleColor, Color32 OccludedColor)
+        public static void ApplyShader(Shader shader, GameObject pgo, Color32 visiblecolour, Color32 occludedcolour)
         {
             if (shader == null) return;
 
@@ -36,30 +35,13 @@ namespace Cheat.Helpers
 
                 for (int k = 0; k < materials.Length; k++)
                 {
+                    // set shader and the colour
                     materials[k].shader = shader;
-                    materials[k].SetColor("_ColorVisible", VisibleColor);
-                    materials[k].SetColor("_ColorBehind", OccludedColor);
+                    materials[k].SetColor("_ColorVisible", visiblecolour);
+                    materials[k].SetColor("_ColorBehind", occludedcolour);
                 }
             }
         }
-        [ObfuscationAttribute(Exclude = true)]
-        public static void RemoveShaders(GameObject pgo)
-        {
-            if (Shader.Find("Standard") == null) return;
-
-            Renderer[] rds = pgo.GetComponentsInChildren<Renderer>();
-
-            for (int j = 0; j < rds.Length; j++)
-            {
-                if (!(rds[j].material.shader != Shader.Find("Standard"))) continue;
-
-                Material[] materials = rds[j].materials;
-
-                for (int k = 0; k < materials.Length; k++)
-                {
-                    materials[k].shader = Shader.Find("Standard");
-                }
-            }
-        }
+       
     }
 }

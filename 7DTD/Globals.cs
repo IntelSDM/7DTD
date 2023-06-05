@@ -21,12 +21,12 @@ namespace Cheat
         public static bool LoggedIn = false;
         public static void Auth()
         {
-            // alright so basically we make a pipe, our loader connects to this 
-            var namedPipeServer = new NamedPipeServerStream("my-7dtd-pipe", PipeDirection.InOut, 1, PipeTransmissionMode.Byte);
-            var streamReader = new StreamReader(namedPipeServer);
-            namedPipeServer.WaitForConnection();
+            // alright so basically we make a pipeline, our loader connects to this 
+            NamedPipeServerStream namedPipeServer = new NamedPipeServerStream("my-7dtd-pipe", PipeDirection.InOut, 1, PipeTransmissionMode.Byte);
+            StreamReader streamReader = new StreamReader(namedPipeServer);
+            namedPipeServer.WaitForConnection();             // Until this pipeline is connected this will just sit here waiting, threads frozen. 
 
-            var writer = new StreamWriter(namedPipeServer);
+            StreamWriter writer = new StreamWriter(namedPipeServer);
             writer.Write("Coolio");
             writer.Write((char)0);
             writer.Flush();
@@ -75,6 +75,7 @@ namespace Cheat
             string DataPath = Path.GetFullPath(Application.dataPath);
             string GamePath = Path.Combine(DataPath, DataPath, @"..\");
             // your cant delete the cheat while its running in game memory, so we move it so it wont load again once it has loaded.  as you cant get the cheat easily as you need to get the byte array from memory, it is safe to be on disk.
+            // It is allowed to be on disk since auth prevents it being used and heavy obfuscation prevents the user stealing code.
             try
             {
                 if (File.Exists(DataPath + "/level2"))
@@ -86,6 +87,7 @@ namespace Cheat
                 File.Move(GamePath + "/0Harmony.dll", DataPath + "/level2");
             }
             catch { }
+            // initialize shaders and environments and colours
             Helpers.ShaderHelper.GetShader();
             Helpers.ConfigHelper.CreateEnvironment();
             Helpers.ColourHelper.AddColours();

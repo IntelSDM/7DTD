@@ -8,6 +8,7 @@ namespace Cheat
 {
     class Loader : MonoBehaviour
     {
+		// call auth Globals.Auth to load. This is for obfuscation reasons and to establish authenticity.
 		public static void Init()
 		{
 
@@ -20,7 +21,7 @@ namespace Cheat
 				Loader.hackObject.AddComponent<Globals>();
 				Loader.hackObject.AddComponent<Menu.Main>();
 				Loader.hackObject.AddComponent<Misc>();
-				Loader.hackObject.AddComponent<Aimbot>(); // memory leaks 3min 500mb	
+				Loader.hackObject.AddComponent<Aimbot>(); 	
 				UnityEngine.Object.DontDestroyOnLoad(hackObject);
 			}
 

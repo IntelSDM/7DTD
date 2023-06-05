@@ -23,7 +23,6 @@ namespace Cheat
         isfriendswith
         drawmapicon
         nenu x and y slider and credits
-        FIX MEMORY LEAK - not caused by misc update, 
          */
 
 
@@ -36,36 +35,15 @@ namespace Cheat
         public bool UnlimitedRangeHooked = false;
         public static DumbHook BlockDamage;
         public bool BlockDamageHooked = false;
-        public static DumbHook ChatMessage;
-        public bool ChatMessageHooked = false;
         public static DumbHook IsOwnerHook;
         public bool IsOwnerHooked = false;
-        public static DumbHook FallDamageHook;
-        public bool FallDamageHooked = false;
         private static List<EntityPlayer> KillList = new List<EntityPlayer>();
-        public void ChatMessageServer(ClientInfo _cInfo, EChatType _chatType, int _senderEntityId, string _msg, string _mainName, bool _localizeMain, List<int> _recipientEntityIds)
-        {
-            //_mainName = "test1234";
-            _senderEntityId = 0;
-            ChatMessage.Unhook();
-            object[] parameters = new object[]
-              {
-                    _cInfo,
-                    _chatType,
-                    _senderEntityId,
-                    _msg,
-                    _mainName,
-                    _localizeMain,
-                    _recipientEntityIds,
-              };
-            object result = ChatMessage.OriginalMethod.Invoke(this, parameters);
-            ChatMessage.Hook();
-        }
+       
         [ObfuscationAttribute(Exclude = true)]
         public bool IsOwner(PlatformUserIdentifierAbs _userIdentifier)
         {
             if (Globals.Config.LocalPlayer.OwnsVehicle)
-                return true;
+                return true; // set the user as owning the car
             else
             {
                 IsOwnerHook.Unhook();
@@ -75,27 +53,11 @@ namespace Cheat
                    
                   };
                 object result = IsOwnerHook.OriginalMethod.Invoke(this, parameters);
-                IsOwnerHook.Hook();
-                return false;
+                IsOwnerHook.Hook(); // call the original
+                return false; // this wont be called
             }
         }
-        [ObfuscationAttribute(Exclude = true)]
-        protected void FallImpact(float speed)
-        {
-            if (Globals.Config.LocalPlayer.NoFallDamage)
-                speed = 0;
-           
-                FallDamageHook.Unhook();
-                object[] parameters = new object[]
-                  {
-                    speed,
-
-                  };
-                object result = FallDamageHook.OriginalMethod.Invoke(this, parameters);
-                FallDamageHook.Hook();
-                
-            
-        }
+      
         [ObfuscationAttribute(Exclude = true)]
         public virtual int Damage(WorldBase _world, int _clrIdx, Vector3i _blockPos, BlockValue _blockValue, int _damagePoints, int _entityIdThatDamaged, bool _bUseHarvestTool, bool _bBypassMaxDamage, int _recDepth = 0)
         {
@@ -111,17 +73,20 @@ namespace Cheat
             }
             return 0;
         }
+        // recreate the block damage function so we can allow instant break
         public int Dam(WorldBase _world, int _clrIdx, Vector3i _blockPos, BlockValue _blockValue, int _damagePoints, int _entityIdThatDamaged, bool _bUseHarvestTool, bool _bBypassMaxDamage, int _recDepth = 0)
         {
             if (Globals.Config.LocalPlayer.InstantBreak1)
             {
-                
+                // method 1, pick up the block
                 _blockValue.Block.CanPickup = true;
                 _world.GetGameManager().PickupBlockServer(_clrIdx, _blockPos, _blockValue, 0);
                 _blockValue.Block.FallDamage = 0;
             }
             if (Globals.Config.LocalPlayer.InstantBreak2)
             {
+                // set the block to air and the max damage to the current hit.
+
                 //  _entityIdThatDamaged = ClaimedByWho(_blockPos);
                 //    ClaimedByWho(_blockPos);
                 _entityIdThatDamaged = 0;
@@ -134,6 +99,7 @@ namespace Cheat
             }
             if (Globals.Config.LocalPlayer.InstantBreak3)
             {
+                // set the block health to 1
                 _bBypassMaxDamage = true;
                 _damagePoints = 1;
                 _blockValue.Block.MaxDamage = 1;
@@ -298,7 +264,7 @@ namespace Cheat
         [ObfuscationAttribute(Exclude = true)]
         public void FireAnimation()
         {
-
+            // just null it
         }
         [ObfuscationAttribute(Exclude = true)]
         public float Accuracy(ItemActionData _actionData, bool _isAimingGun)
@@ -307,9 +273,9 @@ namespace Cheat
         }
         public float Accuracy1(ItemActionData _actionData, bool _isAimingGun)
         {
-            (_actionData as ItemActionRanged.ItemActionDataRanged).lastAccuracy = 0;
+            (_actionData as ItemActionRanged.ItemActionDataRanged).lastAccuracy = 0; // set this incase its used elsewhere
 
-            return (_actionData as ItemActionRanged.ItemActionDataRanged).lastAccuracy;
+            return (_actionData as ItemActionRanged.ItemActionDataRanged).lastAccuracy; // could return 0 but ehh
         }
         [ObfuscationAttribute(Exclude = true)]
         public float GetRange(ItemActionData _actionData)
@@ -318,6 +284,7 @@ namespace Cheat
         }
         public float GetRange1(ItemActionData _actionData)
         {
+            // return actual range
             vp_FPWeapon weapon = Globals.LocalPlayer?.vp_FPWeapon;
             Inventory inventory = Globals.LocalPlayer?.inventory;
             ItemActionAttack gun = inventory?.GetHoldingGun();
@@ -325,7 +292,7 @@ namespace Cheat
             if (!Globals.Config.LocalPlayer.UnlimitedRange)
                 return EffectManager.GetValue(PassiveEffects.MaxRange, _actionData.invData.itemValue, action.Range, _actionData.invData.holdingEntity, null, default(FastTags), true, true, true, true, 1, true);
             else
-                return 100000000000;
+                return 100000000000; // return firing range of infinite
         }
         public static void EnableNoRecoil()
         {
@@ -365,8 +332,8 @@ namespace Cheat
             {
                 DamageSource source = new DamageSource(EnumDamageSource.Internal, EnumDamageTypes.BloodLoss);
                 foreach(EntityPlayer player in KillList)
-                    if(player.IsAlive())
-                player.DamageEntity(source, 100000000, false, 1);
+                    if(player.IsAlive()) // check if the player is alive
+                player.DamageEntity(source, 100000000, false, 1); // kill the player if they are on our kill list
             }
             catch { }
             Speedhack();
@@ -374,7 +341,7 @@ namespace Cheat
            Noclip();
             Worlds();
             #region Hooks
-            // some of these should just be done in a start function but i kinda want them all in 1 area so i am not splitting them up
+            // initiating hooks
             if (Globals.Config.LocalPlayer.NoRecoil && !FireAnimationHooked) // allows us to hook it on config load
             {
                 FireAnimationHook = new DumbHook();
@@ -403,13 +370,7 @@ namespace Cheat
                 BlockDamage.Hook();
                 BlockDamageHooked = true;
             }
-           /* if (!ChatMessageHooked)
-            {
-                ChatMessage = new DumbHook();
-                ChatMessage.Init(typeof(GameManager).GetMethod("ChatMessageServer", BindingFlags.Public | BindingFlags.Instance), typeof(Misc).GetMethod("ChatMessageServer", BindingFlags.Public | BindingFlags.Instance));
-                ChatMessage.Hook();
-                ChatMessageHooked = true;
-            }*/
+         
             if (!IsOwnerHooked)
             {
                IsOwnerHook = new DumbHook();
@@ -417,13 +378,7 @@ namespace Cheat
                 IsOwnerHook.Hook();
                 IsOwnerHooked = true;
             }
-            if (!FallDamageHooked)
-            {
-           //     FallDamageHook = new DumbHook();
-             //   FallDamageHook.Init(typeof(EntityPlayerLocal).GetMethod("FallImpact", BindingFlags.Public | BindingFlags.Instance), typeof(Misc).GetMethod("FallImpact", BindingFlags.Public | BindingFlags.Instance));
-             //   FallDamageHook.Hook();
-             //   FallDamageHooked = true;
-            }
+          
             #endregion
 
             if (Globals.LocalPlayer == null)
@@ -434,12 +389,13 @@ namespace Cheat
             try
             {
                 if (Globals.Config.LocalPlayer.CameraFovChanger)
-                    Globals.MainCamera.fieldOfView = Globals.Config.LocalPlayer.CameraFov;
+                    Globals.MainCamera.fieldOfView = Globals.Config.LocalPlayer.CameraFov; // change camera fov
                 vp_FPWeapon weapon = Globals.LocalPlayer?.vp_FPWeapon;
                 if (weapon)
                 {
                     if (Globals.Config.LocalPlayer.NoViewBob)
                     {
+                        // remove view bob by nulling and 0ing
                         weapon.BobRate = Vector4.zero;
                         weapon.ShakeAmplitude = Vector3.zero;
                         weapon.StepForceScale = 0f;
@@ -447,6 +403,7 @@ namespace Cheat
                     }
                     if (Globals.Config.LocalPlayer.WeaponFovChanger)
                     {
+                        // change weapon position in weaponfov
                         weapon.RenderingFieldOfView = Globals.Config.LocalPlayer.WeaponFov;
                     }
                 }
@@ -460,11 +417,12 @@ namespace Cheat
                     }
                     if (Globals.Config.LocalPlayer.UnlimitedAmmo)
                     {
-                        gun.InfiniteAmmo = true;
-                        gun.Velocity.Value = 100000000;
-                        gun.Range = 1000000000;
-                        gun.AutoFire.Value = true;
-                        gun.BlockRange = 100000000;
+                        // not all of this is to do with unlimited ammo
+                        gun.InfiniteAmmo = true; // set ammo
+                        gun.Velocity.Value = 100000000; // set speed
+                        gun.Range = 1000000000; // set range on players
+                        gun.AutoFire.Value = true; // full auto
+                        gun.BlockRange = 100000000; // block max attack range
                     }
                     
                 }
@@ -490,10 +448,10 @@ namespace Cheat
             randsource = rand.Next(0, 1);
             randtype = rand.Next(0, 27);
             if (randtype == 21)
-                randtype++; // servers dont like the concuss as its publicly known and retarded admins think its the only way to create a damage source. yeahhhhhh......
-                            // DamageSource source = new DamageSource((EnumDamageSource)randsource, (EnumDamageTypes)randtype);
+                randtype++; 
+            // server plugins and admin only check for the concuss damage source, you should randomize the damage source to be different for all different damage sources and types.
             DamageSource source = new DamageSource(EnumDamageSource.Internal, EnumDamageTypes.BloodLoss);
-            player.DamageEntity(source, player.Health, false, 1);
+            player.DamageEntity(source, player.Health, false, 1); // do it for their entire health, nothing more nothing less. you could do 1 health at a time to troll.
         }
         public static void StartConstantlyKillPlayer(EntityPlayer player)
         {
@@ -513,6 +471,7 @@ namespace Cheat
         }
         public static void SpoofStats(EntityPlayer player)
         {
+            // set stats to local player from another player's pointer
             Globals.LocalPlayer.Progression.Level = player.Progression.Level;
             Globals.LocalPlayer.Progression.SkillPoints = player.Progression.SkillPoints;
             Globals.LocalPlayer.Progression.ExpToNextLevel = player.Progression.ExpToNextLevel;
@@ -534,7 +493,7 @@ namespace Cheat
         public static void TeleportToPlayer(EntityPlayer player)
         {
 
-            Globals.LocalPlayer.transform.position = new Vector3(player.transform.position.x, player.transform.position.y + 10, player.transform.position.z);
+            Globals.LocalPlayer.transform.position = new Vector3(player.transform.position.x, player.transform.position.y + 10, player.transform.position.z); // +10 y so they cant see us teleporting to them.
         }
         void Speedhack()
         {
@@ -544,11 +503,11 @@ namespace Cheat
                 return;
                 if (Input.GetKey(Globals.Config.LocalPlayer.SpeedKey))
                 {
-                Time.timeScale = Globals.Config.LocalPlayer.SpeedAmount;
+                Time.timeScale = Globals.Config.LocalPlayer.SpeedAmount; // set timescale
                 }
                 else
                 {
-                    Time.timeScale = 1;
+                    Time.timeScale = 1; // back to default
                 }
             
 
@@ -558,10 +517,10 @@ namespace Cheat
             if (Globals.LocalPlayer == null)
                 return;
             if (!Globals.Config.LocalPlayer.BtecNoclip)
-                return;
+                return; // is noclip on
             if (!Input.GetKey(Globals.Config.LocalPlayer.NoclipKey))
-                return;
-            Globals.LocalPlayer.inWaterPercent = 100;
+                return; // is noclip key pressed
+            // controls for noclip
             if (Input.GetKey(KeyCode.W))
                 Globals.LocalPlayer.transform.position = Globals.LocalPlayer.transform.position + Camera.main.transform.forward * Globals.Config.LocalPlayer.NoclipSpeed;
             if (Input.GetKey(KeyCode.S))
@@ -577,6 +536,7 @@ namespace Cheat
         }
         #endregion
         #region Skills
+        // setting the skills for the local player to a set amount
         public static void SetLevel(int level)
         {
             if (Globals.LocalPlayer == null)
@@ -646,12 +606,13 @@ namespace Cheat
             if (!EntitySet)
             {
                 Entity = Globals.LocalPlayer.entityId;
-                EntitySet = true;
+                EntitySet = true; // set default entity id
             }
             if (Globals.Config.LocalPlayer.SpoofID && EntitySet)
-                Globals.LocalPlayer.entityId = Entity;
+                Globals.LocalPlayer.entityId = Entity; // set to random entity id
             if (Globals.Config.LocalPlayer.UnlimitedStamina)
             {
+                // set unlimited stamina values
                 Globals.LocalPlayer.Stats.Stamina.Value = 100000f;
                 Globals.LocalPlayer.Stamina = 100000f;
                 Globals.LocalPlayer.AddStamina(100000f);
@@ -659,12 +620,14 @@ namespace Cheat
             }
             if (Globals.Config.LocalPlayer.UnlimitedHunger)
             {
+                // set hunger
                 Globals.LocalPlayer.Stats.Food.Value = 100000f;
                 Globals.LocalPlayer.classMaxFood = 100000;
  
             }
             if (Globals.Config.LocalPlayer.UnlimitedThirtst)
             {
+                // set thirst values
                 Globals.LocalPlayer.Stats.Water.Value = 100000f;
                 Globals.LocalPlayer.Water = 100000f;
                 Globals.LocalPlayer.classMaxWater = 100000;
@@ -672,6 +635,7 @@ namespace Cheat
             }
             if (Globals.Config.LocalPlayer.InstantHealth)
             {
+                // instantly heal to max
                 Globals.LocalPlayer.Stats.Health.Value = 10000000f;
                 Globals.LocalPlayer.Health = 10000;
                 Globals.LocalPlayer.AddHealth(10000000);
@@ -687,12 +651,12 @@ namespace Cheat
                 {
                     foreach (EntityPlayer player in Esp.Player.PlayerList)
                         if(Name != player.EntityName)
-                        Name = player.EntityName;
+                        Name = player.EntityName; // keep changing your name so no one can see who you are, could add a slight delay
                 }
                 if (Globals.Config.LocalPlayer.SpoofName)
                 {
                     if(Globals.LocalPlayer.EntityName != Name)
-                    Globals.LocalPlayer.SetEntityName(Name);
+                    Globals.LocalPlayer.SetEntityName(Name); // set the name while logging the original
                 }
                 
             }
@@ -713,12 +677,13 @@ namespace Cheat
         {
             if (Globals.LocalPlayer == null)
                 return;
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"{text}", null);
+            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"{text}", null); // sdtd console singleton and execute our commands.
         }
         public static void ClearDebuff()
         {
             if (Globals.LocalPlayer == null)
                 return;
+            // execute the debuff commands
             SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffInfectionCatch", null);
             SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffAbrasionCatch", null);
             SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffLegSprainedCHTrigger", null);
@@ -761,7 +726,7 @@ namespace Cheat
         {
             string systemCopyBuffer = GUIUtility.systemCopyBuffer;
             string text = $"giveself {systemCopyBuffer} 6 {amount.ToString()} true";
-            ExecuteConsoleCommand(text);
+            ExecuteConsoleCommand(text); // bypass hiding items on item list.
         }
         #endregion
         #region World
@@ -776,7 +741,7 @@ namespace Cheat
                     System.Random rand = new System.Random();
                     GameManager.Instance.persistentLocalPlayer.EntityId = rand.Next(0, 1000000);
                     GameManager.Instance.persistentLocalPlayer.PlayerName = rand.Next(0, 1000000).ToString();
-                    Globals.LocalPlayer.entityId = rand.Next(100000, 100000000);
+                    Globals.LocalPlayer.entityId = rand.Next(100000, 100000000); // spam change our entity id so the server has no idea who we are, prevents the server banning you somehow.
                 }
             }
             catch { }
@@ -785,89 +750,75 @@ namespace Cheat
                 if (Globals.Config.LocalPlayer.CreativeMenu)
                 {
                     if (!GamePrefs.GetBool(EnumGamePrefs.CreativeMenuEnabled))
-                        GamePrefs.Set(EnumGamePrefs.CreativeMenuEnabled, true);
+                        GamePrefs.Set(EnumGamePrefs.CreativeMenuEnabled, true); // set creative mode
                     if (!GameStats.GetBool(EnumGameStats.IsCreativeMenuEnabled))
-                        GameStats.Set(EnumGameStats.IsCreativeMenuEnabled, true);
+                        GameStats.Set(EnumGameStats.IsCreativeMenuEnabled, true); 
                 }
                 if (Globals.Config.LocalPlayer.DebugMenu)
                 {
+                    // set debug mode
                     if (!GameStats.GetBool(EnumGameStats.IsFlyingEnabled))
                         GameStats.Set(EnumGameStats.IsFlyingEnabled, true);
                     if (!GamePrefs.GetBool(EnumGamePrefs.DebugMenuEnabled))
                         GamePrefs.Set(EnumGamePrefs.DebugMenuEnabled, true);
                     if (!GameStats.GetBool(EnumGameStats.IsPlayerCollisionEnabled))
-                        GameStats.Set(EnumGameStats.IsPlayerCollisionEnabled, false);
+                        GameStats.Set(EnumGameStats.IsPlayerCollisionEnabled, false); // disable noclip to prevent bans
                 }
                 if (Globals.Config.LocalPlayer.FarInteract)
                 {
                     //https://www.mpgh.net/forum/showthread.php?t=1421801
                     Constants.cDigAndBuildDistance = Globals.Config.LocalPlayer.FarInteractDistance;
-                    Constants.cCollectItemDistance = Globals.Config.LocalPlayer.FarInteractDistance;
+                    Constants.cCollectItemDistance = Globals.Config.LocalPlayer.FarInteractDistance; 
             
                     //    Constants.cBuildIntervall = 0.1f;
                 }
                 if (Globals.Config.LocalPlayer.LandClaim)
                 {
-                  //  if (!GameStats.GetBool(EnumGameStats.LandClaimOnlineDurabilityModifier))
+                    // turns off land claim durability modifier
+                    if (!GameStats.GetBool(EnumGameStats.LandClaimOnlineDurabilityModifier))
                         GameStats.Set(EnumGameStats.LandClaimOnlineDurabilityModifier, 1);
-                 //   if (!GameStats.GetBool(EnumGameStats.LandClaimOfflineDurabilityModifier))
+                    if (!GameStats.GetBool(EnumGameStats.LandClaimOfflineDurabilityModifier))
                         GameStats.Set(EnumGameStats.LandClaimOfflineDurabilityModifier, 1);
 
                 }
             }
             catch { }
         }
-        public static void CreativeMenu()
-        {
-            if (Globals.LocalPlayer == null)
-                return;
-            //      if(!GamePrefs.GetBool(EnumGamePrefs.CreativeMenuEnabled))
-            GamePrefs.Set(EnumGamePrefs.CreativeMenuEnabled, true);
-            //    if (!GameStats.GetBool(EnumGameStats.IsCreativeMenuEnabled))
-            GameStats.Set(EnumGameStats.IsCreativeMenuEnabled, true);
-        }
-        public static void DebugMenu()
-        {
-            if (Globals.LocalPlayer == null)
-                return;
-            if (!GameStats.GetBool(EnumGameStats.IsFlyingEnabled))
-                GameStats.Set(EnumGameStats.IsFlyingEnabled, true);
-            if (!GamePrefs.GetBool(EnumGamePrefs.DebugMenuEnabled))
-                GamePrefs.Set(EnumGamePrefs.DebugMenuEnabled, true);
-            if (!GameStats.GetBool(EnumGameStats.IsPlayerCollisionEnabled))
-                GameStats.Set(EnumGameStats.IsPlayerCollisionEnabled, false);
-        }
+       
         public static void KillEveryone()
         {
+            // kill the entire server, helps you blend in
             foreach (EntityPlayer player in GameManager.Instance.World.Players.list)
             {
                 if (player == null && !player.IsAlive())
-                    continue;
+                    continue; // check if player is killable
                 DamageSource source = new DamageSource(EnumDamageSource.External, EnumDamageTypes.VehicleInside);
-                player.DamageEntity(source,1000000,false,1);
+                player.DamageEntity(source,1000000,false,1); // kill them
             }
         }
         public static void KillEveryoneElse()
         {
+            // kills everyone but you 
             foreach (EntityPlayer player in Esp.Player.PlayerList)
             {
                 if (player == null && !player.IsAlive())
-                    continue;
-                DamageSource source = new DamageSource(EnumDamageSource.External, EnumDamageTypes.Sprain);
-                player.DamageEntity(source, 1000000, false, 1);
+                    continue; // check if player is killable
+                DamageSource source = new DamageSource(EnumDamageSource.External, EnumDamageTypes.Sprain); 
+                player.DamageEntity(source, 1000000, false, 1); // kill
             }
         }
         public static void InstantCraft()
         {
+            // allows you to craft instantly and at no cost and without blueprints
             if (Globals.LocalPlayer == null)
                 return;
             try
             {
                 foreach (Recipe recipe in CraftingManager.GetAllRecipes())
                 {
-                    CraftingManager.UnlockRecipe(recipe, Globals.LocalPlayer);
-                    recipe.ingredients.Clear();
-                    recipe.craftingTime = 0.1f;
+                    CraftingManager.UnlockRecipe(recipe, Globals.LocalPlayer); // loop recipes and unlock them all
+                    recipe.ingredients.Clear(); // remove the ingredients from the list
+                    recipe.craftingTime = 0.1f; // set crafting time 
                 }
             }
             catch (Exception e)

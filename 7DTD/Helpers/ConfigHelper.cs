@@ -11,9 +11,11 @@ namespace Cheat.Helpers
 {
     class ConfigHelper
     {
-        public static string SelectedConfig = "Default";
-        private static string ConfigPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "R3Cheat\\");
-        private static string GetConfigPath(string name = "Default") { return ConfigPath + name + ".cfg"; }
+        private static string ConfigPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "7DaysCheat\\");
+        private static string GetConfigPath(string name = "Default")
+        {
+            return ConfigPath + name + ".cfg"; 
+        }
         public static void CreateEnvironment()
         {
             if (!Directory.Exists(ConfigPath))
@@ -25,8 +27,8 @@ namespace Cheat.Helpers
             else
                 LoadConfig();
         }
-        private static readonly string Hash = "sgdsdgsdg32g9343hg973gb39ug34bibsdvbw2u2bv2u9v2v2n9bwv2gb29esdvs2q";
-
+       
+        private static readonly string Hash = "sgdsdgsdg32g9343hg973gb39ug34bibsdvbw2u2bv2u9v2v2n9bwv2gb29esdvs2q"; // cant make this dynamic or people cant share configs
         private static string DecryptStatic(string _cipherText)
         {
 
@@ -79,26 +81,20 @@ namespace Cheat.Helpers
             }
             return _clearText;
         }
-        public static void SaveConfig(string name = "Default", bool setconfig = false)
+        public static void SaveConfig(string name = "Default")
         {
             string path = GetConfigPath(name);
-            string json = JsonConvert.SerializeObject(Globals.Config, Formatting.Indented);
-            File.WriteAllText(path, EncryptStatic(json));
-            if (setconfig)
-                SelectedConfig = name;
-            // draw something after this to show the user something happened or do a beep boop :triumph:
+            string json = JsonConvert.SerializeObject(Globals.Config, Formatting.Indented); // serialize it to the config format
+            File.WriteAllText(path, EncryptStatic(json)); // save it encrypted by base64, helps against sigs
 
         }
         public static void LoadConfig(string name = "Default")
         {
             if (File.Exists(GetConfigPath(name)))
             {
-                string json = DecryptStatic(File.ReadAllText(GetConfigPath(name)));
-                Configs.Config s = JsonConvert.DeserializeObject<Configs.Config>(json);
+                string json = DecryptStatic(File.ReadAllText(GetConfigPath(name))); // decrypt the config and read the contents
+                Configs.Config s = JsonConvert.DeserializeObject<Configs.Config>(json);  // deserialize and cast it
                 Globals.Config = s;
-                SelectedConfig = name;
-
-              //  ColourHandler.AddColours();
 
             }
         }
@@ -106,7 +102,7 @@ namespace Cheat.Helpers
         {
             List<string> files = new List<string>();
             DirectoryInfo d = new DirectoryInfo(ConfigPath);
-            FileInfo[] Files = d.GetFiles("*.cfg");
+            FileInfo[] Files = d.GetFiles("*.cfg"); // get an array of all files ending in .cfg
             foreach (FileInfo file in Files)
             {
                     files.Add(file.Name.Substring(0, file.Name.Length));

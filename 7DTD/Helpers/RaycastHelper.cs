@@ -12,7 +12,7 @@ namespace Cheat.Helpers
         // stole the mask from the GetExecuteActionTarget projectile raycast and it works like a gem.
         public static bool PlayerPos(EntityPlayer player,Vector3 pos)
         {
-            
+            // -538750997 is from the game's project raycast mask.
             return Physics.Linecast(
                 Camera.main.transform.position,
                 pos,
@@ -21,6 +21,7 @@ namespace Cheat.Helpers
         }
         public static bool ZombiePos(EntityZombie zombie, Vector3 pos)
         {
+            // -538750997 is from the game's project raycast mask.
             return Physics.Linecast(
                 Camera.main.transform.position,
                 pos,
@@ -36,7 +37,7 @@ namespace Cheat.Helpers
                   Camera.main.transform.position,
                   pos,
                   out RaycastHit);
-                 return RaycastHit.transform.gameObject.layer.ToString();
+                 return RaycastHit.transform.gameObject.layer.ToString(); // check the layer the raycast hits
             }
             catch
             {

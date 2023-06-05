@@ -22,22 +22,23 @@ namespace Cheat.Esp
             try
             {
                 if (GameManager.Instance.World == null)
-                    return;
+                    return; // check if game manager is null
                 if (!(Time.time > CacheTime))
-                    return;
+                    return; // check if cache time has passed
                 AnimalList.Clear();
                 foreach (EntityAnimal animal in FindObjectsOfType<EntityAnimal>().ToList())
                 {
-                    if (animal.Health <= 0)
-                        continue;
-                    if (animal.IsAlive() == false)
-                        continue;
                     if (animal == null)
-                        continue;
+                        continue; // check animal is active
+                    if (animal.Health <= 0)
+                        continue; // is animal alive
+                    if (animal.IsAlive() == false)
+                        continue; // is animal alive
 
-                    AnimalList.Add(animal);
+
+                    AnimalList.Add(animal); // add animal to esp list
                 }
-                CacheTime = Time.time + 5;
+                CacheTime = Time.time + 5; // make new cache time and add delay
             }
             catch { }
         }
@@ -51,27 +52,29 @@ namespace Cheat.Esp
             try
             {
                 if (GameManager.Instance.World == null)
-                    return;
+                    return;// check if gamemanager is active
                 foreach (EntityAnimal animal in AnimalList)
                 {
-                    if (animal.Health <= 0)
-                        continue;
-                    if (animal.IsAlive() == false)
-                        continue;
                     if (animal == null)
-                        continue;
+                        continue; // check if animal is active
+                    if (animal.Health <= 0)
+                        continue; // check if animal is alive
+                    if (animal.IsAlive() == false)
+                        continue; // check if animal is alive
 
-                    Vector3 ScreenPosition = Globals.WorldPointToScreenPoint(animal.transform.position);
-                    if (!(Globals.IsScreenPointVisible(ScreenPosition)))
-                        continue;
-                    int Distance = (int)Vector3.Distance(Globals.MainCamera.transform.position, animal.transform.position);
-                    int Health = animal.Health;
-                    string DistanceStr = Globals.Config.Animal.Distance ? $"({Distance.ToString()}m)" : "";
-                    string nameStr = Globals.Config.Animal.Name ? $"{animal.EntityName}" : "";
-                    string HealthStr = Globals.Config.Animal.Health ? $"({Health}hp)" : "";
-                    if (Distance > Globals.Config.Animal.MaxDistance)
-                        continue;
-                    Drawing.DrawString(new Vector2(ScreenPosition.x, ScreenPosition.y), $"{nameStr}{DistanceStr}{HealthStr}", Helpers.ColourHelper.GetColour("Animal Colour"), true, 12, FontStyle.Normal, 0);
+
+                    Vector3 screenposition = Globals.WorldPointToScreenPoint(animal.transform.position);
+                    if (!(Globals.IsScreenPointVisible(screenposition)))
+                        continue; // check if animal is on screen
+                    int distance = (int)Vector3.Distance(Globals.MainCamera.transform.position, animal.transform.position); // get distance
+                    int health = animal.Health; // get health
+                    string distancestr = Globals.Config.Animal.Distance ? $"({distance.ToString()}m)" : ""; // concat the distance with inlined if statement
+                    string namestr = Globals.Config.Animal.Name ? $"{animal.EntityName}" : "";// concat the name with inlined if statement
+                    string healthstr = Globals.Config.Animal.Health ? $"({health}hp)" : "";// concat the hp with inlined if statement
+                    if (distance > Globals.Config.Animal.MaxDistance)
+                        continue;// check if they are under max distance
+
+                    Drawing.DrawString(new Vector2(screenposition.x, screenposition.y), $"{namestr}{distancestr}{healthstr}", Helpers.ColourHelper.GetColour("Animal Colour"), true, 12, FontStyle.Normal, 0); // draw information
                 }
             }
             catch { }

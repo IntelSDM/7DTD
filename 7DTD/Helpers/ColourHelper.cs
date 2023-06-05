@@ -33,16 +33,15 @@ namespace Cheat.Helpers
 
         public static void AddColour(string id, Color32 c)
         {
+            // add to the colour list
             if (!Globals.Config.Colours.GlobalColors.ContainsKey(id))
                 Globals.Config.Colours.GlobalColors.Add(id, c);
         }
 
-        public static void SetColour(string id, Color32 c) => Globals.Config.Colours.GlobalColors[id] = c;
-
-        public static string ColourToHex(Color32 color)
+        public static void SetColour(string id, Color32 c) 
         {
-            string hex = color.r.ToString("X2") + color.g.ToString("X2") + color.b.ToString("X2");
-            return hex;
+            Globals.Config.Colours.GlobalColors[id] = c;
+
         }
     }
 }

@@ -22,27 +22,27 @@ namespace Cheat.Esp
             try
             {
                 if (GameManager.Instance.World == null)
-                    return;
+                    return; // is world active?
                 if (!(Time.time > CacheTime))
-                    return;
-                Globals.LocalPlayer = GameManager.Instance.World.GetPrimaryPlayer();
-                PlayerList.Clear();
+                    return; // check if enough time passed
+                Globals.LocalPlayer = GameManager.Instance.World.GetPrimaryPlayer(); // set local player
+                PlayerList.Clear(); // clear the current player list
                 foreach (EntityPlayer player in GameManager.Instance.World.Players.list)
                 {
-                    if (player.Health <= 0)
-                        continue;
-                    if (player.IsAlive() == false)
-                        continue;
                     if (player == null)
-                        continue;
+                        continue; // is player null
+                    if (player.Health <= 0)
+                        continue; // is player alive
+                    if (player.IsAlive() == false)
+                        continue;// is player alive
                     if(player.IsSleeping)
-                        continue;
+                        continue; // is the player sleeping
                     if (player == GameManager.Instance.World.GetPrimaryPlayer())
-                        continue;
+                        continue;// check if the player is local player
 
-                    PlayerList.Add(player);
+                    PlayerList.Add(player); // add the player to the list
                 }
-                CacheTime = Time.time + 5;
+                CacheTime = Time.time + 5; // create the next cache time
             }
             catch { }
         }
@@ -60,51 +60,49 @@ namespace Cheat.Esp
                 EntityAlive ent = Globals.LocalPlayer as EntityAlive;
                 Vector3 lookdirection = new Vector3(0f, ent.GetEyeHeight(), 0f);
                 Vector3 lookvector = ent.GetLookVector();
-          //      Drawing.DrawString(new Vector2(500, 100), $"{GamePrefs.GetString(EnumGamePrefs.TelnetPassword)}x {lookdirection.y}y {lookdirection.z}z ", Helpers.ColourHelper.GetColour("Player Colour"), true, 11, FontStyle.Normal, 3);
-             //   Drawing.DrawString(new Vector2(500, 130), $"{lookvector.x}x {lookvector.y}y {lookvector.z}z ", Helpers.ColourHelper.GetColour("Player Colour"), true, 11, FontStyle.Normal, 3);
+         
             }
             try
             {
                 if (GameManager.Instance.World == null)
-                    return;
+                    return; // check game world is active
                 foreach (EntityPlayer player in PlayerList)
                 {
-                    if (player.Health <= 0)
-                        continue;
-                    if (player.IsAlive() == false)
-                        continue;
                     if (player == null)
-                        continue;
+                        continue; // check if player is active
+                    if (player.Health <= 0)
+                        continue; // check if player is alive 
+                    if (player.IsAlive() == false)
+                        continue; // check if the player is alive
+                    
 
-                    Vector3 ScreenPosition = Globals.WorldPointToScreenPoint(player.transform.position);
-                    if (!(Globals.IsScreenPointVisible(ScreenPosition)))
-                        continue;
-                    int Distance = (int)Vector3.Distance(Globals.MainCamera.transform.position, player.transform.position);
-                    int Health = player.Health;
-                    string DistanceStr = Globals.Config.Player.Distance ? $"({Distance.ToString()}m)" : "";
-                    string PlayernameStr = Globals.Config.Player.Name ? $"{player.EntityName}" : "";
-                    string HealthStr = Globals.Config.Player.Health ? $"({Health}hp)" : "";
-                    Vector3 HeadPosition = Globals.WorldPointToScreenPoint(player.emodel.GetHeadTransform().position);
+                    Vector3 screenposition = Globals.WorldPointToScreenPoint(player.transform.position);
+                    if (!(Globals.IsScreenPointVisible(screenposition)))
+                        continue; // check player is visible
+                    int distance = (int)Vector3.Distance(Globals.MainCamera.transform.position, player.transform.position); // distance between player and camera
+                    int health = player.Health; // get player health
+                    string distancestr = Globals.Config.Player.Distance ? $"({distance.ToString()}m)" : ""; // concat the distance with inlined if statement
+                    string playernamestr = Globals.Config.Player.Name ? $"{player.EntityName}" : "";// concat the name with inlined if statement
+                    string healthstr = Globals.Config.Player.Health ? $"({health}hp)" : "";// concat the hp with inlined if statement
+                    Vector3 headposition = Globals.WorldPointToScreenPoint(player.emodel.GetHeadTransform().position); // get head positon
 
-                    if (Distance > Globals.Config.Player.MaxDistance)
-                        continue;
+                    if (distance > Globals.Config.Player.MaxDistance)
+                        continue; // skip the entity if they are over the max distance
 
-                    Drawing.DrawString(new Vector2(ScreenPosition.x, ScreenPosition.y), $"{PlayernameStr}{DistanceStr}{HealthStr}", Helpers.ColourHelper.GetColour("Player Colour"), true, 11, FontStyle.Normal, 3);
+                    Drawing.DrawString(new Vector2(screenposition.x, screenposition.y), $"{playernamestr}{distancestr}{healthstr}", Helpers.ColourHelper.GetColour("Player Colour"), true, 11, FontStyle.Normal, 3); // draw name, health and distance
                     if ((player.IsAdmin || player.IsSpectator) && Globals.Config.Player.ShowAdmins)
-                        Drawing.DrawString(new Vector2(ScreenPosition.x, ScreenPosition.y + 10), $"Admin", Helpers.ColourHelper.GetColour("Player Colour"), true, 11, FontStyle.Normal, 3);
+                        Drawing.DrawString(new Vector2(screenposition.x, screenposition.y + 10), $"Admin", Helpers.ColourHelper.GetColour("Player Colour"), true, 11, FontStyle.Normal, 3); // draw admin status
 
                    if (Globals.Config.Player.Chams)
-                        Helpers.ShaderHelper.ApplyShader(Helpers.ShaderHelper.Shaders["Chams"], player.gameObject, Helpers.ColourHelper.GetColour("Player Chams Visible Colour"), Helpers.ColourHelper.GetColour("Player Chams Invisible Colour"));
-                 //   else
-                   //     Helpers.ShaderHelper.RemoveShaders(player.gameObject);
+                        Helpers.ShaderHelper.ApplyShader(Helpers.ShaderHelper.Shaders["Chams"], player.gameObject, Helpers.ColourHelper.GetColour("Player Chams Visible Colour"), Helpers.ColourHelper.GetColour("Player Chams Invisible Colour")); // apply chams
 
-                    float height = Mathf.Abs(ScreenPosition.y - HeadPosition.y);
-                    if (Globals.Config.Player.Box && Distance < 200)
+                    float height = Mathf.Abs(screenposition.y - screenposition.y); // get the height difference
+                    if (Globals.Config.Player.Box && distance < 200)
                     {
                        
-                        Drawing.PlayerCornerBox(new Vector2(HeadPosition.x, HeadPosition.y + 0.5f), height / 2, height, 2, Distance, Helpers.ColourHelper.GetColour("Player Box Colour"));
+                        Drawing.PlayerCornerBox(new Vector2(headposition.x, headposition.y + 0.5f), height / 2, height, 2, distance, Helpers.ColourHelper.GetColour("Player Box Colour")); // draw a corner box
                     }
-                    if (Globals.Config.Player.HealthBar && Distance < 200)
+                    if (Globals.Config.Player.HealthBar && distance < 200)
                     {
                         float maxhp = player.Stats.Health.Max;
                         float hp = player.Stats.Health.Value;
@@ -129,8 +127,8 @@ namespace Cheat.Esp
                         {
                             barcol = new Color32(249, 3, 3, 255);
                         }
-                        Drawing.DrawFilledBox(HeadPosition.x - height / 4 - 5, HeadPosition.y, 4, height, new Color32(0, 0, 0, 180));
-                        Drawing.DrawFilledBox(HeadPosition.x - height / 4 - 4, HeadPosition.y + height - use - 1, 2f, use, barcol);
+                        Drawing.DrawFilledBox(headposition.x - height / 4 - 5, headposition.y, 4, height, new Color32(0, 0, 0, 180)); // draw health bar background
+                        Drawing.DrawFilledBox(headposition.x - height / 4 - 4, headposition.y + height - use - 1, 2f, use, barcol); // draw healthbar
                     }
                 }
             }
