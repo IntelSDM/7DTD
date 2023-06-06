@@ -21,6 +21,7 @@ In this case i take the 0.harmony.dll from the managed folder and put it in the 
 <br>
 With the bypass out of the way the cheat's functionality is efficient with a full set of aimbot and esp and weapon modifiers but mainly you can change your id and become another player (even on the server) as well as spoof your stats and break blocks in many different ways that bypass server sided anti cheats.
 <br>
+
 Due to obfuscation support you might notice that the code is rather messy. You may ask why Update() will call an Update1() or other callbacks call another function instead of just containing the code. This is due to obfuscation support so we can obfuscate the contents of the callback to hide them from an attacker without renaming the callback. Unity callbacks work by walking the monobehaviour's functions during their construction phase and then checking the method name compared to a string and then diverting the method address to be called within native memory under the correct callback handler. This means that those callback function names MUST be exact at runtime so we must exclude them from obfuscation.
 # The Client
 The client works rather well at sending the server information even if it is all over text. It works very well at what it was intended for even if it was mostly written a very long time ago. It uses xor encryption on strings and lazy imported on function calls to create a layer of protection and did initially use vmp on top of that. It has a heartbeat system too to annoy debuggers.
