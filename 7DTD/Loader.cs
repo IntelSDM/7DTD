@@ -15,17 +15,25 @@ namespace Cheat
 
 			if (Globals.LoggedIn)
 			{
-				Loader.hackObject.AddComponent<Cheat.Esp.Zombie>();
-				Loader.hackObject.AddComponent<Cheat.Esp.Animal>();
-				Loader.hackObject.AddComponent<Cheat.Esp.Player>();
-				Loader.hackObject.AddComponent<Globals>();
-				Loader.hackObject.AddComponent<Menu.Main>();
-				Loader.hackObject.AddComponent<Misc>();
-				Loader.hackObject.AddComponent<Aimbot>(); 	
-				UnityEngine.Object.DontDestroyOnLoad(hackObject);
+				Loader.HackObject.AddComponent<Cheat.Esp.Zombie>();
+				Loader.HackObject.AddComponent<Cheat.Esp.Animal>();
+				Loader.HackObject.AddComponent<Cheat.Esp.Player>();
+				Loader.HackObject.AddComponent<Globals>();
+				Loader.HackObject.AddComponent<Menu.Main>();
+				Loader.HackObject.AddComponent<Misc>();
+				Loader.HackObject.AddComponent<Aimbot>();
+
+				HackObject.AddComponent<Hooks.OnFired>();
+				HackObject.AddComponent<Hooks.GetRange>();
+				HackObject.AddComponent<Hooks.UpdateAccuracy>();
+				HackObject.AddComponent<Hooks.IsOwner>();
+				HackObject.AddComponent<Hooks.OnBlockDamaged>();
+
+				UnityEngine.Object.DontDestroyOnLoad(HackObject);
+
 			}
 
 		}
-		public static GameObject hackObject = new GameObject(); // make bool in a public static class and check if its true constantly as extra auth shit
+		public static GameObject HackObject = new GameObject(); // make bool in a public static class and check if its true constantly as extra auth shit
 	}
 }

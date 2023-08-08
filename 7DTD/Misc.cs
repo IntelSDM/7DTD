@@ -27,10 +27,6 @@ namespace Cheat
 
 
         #region Hook Methods
-        public static DumbHook FireAnimationHook;
-        public static bool FireAnimationHooked = false;
-        public static DumbHook UpdateAccuracyHook;
-        public static bool AccuracyHooked = false;
         public static DumbHook UnlimitedRangeHook;
         public bool UnlimitedRangeHooked = false;
         public static DumbHook BlockDamage;
@@ -39,130 +35,8 @@ namespace Cheat
         public bool IsOwnerHooked = false;
         private static List<EntityPlayer> KillList = new List<EntityPlayer>();
        
-        [ObfuscationAttribute(Exclude = true)]
-        public bool IsOwner(PlatformUserIdentifierAbs _userIdentifier)
-        {
-            if (Globals.Config.LocalPlayer.OwnsVehicle)
-                return true; // set the user as owning the car
-            else
-            {
-                IsOwnerHook.Unhook();
-                object[] parameters = new object[]
-                  {
-                    _userIdentifier,
-                   
-                  };
-                object result = IsOwnerHook.OriginalMethod.Invoke(this, parameters);
-                IsOwnerHook.Hook(); // call the original
-                return false; // this wont be called
-            }
-        }
+       
       
-        // recreate the block damage function so we can allow instant break
-        public int OnBlockDamaged(WorldBase _world, int _clrIdx, Vector3i _blockPos, BlockValue _blockValue, int _damagePoints, int _entityIdThatDamaged, ItemActionAttack.AttackHitInfo _attackHitInfo, bool _bUseHarvestTool, bool _bBypassMaxDamage, int _recDepth = 0)
-        {
-            if (Globals.Config.LocalPlayer.InstantBreak1)
-            {
-                // method 1, pick up the block
-                _blockValue.Block.CanPickup = true;
-                _world.GetGameManager().PickupBlockServer(_clrIdx, _blockPos, _blockValue, 0);
-                _blockValue.Block.FallDamage = 0;
-            }
-            if (Globals.Config.LocalPlayer.InstantBreak2)
-            {
-
-                _entityIdThatDamaged = 0;
-                 _bBypassMaxDamage = true;
-                  _damagePoints = _blockValue.Block.MaxDamage;
-         
-            }
-            if (Globals.Config.LocalPlayer.InstantBreak3)
-            {
-                // set the block health to 1
-                _bBypassMaxDamage = true;
-                _damagePoints = 1;
-                _blockValue.Block.MaxDamage = 1;
-            }
-
-            BlockDamage.Unhook();
-
-
-            object[] parameters = new object[]
-               {
-                    _world,
-                    _clrIdx,
-                    _blockPos,
-                    _blockValue,
-                    _damagePoints,
-                    _entityIdThatDamaged,
-                    _attackHitInfo,
-                    _bUseHarvestTool,
-                    _bBypassMaxDamage,
-                    _recDepth
-               };
-           BlockDamage.OriginalMethod.Invoke(this, parameters);
-
-            BlockDamage.Hook();
-            return 0;
-
-        }
-
-        [ObfuscationAttribute(Exclude = true)]
-        public void FireAnimation()
-        {
-            // just null it
-        }
-        [ObfuscationAttribute(Exclude = true)]
-        public float Accuracy(ItemActionData _actionData, bool _isAimingGun)
-        {
-            return Accuracy1(_actionData, _isAimingGun);
-        }
-        public float Accuracy1(ItemActionData _actionData, bool _isAimingGun)
-        {
-            (_actionData as ItemActionRanged.ItemActionDataRanged).lastAccuracy = 0; // set this incase its used elsewhere
-
-            return (_actionData as ItemActionRanged.ItemActionDataRanged).lastAccuracy; // could return 0 but ehh
-        }
-        [ObfuscationAttribute(Exclude = true)]
-        public float GetRange(ItemActionData _actionData)
-        {
-            return (GetRange1(_actionData));
-        }
-        public float GetRange1(ItemActionData _actionData)
-        {
-            // return actual range
-            vp_FPWeapon weapon = Globals.LocalPlayer?.vp_FPWeapon;
-            Inventory inventory = Globals.LocalPlayer?.inventory;
-            ItemActionAttack gun = inventory?.GetHoldingGun();
-            ItemActionRanged action = gun as ItemActionRanged;
-            if (!Globals.Config.LocalPlayer.UnlimitedRange)
-                return EffectManager.GetValue(PassiveEffects.MaxRange, _actionData.invData.itemValue, action.Range, _actionData.invData.holdingEntity, null, default(FastTags), true, true, true, true, 1, true);
-            else
-                return 100000000000; // return firing range of infinite
-        }
-        public static void EnableNoRecoil()
-        {
-            if (!FireAnimationHooked)
-            {
-                FireAnimationHook = new DumbHook();
-                FireAnimationHook.Init(typeof(EntityPlayerLocal).GetMethod("OnFired", BindingFlags.Public | BindingFlags.Instance), typeof(Misc).GetMethod("FireAnimation", BindingFlags.Public | BindingFlags.Instance));
-                FireAnimationHook.Hook();
-                FireAnimationHooked = true;
-            }
-        }
-
-        public static void EnableNoSpread()
-        {
-            if (!AccuracyHooked)
-            {
-                UpdateAccuracyHook = new DumbHook();
-                UpdateAccuracyHook.Init(typeof(ItemActionRanged).GetMethod("updateAccuracy"), typeof(Misc).GetMethod("Accuracy"));
-                UpdateAccuracyHook.Hook();
-                AccuracyHooked = true;
-            }
-        }
-        bool silentaim = true;
-   
  
         #endregion
         [ObfuscationAttribute(Exclude = true)]
@@ -186,46 +60,6 @@ namespace Cheat
             SetProperties();
            Noclip();
             Worlds();
-            #region Hooks
-            // initiating hooks
-            if (Globals.Config.LocalPlayer.NoRecoil && !FireAnimationHooked) // allows us to hook it on config load
-            {
-                FireAnimationHook = new DumbHook();
-                FireAnimationHook.Init(typeof(EntityPlayerLocal).GetMethod("OnFired", BindingFlags.Public | BindingFlags.Instance), typeof(Misc).GetMethod("FireAnimation", BindingFlags.Public | BindingFlags.Instance));
-                FireAnimationHook.Hook();
-                FireAnimationHooked = true;
-            }
-            if (Globals.Config.LocalPlayer.NoSpread && !AccuracyHooked) // allows us to hook it on config load
-            {
-                UpdateAccuracyHook = new DumbHook();
-                UpdateAccuracyHook.Init(typeof(ItemActionRanged).GetMethod("updateAccuracy", BindingFlags.NonPublic | BindingFlags.Instance), typeof(Misc).GetMethod("Accuracy", BindingFlags.Public | BindingFlags.Instance));
-                UpdateAccuracyHook.Hook();
-                AccuracyHooked = true;
-            }
-            if ( !UnlimitedRangeHooked) 
-            {
-                UnlimitedRangeHook = new DumbHook();
-                UnlimitedRangeHook.Init(typeof(ItemActionRanged).GetMethod("GetRange", BindingFlags.Public | BindingFlags.Instance), typeof(Misc).GetMethod("GetRange", BindingFlags.Public | BindingFlags.Instance));
-                UnlimitedRangeHook.Hook();
-                UnlimitedRangeHooked = true;
-            }
-            if (!BlockDamageHooked)
-            {
-                BlockDamage = new DumbHook();
-                BlockDamage.Init(typeof(Block).GetMethod("OnBlockDamaged", BindingFlags.Public | BindingFlags.Instance), typeof(Misc).GetMethod("OnBlockDamaged", BindingFlags.Public | BindingFlags.Instance));
-                BlockDamage.Hook();
-                BlockDamageHooked = true;
-            }
-         
-            if (!IsOwnerHooked)
-            {
-               IsOwnerHook = new DumbHook();
-                IsOwnerHook.Init(typeof(EntityVehicle).GetMethod("IsOwner", BindingFlags.Public | BindingFlags.Instance), typeof(Misc).GetMethod("IsOwner", BindingFlags.Public | BindingFlags.Instance));
-                IsOwnerHook.Hook();
-                IsOwnerHooked = true;
-            }
-          
-            #endregion
 
             if (Globals.LocalPlayer == null)
                 return;

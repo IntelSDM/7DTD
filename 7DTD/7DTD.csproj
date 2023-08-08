@@ -105,6 +105,11 @@
     <Compile Include="Helpers\DumbHook.cs" />
     <Compile Include="Helpers\RaycastHelper.cs" />
     <Compile Include="Helpers\ShaderHelper.cs" />
+    <Compile Include="Hooks\GetRange.cs" />
+    <Compile Include="Hooks\IsOwner.cs" />
+    <Compile Include="Hooks\OnBlockDamaged.cs" />
+    <Compile Include="Hooks\OnFired.cs" />
+    <Compile Include="Hooks\UpdateAccuracy.cs" />
     <Compile Include="Loader.cs" />
     <Compile Include="Menu\Button.cs" />
     <Compile Include="Menu\Entity.cs" />

@@ -134,9 +134,9 @@ namespace Cheat.Menu
         void Weapons()
         {
            
-            Button RemoveRecoil = new Button("Remove Recoil", "!This Cant Be Undone! This Button Removes Recoil", () => Misc.EnableNoRecoil());
+            Button RemoveRecoil = new Button("Remove Recoil", "!This Cant Be Undone! This Button Removes Recoil", () => { Loader.HackObject.GetComponent<Hooks.OnFired>().Start(); });
             Toggle NoRecoil = new Toggle("No Recoil From Start Up", "This Will Remove Recoil On Start Or Config Load", ref Globals.Config.LocalPlayer.NoRecoil);
-            Button RemoveSpread = new Button("Remove Spread", "!This Cant Be Undone! This Button Removes Spread", () => Misc.EnableNoSpread());
+            Button RemoveSpread = new Button("Remove Spread", "!This Cant Be Undone! This Button Removes Spread", () => { Loader.HackObject.GetComponent<Hooks.UpdateAccuracy>().Start(); });
             Toggle NoSpread = new Toggle("No Spread From Start Up", "This Will Remove Spread On Start Or Config Load", ref Globals.Config.LocalPlayer.NoSpread);
             Toggle NoViewBob = new Toggle("No Shake", "Removes Shake/ViewBob", ref Globals.Config.LocalPlayer.NoViewBob);
             Toggle UnlimitedAmmo = new Toggle("Unlimited Ammo", "Gives You Unlimited Ammo", ref Globals.Config.LocalPlayer.UnlimitedAmmo);
@@ -151,6 +151,7 @@ namespace Cheat.Menu
             Weapon.Items.Add(NoSpread);
             Weapon.Items.Add(NoViewBob);
             Weapon.Items.Add(UnlimitedAmmo);
+            Weapon.Items.Add(UnlimitedRange);
             Weapon.Items.Add(FovChanger);
             Weapon.Items.Add(FovSlider);
             Weapon.Items.Add(CamFovChanger);
