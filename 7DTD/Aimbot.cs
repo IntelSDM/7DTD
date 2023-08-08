@@ -12,7 +12,7 @@ namespace Cheat
         // EnumPlayerKillingMode look into so you can try to disable pve
         // TODO: Add friendslist
         // Fix Box Height
-        public static EntityZombie Zombie; // assign our values here so we dont need to keep calling the targetzombie/player function which loops through loads of stuff
+        public static EntityEnemy Zombie; // assign our values here so we dont need to keep calling the targetzombie/player function which loops through loads of stuff
         public static EntityPlayer Player;
         public static Vector3 ZombieHitPos;
         public static Vector3 PlayerHitPos;
@@ -20,11 +20,11 @@ namespace Cheat
         public static bool TargettingZombie = false;
 
         // We sort closest to crosshair so we will get the first target which is closest
-        private static List<EntityZombie> ZombieClosestToCrosshair(List<EntityZombie> p)
+        private static List<EntityEnemy> ZombieClosestToCrosshair(List<EntityEnemy> p)
         {
             return (from tempPlayer in p
                     orderby Vector2.Distance(new Vector2((float)(Screen.width / 2), (float)(Screen.height / 2)), Camera.main.WorldToScreenPoint(tempPlayer.transform.position))
-                    select tempPlayer).ToList<EntityZombie>();
+                    select tempPlayer).ToList<EntityEnemy>();
         }
         private static List<EntityPlayer> PlayerClosestToCrosshair(List<EntityPlayer> p)
         {
@@ -32,9 +32,9 @@ namespace Cheat
                     orderby Vector2.Distance(new Vector2((float)(Screen.width / 2), (float)(Screen.height / 2)), Camera.main.WorldToScreenPoint(tempPlayer.transform.position))
                     select tempPlayer).ToList<EntityPlayer>();
         }
-        EntityZombie TargetZombie()
+        EntityEnemy TargetZombie()
         {
-            EntityZombie result = new EntityZombie();
+            EntityEnemy result = new EntityZombie();
             try
             {
             
@@ -45,7 +45,7 @@ namespace Cheat
            
            
 
-                foreach (EntityZombie zombie in ZombieClosestToCrosshair(Esp.Zombie.ZombieList))
+                foreach (EntityEnemy zombie in ZombieClosestToCrosshair(Esp.Zombie.ZombieList))
                 {
                   
                         if (!(zombie.IsAlive()) || zombie == null)
@@ -58,7 +58,7 @@ namespace Cheat
                     if (fov > Globals.Config.Aimbot.Fov)
                         continue; // are they in fov?
 
-                    if (Globals.Config.Aimbot.ZombieVisibilityChecks && !Helpers.RaycastHelper.ZombiePos(zombie, Pos))
+                    if (Globals.Config.Aimbot.ZombieVisibilityChecks && !Helpers.RaycastHelper.VisbilityCheck(zombie, Pos))
                         continue; // if visibility checks are enabled then check if they are visible.
 
 
@@ -108,7 +108,7 @@ namespace Cheat
                     if (fov > Globals.Config.Aimbot.Fov)
                         continue; // is the user in the aimbot fov
 
-                    if (Globals.Config.Aimbot.PlayerVisibilityChecks && !Helpers.RaycastHelper.PlayerPos(player, Pos))
+                    if (Globals.Config.Aimbot.PlayerVisibilityChecks && !Helpers.RaycastHelper.VisbilityCheck(player, Pos))
                         continue; // if vis checks are on then vis check them
 
                     return player;

@@ -11,7 +11,7 @@ namespace Cheat.Esp
     class Zombie : MonoBehaviour
     {
         private float CacheTime;
-        public static List<EntityZombie> ZombieList = new List<EntityZombie>();
+        public static List<EntityEnemy> ZombieList = new List<EntityEnemy>();
         [ObfuscationAttribute(Exclude = true)]
         void Update()
         {
@@ -27,7 +27,7 @@ namespace Cheat.Esp
                 if (!(Time.time > CacheTime))
                     return; // check if cache time has passed
                 ZombieList.Clear();
-                foreach (EntityZombie zombie in FindObjectsOfType<EntityZombie>().ToList())
+                foreach (EntityEnemy zombie in FindObjectsOfType<EntityEnemy>().ToList())
                 {
                     if (zombie == null)
                         continue; // check is zombie is null or not
@@ -57,7 +57,7 @@ namespace Cheat.Esp
             {
                 if (GameManager.Instance.World == null)
                     return; // check if world is active
-                foreach (EntityZombie zombie in ZombieList)
+                foreach (EntityEnemy zombie in ZombieList)
                 {
                     if (zombie == null)
                         continue; // check if zombie is valid pointer
