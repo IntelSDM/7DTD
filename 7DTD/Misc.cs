@@ -359,14 +359,14 @@ namespace Cheat
             if ( !UnlimitedRangeHooked) 
             {
                 UnlimitedRangeHook = new DumbHook();
-                UnlimitedRangeHook.Init(typeof(Block).GetMethod("OnBlockDamaged", BindingFlags.Public | BindingFlags.Instance), typeof(Misc).GetMethod("Damage", BindingFlags.Public | BindingFlags.Instance));
+                UnlimitedRangeHook.Init(typeof(Block).GetMethod("GetRange", BindingFlags.Public | BindingFlags.Instance), typeof(Misc).GetMethod("Damage", BindingFlags.Public | BindingFlags.Instance));
                 UnlimitedRangeHook.Hook();
                 UnlimitedRangeHooked = true;
             }
             if (!BlockDamageHooked)
             {
                 BlockDamage = new DumbHook();
-                BlockDamage.Init(typeof(ItemActionRanged).GetMethod("GetRange", BindingFlags.Public | BindingFlags.Instance), typeof(Misc).GetMethod("GetRange", BindingFlags.Public | BindingFlags.Instance));
+                BlockDamage.Init(typeof(ItemActionRanged).GetMethod("OnBlockDamaged", BindingFlags.Public | BindingFlags.Instance), typeof(Misc).GetMethod("GetRange", BindingFlags.Public | BindingFlags.Instance));
                 BlockDamage.Hook();
                 BlockDamageHooked = true;
             }
