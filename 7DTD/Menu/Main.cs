@@ -433,7 +433,7 @@ namespace Cheat.Menu
         }
         void OnGUI1()
         {
-            Drawing.DrawString(new Vector2(5,0), "R3 Cheat By: R3#1380", Helpers.ColourHelper.GetColour("Menu Primary Colour"), false, 14, FontStyle.Normal, 0);
+            Drawing.DrawString(new Vector2(5,0), "Cheat", Helpers.ColourHelper.GetColour("Menu Primary Colour"), false, 14, FontStyle.Normal, 0);
             Globals.MainCamera = Camera.main;
             if (!ShowMenu)
                 return;

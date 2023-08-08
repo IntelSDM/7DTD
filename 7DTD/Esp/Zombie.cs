@@ -75,7 +75,7 @@ namespace Cheat.Esp
                     string distancestr = Globals.Config.Zombie.Distance ? $"({distance.ToString()}m)" : "";
                     string namestr = Globals.Config.Zombie.Name ? $"{zombie.EntityName}" : "";
                     string healthstr = Globals.Config.Zombie.Health ? $"({health}hp)" : "";
-                    if (Distance > Globals.Config.Zombie.MaxDistance)
+                    if (distance > Globals.Config.Zombie.MaxDistance)
                         continue;
                     Drawing.DrawString(new Vector2(screenposition.x, screenposition.y), $"{namestr}{distancestr}{healthstr}", Helpers.ColourHelper.GetColour("Zombie Colour"), true, 12, FontStyle.Normal, 0);
                 }

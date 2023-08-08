@@ -58,23 +58,8 @@ namespace Cheat
             }
         }
       
-        [ObfuscationAttribute(Exclude = true)]
-        public virtual int Damage(WorldBase _world, int _clrIdx, Vector3i _blockPos, BlockValue _blockValue, int _damagePoints, int _entityIdThatDamaged, bool _bUseHarvestTool, bool _bBypassMaxDamage, int _recDepth = 0)
-        {
-            return Dam(_world, _clrIdx, _blockPos, _blockValue, _damagePoints, _entityIdThatDamaged, _bUseHarvestTool, _bBypassMaxDamage, _recDepth);
-        }
-        public static int ClaimedByWho(Vector3i _position)
-        {
-       //     GameManager.Instance.persistentLocalPlayer.AddLandProtectionBlock
-            PersistentPlayerList persistentPlayerList = GameManager.Instance.persistentPlayers;
-            if (persistentPlayerList != null)
-            {
-                return persistentPlayerList.GetLandProtectionBlockOwner(_position).EntityId;
-            }
-            return 0;
-        }
         // recreate the block damage function so we can allow instant break
-        public int Dam(WorldBase _world, int _clrIdx, Vector3i _blockPos, BlockValue _blockValue, int _damagePoints, int _entityIdThatDamaged, bool _bUseHarvestTool, bool _bBypassMaxDamage, int _recDepth = 0)
+        public int OnBlockDamaged(WorldBase _world, int _clrIdx, Vector3i _blockPos, BlockValue _blockValue, int _damagePoints, int _entityIdThatDamaged, ItemActionAttack.AttackHitInfo _attackHitInfo, bool _bUseHarvestTool, bool _bBypassMaxDamage, int _recDepth = 0)
         {
             if (Globals.Config.LocalPlayer.InstantBreak1)
             {
@@ -85,17 +70,11 @@ namespace Cheat
             }
             if (Globals.Config.LocalPlayer.InstantBreak2)
             {
-                // set the block to air and the max damage to the current hit.
 
-                //  _entityIdThatDamaged = ClaimedByWho(_blockPos);
-                //    ClaimedByWho(_blockPos);
                 _entityIdThatDamaged = 0;
                  _bBypassMaxDamage = true;
                   _damagePoints = _blockValue.Block.MaxDamage;
-                // _blockValue.Block.IsCollideMelee // setting this would be good
-                //   _blockValue.damage = 0;
-                //    GameManager.Instance.persistentLocalPlayer.AddLandProtectionBlock(_blockPos);
-                //  GameManager.Instance.persistentLocalPlayer.UserIdentifier.PlatformIdentifier = Platform.EPlatformIdentifier.XBL;
+         
             }
             if (Globals.Config.LocalPlayer.InstantBreak3)
             {
@@ -104,161 +83,28 @@ namespace Cheat
                 _damagePoints = 1;
                 _blockValue.Block.MaxDamage = 1;
             }
-            ChunkCluster chunkCluster = _world.ChunkClusters[_clrIdx];
-            if (chunkCluster == null)
-            {
-                return 0;
-            }
-            if (_blockValue.Block.isMultiBlock && _blockValue.ischild)
-            {
-                Vector3i parentPos = _blockValue.Block.multiBlockPos.GetParentPos(_blockPos, _blockValue);
-                BlockValue block = chunkCluster.GetBlock(parentPos);
-                if (block.ischild)
-                {
-                   
-                    return 0;
-                }
-                return block.Block.OnBlockDamaged(_world, _clrIdx, parentPos, block, _damagePoints, _entityIdThatDamaged, _bUseHarvestTool, _bBypassMaxDamage, _recDepth + 1);
-            }
-            else
-            {
-                int num = _blockValue.damage;
-                bool flag = num >= _blockValue.Block.MaxDamage;
-                num += _damagePoints;
-                chunkCluster.InvokeOnBlockDamagedDelegates(_blockPos, _blockValue, _damagePoints, _entityIdThatDamaged);
-                Block block2 = _blockValue.Block;
-                if (num < 0)
-                {
-                    if (!_blockValue.Block.UpgradeBlock.isair)
-                    {
-                        BlockValue blockValue = _blockValue.Block.UpgradeBlock;
-                        blockValue = BlockPlaceholderMap.Instance.Replace(blockValue, _world.GetGameRandom(), _blockPos.x, _blockPos.z, false, QuestTags.none);
-                        blockValue.rotation = _blockValue.rotation;
-                        blockValue.meta = _blockValue.meta;
-                        blockValue.damage = 0;
-                        Block block3 = blockValue.Block;
-                        if (!block3.shape.IsTerrain())
-                        {
-                            _world.SetBlockRPC(_clrIdx, _blockPos, blockValue);
-                            if (chunkCluster.GetTextureFull(_blockPos) != 0L)
-                            {
-                                GameManager.Instance.SetBlockTextureServer(_blockPos, BlockFace.None, 0, _entityIdThatDamaged);
-                            }
-                        }
-                        else
-                        {
-                            _world.SetBlockRPC(_clrIdx, _blockPos, blockValue, block3.Density);
-                        }
-                        DynamicMeshManager.ChunkChanged(_blockPos, _entityIdThatDamaged, _blockValue.type);
-                        return blockValue.damage;
-                    }
-                    if (_blockValue.damage != 0)
-                    {
-                        _blockValue.damage = 0;
-                        _world.SetBlockRPC(_clrIdx, _blockPos, _blockValue);
-                    }
-                    return 0;
-                }
-                else
-                {
-                    if (!flag && num >= block2.MaxDamage)
-                    {
-                        num -= block2.MaxDamage;
-                        DynamicMeshManager.ChunkChanged(_blockPos, _entityIdThatDamaged, _blockValue.type);
-                        Block.DestroyedResult destroyedResult = _blockValue.Block.OnBlockDestroyedBy(_world, _clrIdx, _blockPos, _blockValue, _entityIdThatDamaged, _bUseHarvestTool);
-                        if (destroyedResult != Block.DestroyedResult.Keep)
-                        {
-                            if (!_blockValue.Block.DowngradeBlock.isair && destroyedResult == Block.DestroyedResult.Downgrade)
-                            {
-                                if (_recDepth == 0)
-                                {
-                                    _blockValue.Block.SpawnDestroyParticleEffect(_world, _blockValue, _blockPos, 1f, _blockValue.Block.tintColor, _entityIdThatDamaged);
-                                }
-                                BlockValue blockValue2 = _blockValue.Block.DowngradeBlock;
-                                blockValue2 = BlockPlaceholderMap.Instance.Replace(blockValue2, _world.GetGameRandom(), _blockPos.x, _blockPos.z, false, QuestTags.none);
-                                blockValue2.rotation = _blockValue.rotation;
-                                blockValue2.meta = _blockValue.meta;
-                                Block block4 = blockValue2.Block;
-                                if (!block4.shape.IsTerrain())
-                                {
-                                    _world.SetBlockRPC(_clrIdx, _blockPos, blockValue2);
-                                    if (chunkCluster.GetTextureFull(_blockPos) != 0L)
-                                    {
-                                        if (_blockValue.Block.RemovePaintOnDowngrade == null)
-                                        {
-                                            GameManager.Instance.SetBlockTextureServer(_blockPos, BlockFace.None, 0, _entityIdThatDamaged);
-                                        }
-                                        else
-                                        {
-                                            for (int i = 0; i < _blockValue.Block.RemovePaintOnDowngrade.Count; i++)
-                                            {
-                                                GameManager.Instance.SetBlockTextureServer(_blockPos, _blockValue.Block.RemovePaintOnDowngrade[i], 0, _entityIdThatDamaged);
-                                            }
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    _world.SetBlockRPC(_clrIdx, _blockPos, blockValue2, block4.Density);
-                                }
-                                if ((num > 0 && _blockValue.Block.EnablePassThroughDamage) || _bBypassMaxDamage)
-                                {
-                                    block4.OnBlockDamaged(_world, _clrIdx, _blockPos, blockValue2, num, _entityIdThatDamaged, _bUseHarvestTool, _bBypassMaxDamage, _recDepth + 1);
-                                }
-                            }
-                            else
-                            {
-                                QuestEventManager.Current.BlockDestroyed(block2, _blockPos);
-                                _blockValue.Block.SpawnDestroyParticleEffect(_world, _blockValue, _blockPos, 1f, _blockValue.Block.GetColorForSide(_blockValue, BlockFace.Top), _entityIdThatDamaged);
-                                _world.SetBlockRPC(_clrIdx, _blockPos, BlockValue.Air);
-                                TileEntityLootContainer tileEntityLootContainer = _world.GetTileEntity(_clrIdx, _blockPos) as TileEntityLootContainer;
-                                if (tileEntityLootContainer != null)
-                                {
-                                    tileEntityLootContainer.OnDestroy();
-                                    for (int j = 0; j < LocalPlayerUI.PlayerUIs.Count; j++)
-                                    {
-                                        if (LocalPlayerUI.PlayerUIs[j].windowManager.IsWindowOpen("looting") && ((XUiC_LootWindow)LocalPlayerUI.PlayerUIs[j].xui.GetWindow("windowLooting").Controller).GetLootBlockPos() == _blockPos)
-                                        {
-                                            LocalPlayerUI.PlayerUIs[j].windowManager.Close("looting");
-                                        }
-                                    }
-                                    Chunk chunk = _world.GetChunkFromWorldPos(_blockPos) as Chunk;
-                                    if (chunk != null)
-                                    {
-                                        chunk.RemoveTileEntityAt<TileEntityLootContainer>((World)_world, World.toBlock(_blockPos));
-                                    }
-                                }
-                            }
-                        }
-                        return block2.MaxDamage;
-                    }
-                    if (_blockValue.damage != num)
-                    {
-                        _blockValue.damage = num;
-                        if (!block2.shape.IsTerrain())
-                        {
-                            _world.SetBlocksRPC(new List<BlockChangeInfo>
-                        {
-                            new BlockChangeInfo(_blockPos, _blockValue, false, true)
-                        });
-                        }
-                        else
-                        {
-                            sbyte density = _world.GetDensity(_clrIdx, _blockPos);
-                            sbyte b = (sbyte)Utils.FastMin(-1f, (float)MarchingCubes.DensityTerrain * (1f - (float)num / (float)block2.MaxDamage));
-                            if ((_damagePoints > 0 && b > density) || (_damagePoints < 0 && b < density))
-                            {
-                                _world.SetBlockRPC(_clrIdx, _blockPos, _blockValue, b);
-                            }
-                            else
-                            {
-                                _world.SetBlockRPC(_clrIdx, _blockPos, _blockValue);
-                            }
-                        }
-                    }
-                    return _blockValue.damage;
-                }
-            }
+
+            BlockDamage.Unhook();
+
+
+            object[] parameters = new object[]
+               {
+                    _world,
+                    _clrIdx,
+                    _blockPos,
+                    _blockValue,
+                    _damagePoints,
+                    _entityIdThatDamaged,
+                    _attackHitInfo,
+                    _bUseHarvestTool,
+                    _bBypassMaxDamage,
+                    _recDepth
+               };
+           BlockDamage.OriginalMethod.Invoke(this, parameters);
+
+            BlockDamage.Hook();
+            return 0;
+
         }
 
         [ObfuscationAttribute(Exclude = true)]
@@ -359,14 +205,14 @@ namespace Cheat
             if ( !UnlimitedRangeHooked) 
             {
                 UnlimitedRangeHook = new DumbHook();
-                UnlimitedRangeHook.Init(typeof(Block).GetMethod("GetRange", BindingFlags.Public | BindingFlags.Instance), typeof(Misc).GetMethod("Damage", BindingFlags.Public | BindingFlags.Instance));
+                UnlimitedRangeHook.Init(typeof(ItemActionRanged).GetMethod("GetRange", BindingFlags.Public | BindingFlags.Instance), typeof(Misc).GetMethod("GetRange", BindingFlags.Public | BindingFlags.Instance));
                 UnlimitedRangeHook.Hook();
                 UnlimitedRangeHooked = true;
             }
             if (!BlockDamageHooked)
             {
                 BlockDamage = new DumbHook();
-                BlockDamage.Init(typeof(ItemActionRanged).GetMethod("OnBlockDamaged", BindingFlags.Public | BindingFlags.Instance), typeof(Misc).GetMethod("GetRange", BindingFlags.Public | BindingFlags.Instance));
+                BlockDamage.Init(typeof(Block).GetMethod("OnBlockDamaged", BindingFlags.Public | BindingFlags.Instance), typeof(Misc).GetMethod("OnBlockDamaged", BindingFlags.Public | BindingFlags.Instance));
                 BlockDamage.Hook();
                 BlockDamageHooked = true;
             }
