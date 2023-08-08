@@ -15,5 +15,6 @@ namespace Cheat.Configs
         public LocalPlayer LocalPlayer = new LocalPlayer();
         public Aimbot Aimbot = new Aimbot();
         public Friends Friends = new Friends();
+        public Tiles Tiles = new Tiles();
     }
 }

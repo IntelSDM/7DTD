@@ -36,27 +36,27 @@ namespace Cheat
             LoggedIn = true; // prevents people finding the init after obfuscation and just jumping to that, it breaks the cheat if they try that.
             Loader.Init();
         }
-        public static bool IsScreenPointVisible(Vector3 screenPoint)
+        public static bool IsScreenPointVisible(Vector3 screenpoint)
         {
-            return screenPoint.z > 0.01f && screenPoint.x > -5f && screenPoint.y > -5f && screenPoint.x < (float)Screen.width && screenPoint.y < (float)Screen.height;
+            return screenpoint.z > 0.01f && screenpoint.x > -5f && screenpoint.y > -5f && screenpoint.x < (float)Screen.width && screenpoint.y < (float)Screen.height;
         }
 
-        public static Vector3 WorldPointToScreenPoint(Vector3 worldPoint)
+        public static Vector3 WorldPointToScreenPoint(Vector3 worldpoint)
         {
-            Vector3 vector = MainCamera.WorldToScreenPoint(worldPoint);
+            Vector3 vector = MainCamera.WorldToScreenPoint(worldpoint);
             vector.y = (float)Screen.height - vector.y;
             return vector;
         }
-        public static Vector3 GetLimbPosition(Transform target, string objName)
+        public static Vector3 GetLimbPosition(Transform target, string objname)
         {
-            var componentsInChildren = target.transform.GetComponentsInChildren<Transform>();
+            var childcomp = target.transform.GetComponentsInChildren<Transform>();
             var result = Vector3.zero;
 
-            if (componentsInChildren == null) return result;
+            if (childcomp == null) return result;
 
-            foreach (var transform in componentsInChildren)
+            foreach (var transform in childcomp)
             {
-                if (transform.name.Trim() != objName) continue;
+                if (transform.name.Trim() != objname) continue;
 
                 result = transform.position + new Vector3(0f, 0.4f, 0f);
                 break;

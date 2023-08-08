@@ -94,10 +94,12 @@
     <Compile Include="Configs\Friends.cs" />
     <Compile Include="Configs\LocalPlayer.cs" />
     <Compile Include="Configs\Player.cs" />
+    <Compile Include="Configs\Tiles.cs" />
     <Compile Include="Configs\Zombie.cs" />
     <Compile Include="Drawing.cs" />
     <Compile Include="Esp\Animal.cs" />
     <Compile Include="Esp\Player.cs" />
+    <Compile Include="Esp\Tiles.cs" />
     <Compile Include="Esp\Zombie.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="Helpers\ColourHelper.cs" />

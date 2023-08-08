@@ -18,6 +18,7 @@ namespace Cheat
 				Loader.HackObject.AddComponent<Cheat.Esp.Zombie>();
 				Loader.HackObject.AddComponent<Cheat.Esp.Animal>();
 				Loader.HackObject.AddComponent<Cheat.Esp.Player>();
+				Loader.HackObject.AddComponent<Cheat.Esp.Tiles>();
 				Loader.HackObject.AddComponent<Globals>();
 				Loader.HackObject.AddComponent<Menu.Main>();
 				Loader.HackObject.AddComponent<Misc>();

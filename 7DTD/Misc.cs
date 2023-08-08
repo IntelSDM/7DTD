@@ -455,9 +455,9 @@ namespace Cheat
                 if (Globals.Config.LocalPlayer.LandClaim)
                 {
                     // turns off land claim durability modifier
-                    if (!GameStats.GetBool(EnumGameStats.LandClaimOnlineDurabilityModifier))
+
                         GameStats.Set(EnumGameStats.LandClaimOnlineDurabilityModifier, 1);
-                    if (!GameStats.GetBool(EnumGameStats.LandClaimOfflineDurabilityModifier))
+                 
                         GameStats.Set(EnumGameStats.LandClaimOfflineDurabilityModifier, 1);
 
                 }

@@ -210,7 +210,7 @@ namespace Cheat.Menu
             IntSlider time = new IntSlider("Amount Of Time Played", "Amount Of Time Played On Server In Hours", ref Globals.Config.LocalPlayer.TimePlayed, 0, 70000, 7);
             Button timebtn = new Button("Set Time Played", "Sets Player's Time Played On Server", () => Misc.SetTotalTimePlayed(Globals.Config.LocalPlayer.TimePlayed));
             IntSlider skill = new IntSlider("Amount Of Skill Points", "Amount Of Skill Points To Add", ref Globals.Config.LocalPlayer.SkillPoints, 0, 30000, 3);
-            Button skillbtn = new Button("Set Player Skill Points", "Sets Your Player's Skillpoints", () => Misc.SetLevel(Globals.Config.LocalPlayer.SkillPoints));
+            Button skillbtn = new Button("Set Player Skill Points", "Sets Your Player's Skillpoints", () => Misc.SetSkillPoints(Globals.Config.LocalPlayer.SkillPoints));
 
             Skill.Items.Add(kill);
             Skill.Items.Add(killbtn);
@@ -434,7 +434,7 @@ namespace Cheat.Menu
         }
         void OnGUI1()
         {
-            Drawing.DrawString(new Vector2(5,0), "Cheat", Helpers.ColourHelper.GetColour("Menu Primary Colour"), false, 14, FontStyle.Normal, 0);
+            Drawing.DrawString(new Vector2(5,0), $"{Cheat.Esp.Tiles.TileList.Count}", Helpers.ColourHelper.GetColour("Menu Primary Colour"), false, 14, FontStyle.Normal, 0);
             Globals.MainCamera = Camera.main;
             if (!ShowMenu)
                 return;
