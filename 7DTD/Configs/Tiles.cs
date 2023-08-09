@@ -8,8 +8,8 @@ namespace Cheat.Configs
 {
     class Tiles
     {
-        public bool Name = true;
-        public bool Distance = true;
+        public bool Name = false;
+        public bool Distance = false;
         public int MaxDistance = 300;
     }
 }

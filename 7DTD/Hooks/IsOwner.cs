@@ -13,12 +13,11 @@ namespace Cheat.Hooks
         public static DumbHook Hook;
         public void Start()
         {
-            if (Globals.Config.LocalPlayer.NoSpread)
-            {
+            
                 Hook = new DumbHook();
                 Hook.Init(typeof(EntityVehicle).GetMethod("IsOwner", BindingFlags.Public | BindingFlags.Instance), typeof(IsOwner).GetMethod("HookFunction", BindingFlags.Public | BindingFlags.Instance));
                 Hook.Hook();
-            }
+            
         }
         public bool HookFunction(PlatformUserIdentifierAbs _userIdentifier)
         {

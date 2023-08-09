@@ -13,12 +13,11 @@ namespace Cheat.Hooks
         public static DumbHook Hook;
         public void Start()
         {
-            if (Globals.Config.LocalPlayer.NoRecoil)
-            {
+
                 Hook = new DumbHook();
                 Hook.Init(typeof(Block).GetMethod("OnBlockDamaged", BindingFlags.Public | BindingFlags.Instance), typeof(OnBlockDamaged).GetMethod("HookFunction", BindingFlags.Public | BindingFlags.Instance));
                 Hook.Hook();
-            }
+            
         }
         public int HookFunction(WorldBase _world, int _clrIdx, Vector3i _blockPos, BlockValue _blockValue, int _damagePoints, int _entityIdThatDamaged, ItemActionAttack.AttackHitInfo _attackHitInfo, bool _bUseHarvestTool, bool _bBypassMaxDamage, int _recDepth = 0)
         {
