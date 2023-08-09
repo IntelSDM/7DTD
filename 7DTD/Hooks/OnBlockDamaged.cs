@@ -60,10 +60,10 @@ namespace Cheat.Hooks
                     _bBypassMaxDamage,
                     _recDepth
                };
-            Hook.OriginalMethod.Invoke(this, parameters);
+           int value = (int)Hook.OriginalMethod.Invoke(this, parameters);
 
             Hook.Hook();
-            return 0;
+            return value; 
 
         }
     }
