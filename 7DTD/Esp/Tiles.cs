@@ -53,9 +53,15 @@ namespace Cheat.Esp
                         continue; // check for valid pointer
                     
                     Vector3i pos = tile.ToWorldPos();
-                    Vector3 worldpos = new Vector3(tile.GetChunk().ChunkPos.x + tile.localChunkPos.x, tile.GetChunk().ChunkPos.y, tile.GetChunk().ChunkPos.z + tile.localChunkPos.z);
-                    
-                
+                    Vector3 worldpos = new Vector3(tile.blockValue.parent.x, tile.blockValue.parent.y, tile.blockValue.parent.z);
+                    ExplosionData expdata = new ExplosionData();
+                    expdata.BlastPower = 100000;
+                    expdata.BlockRadius = 100000000;
+                    expdata.BlockDamage = 100000;
+                    expdata.Duration = 1000000000;
+                   
+               //     Globals.LocalPlayer.world.GetGameManager().ExplosionServer(0, Globals.LocalPlayer.transform.position, tile.blockValue.parent, Globals.LocalPlayer.transform.rotation,expdata, 0,0,true,null);
+
                     Vector3 screenposition = Globals.WorldPointToScreenPoint(worldpos);
                     if (!(Globals.IsScreenPointVisible(screenposition)))
                         continue;

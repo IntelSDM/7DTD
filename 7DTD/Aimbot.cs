@@ -20,18 +20,15 @@ namespace Cheat
         public static bool TargettingZombie = false;
 
         // We sort closest to crosshair so we will get the first target which is closest
-        private static List<EntityEnemy> ZombieClosestToCrosshair(List<EntityEnemy> p)
+
+        private static List<T> EntityClosestToCrosshair<T>(List<T> entitylist) where T : EntityAlive
         {
-            return (from tempPlayer in p
-                    orderby Vector2.Distance(new Vector2((float)(Screen.width / 2), (float)(Screen.height / 2)), Camera.main.WorldToScreenPoint(tempPlayer.transform.position))
-                    select tempPlayer).ToList<EntityEnemy>();
+            return (from entity in entitylist
+                    orderby Vector2.Distance(new Vector2((float)(Screen.width / 2), (float)(Screen.height / 2)), Camera.main.WorldToScreenPoint(entity.transform.position)) ascending,
+                    Vector3.Distance(entity.transform.position,Globals.MainCamera.transform.position) ascending
+                    select entity).ToList<T>();
         }
-        private static List<EntityPlayer> PlayerClosestToCrosshair(List<EntityPlayer> p)
-        {
-            return (from tempPlayer in p
-                    orderby Vector2.Distance(new Vector2((float)(Screen.width / 2), (float)(Screen.height / 2)), Camera.main.WorldToScreenPoint(tempPlayer.transform.position))
-                    select tempPlayer).ToList<EntityPlayer>();
-        }
+       
         EntityEnemy TargetZombie()
         {
             EntityEnemy result = new EntityZombie();
@@ -45,7 +42,7 @@ namespace Cheat
            
            
 
-                foreach (EntityEnemy zombie in ZombieClosestToCrosshair(Esp.Zombie.ZombieList))
+                foreach (EntityEnemy zombie in EntityClosestToCrosshair(Esp.Zombie.ZombieList))
                 {
                   
                         if (!(zombie.IsAlive()) || zombie == null)
@@ -84,7 +81,7 @@ namespace Cheat
           
             
 
-                foreach (EntityPlayer player in PlayerClosestToCrosshair(Esp.Player.PlayerList))
+                foreach (EntityPlayer player in EntityClosestToCrosshair(Esp.Player.PlayerList))
                 {
                     if (Globals.LocalPlayer.IsFriendsWith(player) && Globals.Config.Aimbot.PlayerAimbotTargetFriends) // make check so they can turn off this check
                         continue;
