@@ -51,8 +51,8 @@ namespace Cheat.Esp
                 {
                     if (tile == null)
                         continue; // check for valid pointer
-                    BlockEntityData blockEntity = tile.GetChunk().GetBlockEntity(tile.ToWorldPos());
-                    Vector3 worldpos = blockEntity.transform.position;
+                    BlockEntityData blockentity = tile.GetChunk().GetBlockEntity(tile.ToWorldPos());
+                    Vector3 worldpos = blockentity.transform.position;
                  
 
                     Vector3 screenposition = Globals.WorldPointToScreenPoint(worldpos);
@@ -61,8 +61,8 @@ namespace Cheat.Esp
                     int distance = (int)Vector3.Distance(Globals.MainCamera.transform.position, worldpos);
                     string distancestr = Globals.Config.Tiles.Distance ? $"({distance.ToString()}m)" : "";
                     string namestr = Globals.Config.Tiles.Name ? $"{tile.blockValue.Block.GetBlockName()}" : "";
-                    if (distance > Globals.Config.Tiles.MaxDistance)
-                        continue;
+               //     if (distance > Globals.Config.Tiles.MaxDistance)
+                    //    continue;
 
                     Drawing.DrawString(new Vector2(screenposition.x, screenposition.y), $"{namestr}{distancestr}", Helpers.ColourHelper.GetColour("Tile Item Colour"), true, 12, FontStyle.Normal, 0);
                 }
