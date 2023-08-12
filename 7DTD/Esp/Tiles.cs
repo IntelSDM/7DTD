@@ -53,8 +53,12 @@ namespace Cheat.Esp
                     if (tile == null)
                         continue; // check for valid pointer
                     BlockEntityData blockentity = tile.GetChunk().GetBlockEntity(tile.ToWorldPos());
+
+                    if (blockentity == null)
+                        continue; // Not all TileEntity have BlockEntityData
+
                     Vector3 worldpos = blockentity.transform.position;
-                  
+                        
                  
                     Vector3 screenposition = Globals.WorldPointToScreenPoint(worldpos);
                     if (!(Globals.IsScreenPointVisible(screenposition)))
