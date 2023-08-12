@@ -82,10 +82,11 @@ namespace Cheat.Menu
             SubMenu player = new SubMenu("Player Esp", "Shows Player Information");
             SubMenu zombies = new SubMenu("Zombie Esp", "Shows Zombie Information");
             SubMenu animal = new SubMenu("Animal Esp", "Shows Animal Information");
-
+            SubMenu tiles = new SubMenu("Tile Esp", "Shows Block/Tile Information");
             Esp.Items.Add(player);
             Esp.Items.Add(zombies);
             Esp.Items.Add(animal);
+            Esp.Items.Add(tiles);
             #region Player
             Toggle playername = new Toggle("Player Name", "Shows The Player Name", ref Globals.Config.Player.Name);
             Toggle playerdistance = new Toggle("Player Distance", "Shows Your Distance From The Player", ref Globals.Config.Player.Distance);
@@ -116,7 +117,6 @@ namespace Cheat.Menu
             zombies.Items.Add(zombiehealth);
             zombies.Items.Add(zombiemaxdistance);
             #endregion
-
             #region Animal
             Toggle animalname = new Toggle("Animal Name", "Shows The Type Of Animal", ref Globals.Config.Animal.Name);
             Toggle animaldistance = new Toggle("Animal Distance", "Shows Your Distance From The Animal", ref Globals.Config.Animal.Distance);
@@ -127,6 +127,15 @@ namespace Cheat.Menu
             animal.Items.Add(animaldistance);
             animal.Items.Add(animalhealth);
             animal.Items.Add(animalmaxdistance);
+            #endregion
+            #region Tile
+            Toggle tilename = new Toggle("Tile Name", "Shows The Type Of Tile", ref Globals.Config.Tiles.Name);
+            Toggle tiledistance = new Toggle("Tile Distance", "Shows Your Distance From The Tile", ref Globals.Config.Tiles.Distance);
+            IntSlider tilemaxdistance = new IntSlider("Max Distance", "Max Distance Tiles Will Render", ref Globals.Config.Tiles.MaxDistance, 0, 2000, 50);
+
+            tiles.Items.Add(tilename);
+            tiles.Items.Add(tiledistance);
+            tiles.Items.Add(tilemaxdistance);
             #endregion
         }
         #endregion
