@@ -75,9 +75,22 @@ namespace Cheat.Esp
                     string distancestr = Globals.Config.Zombie.Distance ? $"({distance.ToString()}m)" : "";
                     string namestr = Globals.Config.Zombie.Name ? $"{zombie.EntityName}" : "";
                     string healthstr = Globals.Config.Zombie.Health ? $"({health}hp)" : "";
+                    Vector3 headposition = Globals.WorldPointToScreenPoint(zombie.emodel.GetHeadTransform().position); // get head positon
                     if (distance > Globals.Config.Zombie.MaxDistance)
                         continue;
                     Drawing.DrawString(new Vector2(screenposition.x, screenposition.y), $"{namestr}{distancestr}{healthstr}", Helpers.ColourHelper.GetColour("Zombie Colour"), true, 12, FontStyle.Normal, 0);
+                 
+                    float height = Mathf.Abs(headposition.y - screenposition.y); // get the height difference
+                    float x = screenposition.x - height * 0.3f;
+                    float y = headposition.y;
+                    if (Globals.Config.Zombie.Box && distance < 200)
+                    {
+                        Drawing.PlayerCornerBox(new Vector2(headposition.x, headposition.y + 0.5f), height / 2, height, 2, distance, Helpers.ColourHelper.GetColour("Zombie Box Colour")); // draw a corner box
+                    }
+                    if (Globals.Config.Zombie.HealthBar && distance < 200)
+                    {
+                        Drawing.DrawHealthBar(zombie, height, x, y);
+                    }
                 }
             }
             catch { }

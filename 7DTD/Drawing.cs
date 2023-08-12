@@ -27,10 +27,10 @@ namespace Cheat
             float maxHealth = entity.Stats.Health.Max;
             float curHealth = entity.Stats.Health.Value;
             float percentage = curHealth / (float)maxHealth;
-            float barHeight = height * percentage;
-            Color32 barColour = GetHealthColour(entity);
+            float barheight = height * percentage;
+            Color32 barcolour = GetHealthColour(entity);
             DrawFilledBox(x - 5f, y, 4f, height, new Color32(0, 0, 0, 180)); // draw health bar background
-            DrawFilledBox(x - 4f, y + height - barHeight - 1f, 2f, barHeight, barColour); // draw healthbar
+            DrawFilledBox(x - 4f, y + height - barheight - 1f, 2f, barheight, barcolour); // draw healthbar
         }
         private static Color32 GetHealthColour(EntityAlive entity)
         {
