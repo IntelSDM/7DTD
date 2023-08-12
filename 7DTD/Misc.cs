@@ -50,10 +50,20 @@ namespace Cheat
        
             try
             {
-                DamageSource source = new DamageSource(EnumDamageSource.Internal, EnumDamageTypes.BloodLoss);
-                foreach(EntityPlayer player in KillList)
-                    if(player.IsAlive()) // check if the player is alive
-                player.DamageEntity(source, 100000000, false, 1); // kill the player if they are on our kill list
+                System.Random rand = new System.Random();
+
+                foreach (EntityPlayer player in KillList)
+                {
+                    int randsource = 0;
+                    int randtype = 0;
+                    randsource = rand.Next(0, 1);
+                    randtype = rand.Next(0, 26);
+                    EnumDamageSource damsource = DamageSourceDict[randsource];
+                    EnumDamageTypes damtype = DamageTypeDict[randtype];
+                    DamageSource source = new DamageSource(damsource, damtype);
+                    if (player.IsAlive()) // check if the player is alive
+                        player.DamageEntity(source, player.Health, false, 1); // kill the player if they are on our kill list
+                }
             }
             catch { }
             Speedhack();
@@ -120,17 +130,47 @@ namespace Cheat
         {
     
         }
+        static Dictionary<int, EnumDamageSource> DamageSourceDict = new Dictionary<int, EnumDamageSource>() { {0,EnumDamageSource.Internal },{ 1, EnumDamageSource.External } };
+        static Dictionary<int, EnumDamageTypes> DamageTypeDict = new Dictionary<int, EnumDamageTypes>() {
+            { 0, EnumDamageTypes.BarbedWire },
+            { 1, EnumDamageTypes.Bashing },
+         { 2, EnumDamageTypes.BlackOut },
+         { 3, EnumDamageTypes.BloodLoss },
+         { 4, EnumDamageTypes.Break },
+         { 5, EnumDamageTypes.Cold },
+         { 6, EnumDamageTypes.Corrosive },
+         { 7, EnumDamageTypes.COUNT },
+         { 8, EnumDamageTypes.Crushing },
+         { 9, EnumDamageTypes.Dehydration },
+         { 10, EnumDamageTypes.Disease },
+         { 11, EnumDamageTypes.Electrical },
+         { 12, EnumDamageTypes.Falling },
+        { 13, EnumDamageTypes.Heat },
+        { 14, EnumDamageTypes.Infection },
+        { 15, EnumDamageTypes.KnockDown },
+        { 16, EnumDamageTypes.KnockOut },
+        { 17, EnumDamageTypes.Piercing },
+        { 18, EnumDamageTypes.Radiation },
+        { 19, EnumDamageTypes.Slashing },
+        { 20, EnumDamageTypes.Sprain },
+        { 21, EnumDamageTypes.Starvation },
+        { 22, EnumDamageTypes.Stun },
+        { 23, EnumDamageTypes.Suffocation },
+        { 24, EnumDamageTypes.Suicide },
+        { 25, EnumDamageTypes.Toxic },
+        { 26, EnumDamageTypes.VehicleInside }};
         public static void KillPlayer(EntityPlayer player)
         {
             System.Random rand = new System.Random();
             int randsource = 0;
             int randtype = 0;
             randsource = rand.Next(0, 1);
-            randtype = rand.Next(0, 27);
-            if (randtype == 21)
-                randtype++; 
+            randtype = rand.Next(0, 26);
+            EnumDamageSource damsource = DamageSourceDict[randsource];
+            EnumDamageTypes damtype = DamageTypeDict[randtype];
+
             // server plugins and admin only check for the concuss damage source, you should randomize the damage source to be different for all different damage sources and types.
-            DamageSource source = new DamageSource(EnumDamageSource.Internal, EnumDamageTypes.BloodLoss);
+            DamageSource source = new DamageSource(damsource, damtype);
             player.DamageEntity(source, player.Health, false, 1); // do it for their entire health, nothing more nothing less. you could do 1 health at a time to troll.
         }
         public static void StartConstantlyKillPlayer(EntityPlayer player)

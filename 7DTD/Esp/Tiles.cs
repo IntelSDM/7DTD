@@ -31,6 +31,8 @@ namespace Cheat.Esp
                     }
                 }
 
+              
+
                 CacheTime = Time.time + 3; // set the next time we will cache
             }
             catch
@@ -45,16 +47,15 @@ namespace Cheat.Esp
 
                 if (GameManager.Instance.World == null)
                     return; // check if world is active
-
-
+            
                 foreach (TileEntity tile in TileList)
                 {
                     if (tile == null)
                         continue; // check for valid pointer
                     BlockEntityData blockentity = tile.GetChunk().GetBlockEntity(tile.ToWorldPos());
                     Vector3 worldpos = blockentity.transform.position;
+                  
                  
-
                     Vector3 screenposition = Globals.WorldPointToScreenPoint(worldpos);
                     if (!(Globals.IsScreenPointVisible(screenposition)))
                         continue;

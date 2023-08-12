@@ -469,8 +469,10 @@ namespace Cheat.Menu
                     {
                         if (player == null)
                             continue;
-                        if (!player.IsAlive())
+                        if (player.IsSleeper)
                             continue;
+                      //  if (!player.IsAlive())
+                        //    continue;
                         SubMenu playermenu = new SubMenu(player.EntityName,"");
                         PlayerMenu.Items.Add(playermenu);
                         playermenu.Items.Add(new Button("Teleport To Player", "Teleports You To Player", () => Misc.TeleportToPlayer(player)));
