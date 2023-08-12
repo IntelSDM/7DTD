@@ -22,6 +22,41 @@ namespace Cheat
         }
         private static Material drawMaterial;
 
+        public static void DrawHealthBar(EntityAlive entity, float height, float x, float y)
+        {
+            float maxHealth = entity.Stats.Health.Max;
+            float curHealth = entity.Stats.Health.Value;
+            float percentage = curHealth / (float)maxHealth;
+            float barHeight = height * percentage;
+            Color32 barColour = GetHealthColour(entity);
+            DrawFilledBox(x - 5f, y, 4f, height, new Color32(0, 0, 0, 180)); // draw health bar background
+            DrawFilledBox(x - 4f, y + height - barHeight - 1f, 2f, barHeight, barColour); // draw healthbar
+        }
+        private static Color32 GetHealthColour(EntityAlive entity)
+        {
+            float maxhp = entity.Stats.Health.Max;
+            float hp = entity.Stats.Health.Value;
+            float percent2 = (hp / maxhp) * 100;
+            Color32 barcol = new Color32();
+            if (percent2 <= 100 && percent2 >= 86)
+            {
+                barcol = new Color32(15, 212, 10, 255);
+            }
+            if (percent2 <= 85 && percent2 >= 66)
+            {
+                barcol = new Color32(253, 219, 9, 200);
+
+            }
+            if (percent2 <= 65 && percent2 >= 35)
+            {
+                barcol = new Color32(249, 108, 24, 200);
+            }
+            if (percent2 <= 34 && percent2 >= 0)
+            {
+                barcol = new Color32(249, 3, 3, 255);
+            }
+            return barcol;
+        }
         public static void DrawCircle(Color Col, Vector2 Center, float Radius)
         {
             GL.PushMatrix();
