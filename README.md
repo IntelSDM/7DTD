@@ -1,9 +1,13 @@
 # 7DTD
 Not for distribution of any sort, Binary aren't allowed to be distributed in any way. Links to this shouldn't be distributed through any forum sites.
-<br>
-<img src="https://github.com/IntelSDM/7DTD/blob/main/Images/1.png" width=70% height=100%>
-<br>
-
+<p align="center">
+  <img src="./Images/1.png"
+    style="width: 75%;" />
+</p>
+<p align="center">
+  <img src="./Images/4.png"
+    style="width: 55%;" />
+</p>
 # What is 7DTD?
 This is a cheat for the game 7 days to die. An easy anti cheat secured unity game.
 <br>
@@ -44,7 +48,11 @@ There are many ways to improve on this, firstly the data should be transferred u
 [![IMAGE ALT TEXT](http://img.youtube.com/vi/e7meP019pTY/0.jpg)](http://www.youtube.com/watch?v=e7meP019pTY "Hacking")
 
 # More Images:
-<img src="https://github.com/IntelSDM/7DTD/blob/main/Images/2.png" width=70% height=100%>
-<br>
-<img src="https://github.com/IntelSDM/7DTD/blob/main/Images/3.png" width=70% height=100%>
-<br>
+<p align="left">
+  <img src="./Images/2.png"
+    style="width: 85%;" />
+</p>
+<p align="left">
+  <img src="./Images/3.png"
+    style="width: 85%;" />
+</p>
