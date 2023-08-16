@@ -102,6 +102,7 @@
     <Compile Include="Esp\Tiles.cs" />
     <Compile Include="Esp\Zombie.cs" />
     <Compile Include="Globals.cs" />
+    <Compile Include="Helpers\Access.cs" />
     <Compile Include="Helpers\ColourHelper.cs" />
     <Compile Include="Helpers\ConfigHelper.cs" />
     <Compile Include="Helpers\DumbHook.cs" />
