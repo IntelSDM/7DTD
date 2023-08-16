@@ -96,7 +96,7 @@ namespace Cheat.Menu
             Toggle playerbox = new Toggle("Show Boxes", "Draws Boxes Around Players", ref Globals.Config.Player.Box);
             Toggle playerhealthbar = new Toggle("Show Health Bar", "Draws Health Bar Next To Player", ref Globals.Config.Player.HealthBar);
             Toggle playerchams = new Toggle("Chams", "Changes Player Model Colour", ref Globals.Config.Player.Chams);
-
+            IntSlider playerchamtype = new IntSlider("Cham Type", "Change Cham Settings", ref Globals.Config.Player.ChamType, 0, 6, 1);
             player.Items.Add(playername);
             player.Items.Add(playerdistance);
             player.Items.Add(playerhealth);
@@ -105,6 +105,7 @@ namespace Cheat.Menu
             player.Items.Add(playerbox);
             player.Items.Add(playerhealthbar);
             player.Items.Add(playerchams);
+            player.Items.Add(playerchamtype);
             #endregion
             #region Zombie
             Toggle zombiename = new Toggle("Zombie Name", "Shows The Type Of Zombie", ref Globals.Config.Zombie.Name);
@@ -114,6 +115,7 @@ namespace Cheat.Menu
             Toggle zombiebox = new Toggle("Zombie Box","Draws Bounding Box Around Zombie", ref Globals.Config.Zombie.Box);
             Toggle zombiehealthbar = new Toggle("Zombie HealthBar", "Bar Representing Health", ref Globals.Config.Zombie.HealthBar);
             Toggle zombiechams = new Toggle("Chams", "Changes Zombie Colour", ref Globals.Config.Zombie.Chams);
+            IntSlider zombiechamtype = new IntSlider("Cham Type", "Change Cham Settings", ref Globals.Config.Zombie.ChamType, 0, 6, 1);
             zombies.Items.Add(zombiename);
             zombies.Items.Add(zombiedistance);
             zombies.Items.Add(zombiehealth);
@@ -121,6 +123,7 @@ namespace Cheat.Menu
             zombies.Items.Add(zombiebox);
             zombies.Items.Add(zombiehealthbar);
             zombies.Items.Add(zombiechams);
+            zombies.Items.Add(zombiechamtype);
             #endregion
             #region Animal
             Toggle animalname = new Toggle("Animal Name", "Shows The Type Of Animal", ref Globals.Config.Animal.Name);

@@ -15,5 +15,6 @@ namespace Cheat.Configs
         public bool Box = true;
         public bool HealthBar = true;
         public bool Chams = true;
+        public int ChamType = 0;
     }
 }

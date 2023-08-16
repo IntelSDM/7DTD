@@ -97,7 +97,7 @@ namespace Cheat.Esp
                         Drawing.DrawString(new Vector2(screenposition.x, screenposition.y + 10), $"Admin", Helpers.ColourHelper.GetColour("Player Colour"), true, 11, FontStyle.Normal, 3); // draw admin status
 
                     if (Globals.Config.Player.Chams)
-                        Helpers.ShaderHelper.ApplyShader(Helpers.ShaderHelper.Shaders["Chams"], player.gameObject, Helpers.ColourHelper.GetColour("Player Chams Visible Colour"), Helpers.ColourHelper.GetColour("Player Chams Invisible Colour")); // apply chams
+                        Helpers.ShaderHelper.ApplyShader(0, player.gameObject, Helpers.ColourHelper.GetColour("Player Chams Primary Colour"), Helpers.ColourHelper.GetColour("Player Chams Secondary Colour")); // apply chams
                     else
                         Helpers.ShaderHelper.RemoveShader(player.gameObject);
                     float height = Mathf.Abs(headposition.y - screenposition.y); // get the height difference

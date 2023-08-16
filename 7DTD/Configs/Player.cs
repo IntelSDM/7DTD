@@ -15,6 +15,7 @@ namespace Cheat.Configs
         public bool Health = true;
         public bool ShowAdmins = true;
         public bool Chams = false;
+        public int ChamType = 0;
         public int MaxDistance = 2000;
     }
 }

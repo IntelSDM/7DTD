@@ -19,8 +19,10 @@ namespace Cheat.Helpers
             AddColour("Menu Primary Colour", Color.red);
             AddColour("Menu Secondary Colour", Color.white);
             AddColour("Player Box Colour", Color.red);
-            AddColour("Player Chams Visible Colour", Color.white);
-            AddColour("Player Chams Invisible Colour", Color.red);
+            AddColour("Player Chams Primary Colour", Color.white);
+            AddColour("Player Chams Secondary Colour", Color.red);
+            AddColour("Zombie Chams Primary Colour", Color.white);
+            AddColour("Zombie Chams Secondary Colour", Color.red);
             AddColour("Zombie Box Colour", Color.red);
             AddColour("Aimbot Fov Colour", Color.white);
             AddColour("Aimbot Target Line Colour", Color.red);

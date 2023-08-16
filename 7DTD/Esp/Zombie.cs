@@ -99,7 +99,7 @@ namespace Cheat.Esp
                     }
                     if (Globals.Config.Zombie.Chams)
                     {
-                        Helpers.ShaderHelper.ApplyShader(Helpers.ShaderHelper.Shaders["Chams"], zombie.gameObject, Helpers.ColourHelper.GetColour("Player Chams Visible Colour"), Helpers.ColourHelper.GetColour("Player Chams Invisible Colour")); // apply chams
+                        Helpers.ShaderHelper.ApplyShader(Globals.Config.Zombie.ChamType, zombie.gameObject, Helpers.ColourHelper.GetColour("Zombie Chams Primary Colour"), Helpers.ColourHelper.GetColour("Zombie Chams Secondary Colour")); // apply chams
                     }
                     else
                     {
