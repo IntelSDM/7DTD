@@ -69,10 +69,15 @@ namespace Cheat.Esp
                     if (player == null)
                         continue; // check if player is active
                     if (player.Health <= 0)
-                        continue; // check if player is alive 
-                    if (player.IsAlive() == false)
+                    {
+                        Helpers.ShaderHelper.RemoveShader(player.gameObject);
                         continue; // check if the player is alive
-                    
+                    }
+                    if (player.IsAlive() == false)
+                    {
+                        Helpers.ShaderHelper.RemoveShader(player.gameObject);
+                        continue; // check if the player is alive
+                    }
 
                     Vector3 screenposition = Globals.WorldPointToScreenPoint(player.transform.position);
                     if (!(Globals.IsScreenPointVisible(screenposition)))
@@ -93,7 +98,8 @@ namespace Cheat.Esp
 
                     if (Globals.Config.Player.Chams)
                         Helpers.ShaderHelper.ApplyShader(Helpers.ShaderHelper.Shaders["Chams"], player.gameObject, Helpers.ColourHelper.GetColour("Player Chams Visible Colour"), Helpers.ColourHelper.GetColour("Player Chams Invisible Colour")); // apply chams
-
+                    else
+                        Helpers.ShaderHelper.RemoveShader(player.gameObject);
                     float height = Mathf.Abs(headposition.y - screenposition.y); // get the height difference
                     float x = screenposition.x - height * 0.3f;
                     float y = headposition.y; 

@@ -62,9 +62,15 @@ namespace Cheat.Esp
                     if (zombie == null)
                         continue; // check if zombie is valid pointer
                     if (zombie.Health <= 0)
+                    {
+                        Helpers.ShaderHelper.RemoveShader(zombie.gameObject); // remove chams
                         continue; // check alive
+                    }
                     if (zombie.IsAlive() == false)
+                    {
+                        Helpers.ShaderHelper.RemoveShader(zombie.gameObject); // remove chams
                         continue; // check alive
+                    }
 
 
                     Vector3 screenposition = Globals.WorldPointToScreenPoint(zombie.transform.position);
