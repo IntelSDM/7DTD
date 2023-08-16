@@ -13,6 +13,7 @@ namespace Cheat.Helpers
     class ShaderHelper
     {
         public static Dictionary<string, Shader> Shaders = new Dictionary<string, Shader>();
+        public static Dictionary<string, Shader> ModelShaders = new Dictionary<string, Shader>();
         public static void GetShader()
         {
             using (WebClient webclient = new WebClient())
@@ -25,20 +26,38 @@ namespace Cheat.Helpers
         }
         public static void ApplyShader(Shader shader, GameObject pgo, Color32 visiblecolour, Color32 occludedcolour)
         {
-            if (shader == null) return;
-
-            Renderer[] rds = pgo.GetComponentsInChildren<Renderer>();
-
-            for (int j = 0; j < rds.Length; j++)
+            if (shader == null) 
+                return;
+            foreach (var r in pgo.GetComponentsInChildren<UnityEngine.Renderer>())
             {
-                Material[] materials = rds[j].materials;
-
-                for (int k = 0; k < materials.Length; k++)
+                foreach (Material m in r.materials)
                 {
-                    // set shader and the colour
-                    materials[k].shader = shader;
-                    materials[k].SetColor("_ColorVisible", visiblecolour);
-                    materials[k].SetColor("_ColorBehind", occludedcolour);
+                    if (!ModelShaders.ContainsKey(m.name) && m.shader != shader)
+                    {
+                        ModelShaders.Add(m.name, m.shader);
+                    }
+                    if (m.shader != shader)
+                    {
+                        m.shader = shader;
+                        m.SetColor("_ColorVisible", visiblecolour);
+                        m.SetColor("_ColorBehind", occludedcolour);
+                    }
+                }
+            }
+
+         
+        }
+        public static void RemoveShader(GameObject pgo)
+        {
+            foreach (var r in pgo.GetComponentsInChildren<UnityEngine.Renderer>())
+            {
+                foreach (Material m in r.materials)
+                {
+                    if (ModelShaders.ContainsKey(m.name))
+                    {
+                        m.shader = ModelShaders[m.name];
+
+                    }
                 }
             }
         }

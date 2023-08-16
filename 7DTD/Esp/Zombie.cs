@@ -91,6 +91,14 @@ namespace Cheat.Esp
                     {
                         Drawing.DrawHealthBar(zombie, height, x, y);
                     }
+                    if (Globals.Config.Zombie.Chams)
+                    {
+                        Helpers.ShaderHelper.ApplyShader(Helpers.ShaderHelper.Shaders["Chams"], zombie.gameObject, Helpers.ColourHelper.GetColour("Player Chams Visible Colour"), Helpers.ColourHelper.GetColour("Player Chams Invisible Colour")); // apply chams
+                    }
+                    else
+                    {
+                        Helpers.ShaderHelper.RemoveShader( zombie.gameObject); // remove chams
+                    }
                 }
             }
             catch { }

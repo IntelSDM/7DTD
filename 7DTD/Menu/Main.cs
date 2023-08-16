@@ -113,12 +113,14 @@ namespace Cheat.Menu
             IntSlider zombiemaxdistance = new IntSlider("Max Distance", "Max Distance Zombies Will Render", ref Globals.Config.Zombie.MaxDistance, 0, 2000, 50);
             Toggle zombiebox = new Toggle("Zombie Box","Draws Bounding Box Around Zombie", ref Globals.Config.Zombie.Box);
             Toggle zombiehealthbar = new Toggle("Zombie HealthBar", "Bar Representing Health", ref Globals.Config.Zombie.HealthBar);
+            Toggle zombiechams = new Toggle("Chams", "Changes Zombie Colour", ref Globals.Config.Zombie.Chams);
             zombies.Items.Add(zombiename);
             zombies.Items.Add(zombiedistance);
             zombies.Items.Add(zombiehealth);
             zombies.Items.Add(zombiemaxdistance);
             zombies.Items.Add(zombiebox);
             zombies.Items.Add(zombiehealthbar);
+            zombies.Items.Add(zombiechams);
             #endregion
             #region Animal
             Toggle animalname = new Toggle("Animal Name", "Shows The Type Of Animal", ref Globals.Config.Animal.Name);

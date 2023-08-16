@@ -14,5 +14,6 @@ namespace Cheat.Configs
         public int MaxDistance = 100;
         public bool Box = true;
         public bool HealthBar = true;
+        public bool Chams = true;
     }
 }
