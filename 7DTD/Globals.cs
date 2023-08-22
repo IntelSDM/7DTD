@@ -64,12 +64,8 @@ namespace Cheat
 
             return result;
         }
-        [ObfuscationAttribute(Exclude = true)]
-        void Start()
-        {
-            Start1();
-        }
-        private void Start1()
+
+        private void Start()
         {
             string DataPath = Path.GetFullPath(Application.dataPath);
             string GamePath = Path.Combine(DataPath, DataPath, @"..\");

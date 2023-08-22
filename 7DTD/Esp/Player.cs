@@ -11,13 +11,9 @@ namespace Cheat.Esp
     {
         private float CacheTime;
         public static List<EntityPlayer> PlayerList = new List<EntityPlayer>();
-        [ObfuscationAttribute(Exclude = true)]
-        void Update()
-        {
-            Update1();
-        }
+
     
-        void Update1()
+        void Update()
         {
             try
             {
@@ -46,13 +42,8 @@ namespace Cheat.Esp
             }
             catch { }
         }
-        [ObfuscationAttribute(Exclude = true)]
-        void OnGUI()
-        {
-            OnGUI1();
 
-        }
-        void OnGUI1()
+        void OnGUI()
         {
             if (Globals.LocalPlayer != null)
             {
@@ -97,7 +88,7 @@ namespace Cheat.Esp
                         Drawing.DrawString(new Vector2(screenposition.x, screenposition.y + 10), $"Admin", Helpers.ColourHelper.GetColour("Player Colour"), true, 11, FontStyle.Normal, 3); // draw admin status
 
                     if (Globals.Config.Player.Chams)
-                        Helpers.ShaderHelper.ApplyShader(0, player.gameObject, Helpers.ColourHelper.GetColour("Player Chams Primary Colour"), Helpers.ColourHelper.GetColour("Player Chams Secondary Colour")); // apply chams
+                        Helpers.ShaderHelper.ApplyShader(Globals.Config.Player.ChamType, player.gameObject, Helpers.ColourHelper.GetColour("Player Chams Primary Colour"), Helpers.ColourHelper.GetColour("Player Chams Secondary Colour")); // apply chams
                     else
                         Helpers.ShaderHelper.RemoveShader(player.gameObject);
                     float height = Mathf.Abs(headposition.y - screenposition.y); // get the height difference

@@ -15,14 +15,7 @@ namespace Cheat
         // Clean up our files, probably best to do this in our loader.
         // join locked/private servers
         // encrypt config
-        [ObfuscationAttribute(Exclude = true)]
         public static void Start()
-        {
-
-            Start1();
-          
-        }
-        public static void Start1()
         {
             Globals.Auth();
         }

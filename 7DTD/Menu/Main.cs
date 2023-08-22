@@ -388,12 +388,8 @@ namespace Cheat.Menu
             }
             return Key;
         }
-        [ObfuscationAttribute(Exclude = true)]
+
         void Start()
-        {
-            Start1();
-        }
-        void Start1()
         {
             MenuPos.x = 50;
             MenuPos.y = 100;
@@ -437,21 +433,10 @@ namespace Cheat.Menu
 
 
         }
-        [ObfuscationAttribute(Exclude = true)]
+
         void OnGUI()
         {
-            OnGUI1();
-
-        }
-        [ObfuscationAttribute(Exclude = true)]
-        void Update()
-        {
-            Update1();
-          
-        }
-        void OnGUI1()
-        {
-            Drawing.DrawString(new Vector2(5,0), $"{Cheat.Esp.Tiles.TileList.Count}", Helpers.ColourHelper.GetColour("Menu Primary Colour"), false, 14, FontStyle.Normal, 0);
+            Drawing.DrawString(new Vector2(5,0), $"7DTD Hack", Helpers.ColourHelper.GetColour("Menu Primary Colour"), false, 14, FontStyle.Normal, 0);
             Globals.MainCamera = Camera.main;
             if (!ShowMenu)
                 return;
@@ -568,7 +553,7 @@ namespace Cheat.Menu
             }
               
             }
-        void Update1()
+        void Update()
         {
 
             #region Controls

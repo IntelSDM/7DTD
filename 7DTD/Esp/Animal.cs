@@ -11,13 +11,7 @@ namespace Cheat.Esp
     {
         private float CacheTime;
         public static List<EntityAnimal> AnimalList = new List<EntityAnimal>();
-
-        [ObfuscationAttribute(Exclude = true)]
         void Update()
-        {
-            Update1();
-        }
-        void Update1()
         {
             try
             {
@@ -42,12 +36,7 @@ namespace Cheat.Esp
             }
             catch { }
         }
-        [ObfuscationAttribute(Exclude = true)]
         void OnGUI()
-        {
-            OnGUI1();
-        }
-        void OnGUI1()
         {
             try
             {

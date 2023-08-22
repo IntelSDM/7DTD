@@ -11,40 +11,9 @@ namespace Cheat
 {
     class Misc : MonoBehaviour
     {
-
-        /*
-         * item time
-             ulong worldTime = GameManager.Instance.World.GetWorldTime();
-                             GameManager.Instance.World.SetTimeJump(worldTime + 6000UL, false);
-                             Debug.Log("Added 6hr to World Time...");
-        Draw Players and bases on map
-        open locked crates
-        place items in blocked zones
-        isfriendswith
-        drawmapicon
-        nenu x and y slider and credits
-         */
-
-
-        #region Hook Methods
-        public static DumbHook UnlimitedRangeHook;
-        public bool UnlimitedRangeHooked = false;
-        public static DumbHook BlockDamage;
-        public bool BlockDamageHooked = false;
-        public static DumbHook IsOwnerHook;
-        public bool IsOwnerHooked = false;
         private static List<EntityPlayer> KillList = new List<EntityPlayer>();
-       
-       
-      
- 
-        #endregion
-        [ObfuscationAttribute(Exclude = true)]
+
         void Update()
-        {
-            Update1();
-        }
-        void Update1()
         {
             
        
@@ -122,14 +91,7 @@ namespace Cheat
 
         }
 
-        [ObfuscationAttribute(Exclude = true)]
-        void Start()
-        { 
-        }
-        void Start1()
-        {
-    
-        }
+
         static Dictionary<int, EnumDamageSource> DamageSourceDict = new Dictionary<int, EnumDamageSource>() { {0,EnumDamageSource.Internal },{ 1, EnumDamageSource.External } };
         static Dictionary<int, EnumDamageTypes> DamageTypeDict = new Dictionary<int, EnumDamageTypes>() {
             { 0, EnumDamageTypes.BarbedWire },

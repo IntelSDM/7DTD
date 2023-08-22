@@ -116,17 +116,7 @@ namespace Cheat
             return result;
 
         }
-        [ObfuscationAttribute(Exclude = true)]
-        void Update()
-        {
-            Update1();
-        }
-        [ObfuscationAttribute(Exclude = true)]
         void OnGUI()
-        {
-            OnGUI1();
-        }
-        void OnGUI1()
         {
             // so basically we cant target a player and zombie at the same time as we exit the function in the silentaim method when we have a target
             try
@@ -213,7 +203,7 @@ namespace Cheat
                 return;
                 PlayerHitPos = Player.emodel.GetHeadTransform().position;
         }
-        void Update1()
+        void Update()
         {
             Zombie = TargetZombie();
            SetZombieAimPos();

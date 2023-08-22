@@ -12,12 +12,7 @@ namespace Cheat.Esp
     {
         private float CacheTime;
         public static List<EntityEnemy> ZombieList = new List<EntityEnemy>();
-        [ObfuscationAttribute(Exclude = true)]
         void Update()
-        {
-            Update1();
-        }
-        void Update1()
         {
             // caching zombies
             try
@@ -45,13 +40,8 @@ namespace Cheat.Esp
             { 
             }
         }
-        [ObfuscationAttribute(Exclude = true)]
-        void OnGUI()
-        {
-            OnGUI1();
 
-        }
-        void OnGUI1()
+        void OnGUI()
         {
             try
             {
