@@ -16,6 +16,5 @@ namespace Cheat.Configs
         public Aimbot Aimbot = new Aimbot();
         public Friends Friends = new Friends();
         public Tiles Tiles = new Tiles();
-        public Debug Debug = new Debug();
     }
 }
