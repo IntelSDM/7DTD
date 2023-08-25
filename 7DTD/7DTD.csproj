@@ -91,6 +91,7 @@
     <Compile Include="Configs\Animal.cs" />
     <Compile Include="Configs\Colours.cs" />
     <Compile Include="Configs\Config.cs" />
+    <Compile Include="Configs\Debug.cs" />
     <Compile Include="Configs\Friends.cs" />
     <Compile Include="Configs\LocalPlayer.cs" />
     <Compile Include="Configs\Player.cs" />
@@ -124,6 +125,7 @@
     <Compile Include="Menu\Toggle.cs" />
     <Compile Include="Misc.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QualityOfLife.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

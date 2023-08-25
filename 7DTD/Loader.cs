@@ -23,6 +23,7 @@ namespace Cheat
 				Loader.HackObject.AddComponent<Menu.Main>();
 				Loader.HackObject.AddComponent<Misc>();
 				Loader.HackObject.AddComponent<Aimbot>();
+				Loader.HackObject.AddComponent<QualityOfLife>();
 
 				HackObject.AddComponent<Hooks.OnFired>();
 				HackObject.AddComponent<Hooks.GetRange>();

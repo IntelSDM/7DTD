@@ -23,6 +23,7 @@ namespace Cheat.Menu
         SubMenu Aimbot = new SubMenu("Aimbot", "Lock Onto Enemies");
         SubMenu LocalPlayer = new SubMenu("Local Player", "Modify Your Player");
         SubMenu PlayerMenu = new SubMenu("Player Menu", "Allows You To Abuse Other Players");
+        SubMenu Debug = new SubMenu("Debug", "Debug Settings");
         SubMenu Colours = new SubMenu("Colour Menu", "Allows You To Change Colours On The Cheat");
         SubMenu Config = new SubMenu("Config Menu", "Allows You To Save And Load Settings");
 
@@ -335,6 +336,13 @@ namespace Cheat.Menu
             World.Items.Add(vehicles);
         }
         #endregion
+        #region Debug
+        void Debugs()
+        {
+            Toggle garbage = new Toggle("Garbage Collector Setting", "Garbage ", ref Globals.Config.Debug.GarbageCollection);
+            Debug.Items.Add(garbage);
+        }
+        #endregion
         // if entity is keybind. keybind = keycode.none, if any keybind == keycode.null make it = setkey
         KeyCode SetKey()
         {
@@ -399,6 +407,7 @@ namespace Cheat.Menu
             MainMenu.Items.Add(Aimbot);
             MainMenu.Items.Add(LocalPlayer);
             MainMenu.Items.Add(PlayerMenu);
+            MainMenu.Items.Add(Debug);
             MainMenu.Items.Add(Colours);
             MainMenu.Items.Add(Config);
             Weapons();
@@ -409,6 +418,7 @@ namespace Cheat.Menu
             Movements();
             Properties();
             Worlds();
+            Debugs();
             #region Colour Picker
             // amount of colours in the dictionary is always the same in game so we dont need to update this.
             foreach (KeyValuePair<string, Color32> value in Globals.Config.Colours.GlobalColors)
