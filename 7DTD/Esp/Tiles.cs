@@ -65,7 +65,7 @@ namespace Cheat.Esp
                         continue;
                     int distance = (int)Vector3.Distance(Globals.MainCamera.transform.position, worldpos);
                     string distancestr = Globals.Config.Tiles.Distance ? $"({distance.ToString()}m)" : "";
-                    string namestr = Globals.Config.Tiles.Name ? $"{tile.blockValue.Block.GetBlockName()}" : "";
+                    string namestr = Globals.Config.Tiles.Name ? $"{tile.blockValue.Block.GetLocalizedBlockName()}" : "";
                     if (distance > Globals.Config.Tiles.MaxDistance)
                         continue;
 
