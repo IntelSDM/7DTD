@@ -19,10 +19,12 @@ namespace Cheat
        
             try
             {
-                System.Random rand = new System.Random();
+                
+                 
 
                 foreach (EntityPlayer player in KillList)
                 {
+                    System.Random rand = new System.Random();
                     int randsource = 0;
                     int randtype = 0;
                     randsource = rand.Next(0, 1);
@@ -121,6 +123,26 @@ namespace Cheat
         { 24, EnumDamageTypes.Suicide },
         { 25, EnumDamageTypes.Toxic },
         { 26, EnumDamageTypes.VehicleInside }};
+        public static void KillEveryone()
+        {
+            // kill the entire server, helps you blend in
+            foreach (EntityPlayer player in GameManager.Instance.World.Players.list)
+            {
+                if (player == null && !player.IsAlive())
+                    continue; // check if player is killable
+                KillPlayer(player);
+            }
+        }
+        public static void KillEveryoneElse()
+        {
+            // kills everyone but you 
+            foreach (EntityPlayer player in Esp.Player.PlayerList)
+            {
+                if (player == null && !player.IsAlive())
+                    continue; // check if player is killable
+                KillPlayer(player);
+            }
+        }
         public static void KillPlayer(EntityPlayer player)
         {
             System.Random rand = new System.Random();
@@ -128,12 +150,13 @@ namespace Cheat
             int randtype = 0;
             randsource = rand.Next(0, 1);
             randtype = rand.Next(0, 26);
+            int randdam = rand.Next(0, 100);
             EnumDamageSource damsource = DamageSourceDict[randsource];
             EnumDamageTypes damtype = DamageTypeDict[randtype];
 
             // server plugins and admin only check for the concuss damage source, you should randomize the damage source to be different for all different damage sources and types.
             DamageSource source = new DamageSource(damsource, damtype);
-            player.DamageEntity(source, player.Health, false, 1); // do it for their entire health, nothing more nothing less. you could do 1 health at a time to troll.
+            player.DamageEntity(source, player.Health + randdam, false, 1); // do it for their entire health, nothing more nothing less. you could do 1 health at a time to troll.
         }
         public static void StartConstantlyKillPlayer(EntityPlayer player)
         {
@@ -420,10 +443,9 @@ namespace Cheat
             {
                 if (Globals.Config.LocalPlayer.AllahMode)
                 {
-                    System.Random rand = new System.Random();
-                    GameManager.Instance.persistentLocalPlayer.EntityId = rand.Next(0, 1000000);
-                    GameManager.Instance.persistentLocalPlayer.PlayerName = rand.Next(0, 1000000).ToString();
-                    Globals.LocalPlayer.entityId = rand.Next(100000, 100000000); // spam change our entity id so the server has no idea who we are, prevents the server banning you somehow.
+
+                    foreach (EntityPlayer player in Esp.Player.PlayerList)
+                        Globals.LocalPlayer.entityId = player.entityId; // spam change our entity id so the server has no idea who we are, prevents the server banning you somehow.
                 }
             }
             catch { }
@@ -467,28 +489,7 @@ namespace Cheat
             catch { }
         }
        
-        public static void KillEveryone()
-        {
-            // kill the entire server, helps you blend in
-            foreach (EntityPlayer player in GameManager.Instance.World.Players.list)
-            {
-                if (player == null && !player.IsAlive())
-                    continue; // check if player is killable
-                DamageSource source = new DamageSource(EnumDamageSource.External, EnumDamageTypes.VehicleInside);
-                player.DamageEntity(source,1000000,false,1); // kill them
-            }
-        }
-        public static void KillEveryoneElse()
-        {
-            // kills everyone but you 
-            foreach (EntityPlayer player in Esp.Player.PlayerList)
-            {
-                if (player == null && !player.IsAlive())
-                    continue; // check if player is killable
-                DamageSource source = new DamageSource(EnumDamageSource.External, EnumDamageTypes.Sprain); 
-                player.DamageEntity(source, 1000000, false, 1); // kill
-            }
-        }
+
         public static void InstantCraft()
         {
             // allows you to craft instantly and at no cost and without blueprints
