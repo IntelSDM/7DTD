@@ -350,6 +350,10 @@ namespace Cheat
                 Globals.LocalPlayer.Stats.Health.MaxModifier = 1000000000;
 
             }
+            if (Globals.Config.LocalPlayer.ClearDebuffs)
+            {
+                RemoveAllNegativeBuffs();
+            }
             try
             {
                 if (Globals.Config.LocalPlayer.RandomlySpoofName)
@@ -384,48 +388,18 @@ namespace Cheat
                 return;
             SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"{text}", null); // sdtd console singleton and execute our commands.
         }
-        public static void ClearDebuff()
+        public static void RemoveAllNegativeBuffs()
         {
-            if (Globals.LocalPlayer == null)
+            if (GameManager.Instance == null)
                 return;
-            // execute the debuff commands
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffInfectionCatch", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffAbrasionCatch", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffLegSprainedCHTrigger", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffLegBroken", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffArmSprainedCHTrigger", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffArmBroken", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffFatiguedTrigger", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffInjuryBleedingTwo", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffLaceration", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffInjuryStunned01CHTrigger", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffInjuryStunned01Cooldown", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffInjuryConcussion", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffInjuryBleedingOne", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffInjuryBleedingBarbedWire", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffInjuryBleeding", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffInjuryBleedingParticle", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffPlayerFallingDamage", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffFatigued", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffStayDownKO", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffInjuryCrippled01", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffInjuryUnconscious", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffBatterUpSlowDown", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffRadiation03", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffNearDeathTrauma", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffDysenteryCatchFood", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffDysenteryCatchDrink", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffDysenteryMain", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffIllPneumonia00", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffIllPneumonia01", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffInfectionMain", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffInfection04", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffStatusHungry01", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffStatusHungry02", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffStatusHungry03", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffStatusThirsty01", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffStatusThirsty02", null);
-            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"debuff buffStatusThirsty03", null);
+            EntityPlayer primaryplayer = GameManager.Instance.World.GetPrimaryPlayer();
+            
+            for (int index = 0; index < primaryplayer.Buffs.ActiveBuffs.Count; ++index)
+            {
+                if (primaryplayer.Buffs.ActiveBuffs[index].BuffClass.DamageType == EnumDamageTypes.None)
+                    continue;
+                    primaryplayer.Buffs.ActiveBuffs[index].Remove = true;
+            }
         }
         public static void GiveItemFromClipboard(int amount)
         {

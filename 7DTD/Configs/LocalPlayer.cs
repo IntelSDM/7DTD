@@ -43,6 +43,7 @@ namespace Cheat.Configs
         public bool SpoofName = true;
         public bool SpoofID = false;
         public bool RandomlySpoofName = false;
+        public bool ClearDebuffs = false;
 
         public bool LandClaim = true;
         public bool InstantBreak1 = true;

@@ -275,7 +275,7 @@ namespace Cheat.Menu
             Toggle unlimitedwater = new Toggle("Unlimited Water", "Never Run Out Of Water Like A Camel", ref Globals.Config.LocalPlayer.UnlimitedThirtst);
             Toggle unlimitedhealth = new Toggle("Instant Health Regeneration", "You Health Instantly Regenerates To Max", ref Globals.Config.LocalPlayer.InstantHealth);
            // Toggle nofall = new Toggle("No Fall Damage", "Never Skipping Leg Day", ref Globals.Config.LocalPlayer.NoFallDamage);
-            Button cleardebuff = new Button("Clear Debuffs", "Removes Injuries Such As Broken Legs", () => Misc.ClearDebuff());
+            Toggle cleardebuff = new Toggle("Clear Debuffs", "Removes Negative Debuffs", ref Globals.Config.LocalPlayer.ClearDebuffs);
             Toggle spoofname = new Toggle("Spoof Name", "Spoofs Your Name", ref Globals.Config.LocalPlayer.SpoofName);
             Toggle spoofid = new Toggle("Spoof ID", "Allows You To Use IDS In PlayerList", ref Globals.Config.LocalPlayer.SpoofID);
             Button name = new Button("Copy Name From Clipboard", "Copies Name From Clipboard And Spoofs Name To It", () => Misc.ClipboardToString(out Misc.Name));
