@@ -1,6 +1,6 @@
 # 7DTD
 <p align="center">
-  <img src="./Images/1.png"
+  <img src="./Images/6.png"
     style="width: 75%;" />
 </p>
 <p align="center">
@@ -43,11 +43,19 @@ The server works very well at logging data with its own database system written 
 There are many ways to improve on this, firstly the data should be transferred using a none text method like I said before with the client. The client event handler should work in a much more objective way by initializing a new instance class with key words to active it. A console command system would also greatly improve such a system in order to have a command class that can add different commands with different derived actions. The file system of sending files should also use a dictionary of files in order to save memory with all those allocations of the same file in different database instances.
 
 ## Videos
-[![IMAGE ALT TEXT](http://img.youtube.com/vi/aAVyQwCgoKU/0.jpg)](http://www.youtube.com/watch?v=aAVyQwCgoKU "Devblog 2")
+<a href="http://www.youtube.com/watch?v=aAVyQwCgoKU">
+  <img src="./Images/7.png" alt="Play Video" width="800" height="600">
+</a>
 <br>
-[![IMAGE ALT TEXT](http://img.youtube.com/vi/e7meP019pTY/0.jpg)](http://www.youtube.com/watch?v=e7meP019pTY "Hacking")
+<a href="http://www.youtube.com/watch?v=e7meP019pTY">
+  <img src="./Images/8.png" alt="Play Video" width="800" height="600">
+</a>
 
 ## More Images:
+<p align="left">
+  <img src="./Images/9.png"
+    style="width: 85%;" />
+</p>
 <p align="left">
   <img src="./Images/2.png"
     style="width: 85%;" />
