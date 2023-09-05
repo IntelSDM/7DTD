@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -8,9 +9,10 @@ namespace Cheat.Esp
 {
     class Tiles : MonoBehaviour
     {
-
+        private const string Identifier = "Tile Item Colour";
         private float CacheTime;
         public static List<TileEntity> TileList = new List<TileEntity>();
+        
         void Update()
         {
             try
@@ -47,9 +49,9 @@ namespace Cheat.Esp
 
                 if (GameManager.Instance.World == null)
                     return; // check if world is active
-            
+             
                 foreach (TileEntity tile in TileList)
-                {
+                { 
                     if (tile == null)
                         continue; // check for valid pointer
                     BlockEntityData blockentity = tile.GetChunk().GetBlockEntity(tile.ToWorldPos());
@@ -69,7 +71,18 @@ namespace Cheat.Esp
                     if (distance > Globals.Config.Tiles.MaxDistance)
                         continue;
 
-                    Drawing.DrawString(new Vector2(screenposition.x, screenposition.y), $"{namestr}{distancestr}", Helpers.ColourHelper.GetColour("Tile Item Colour"), true, 12, FontStyle.Normal, 0);
+
+                    // It's Just TileEntityType Length Check Only
+                    var tileTypes = Enum.GetNames(typeof(TileEntityType)); 
+                    for(int i = 0; i < tileTypes.Length; i++)
+                    { 
+                        if (Globals.Config.Tiles.TypeFilter[i] && tileTypes[i] == tile.GetTileEntityType().ToStringCached())
+                        {
+                            Drawing.DrawString(new Vector2(screenposition.x, screenposition.y), $"{namestr}{distancestr}", Helpers.ColourHelper.GetColour(Identifier), true, 12, FontStyle.Normal, 0);
+                        }
+                    }
+
+
                 }
             }
             catch { }
