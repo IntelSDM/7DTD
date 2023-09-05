@@ -141,9 +141,26 @@ namespace Cheat.Menu
             Toggle tiledistance = new Toggle("Tile Distance", "Shows Your Distance From The Tile", ref Globals.Config.Tiles.Distance);
             IntSlider tilemaxdistance = new IntSlider("Max Distance", "Max Distance Tiles Will Render", ref Globals.Config.Tiles.MaxDistance, 0, 2000, 50);
 
+
+ 
+
             tiles.Items.Add(tilename);
             tiles.Items.Add(tiledistance);
             tiles.Items.Add(tilemaxdistance);
+
+
+
+            SubMenu tileTypeFilterMenu = new SubMenu("Filter", "Tile Filter");
+            tiles.Items.Add(tileTypeFilterMenu);
+
+            System.Collections.IList filterType = Enum.GetValues(typeof(TileEntityType));
+            for (int i = 0; i < filterType.Count; i++)
+            {
+                var type = (TileEntityType)filterType[i];
+                Toggle tileTypeFilterToggle = new Toggle($"Tile Type Filter {type.ToStringCached()}", $"Filter : {type.ToStringCached()}", ref Globals.Config.Tiles.TypeFilter[i]);
+                tileTypeFilterMenu.Items.Add(tileTypeFilterToggle);
+            }
+
             #endregion
         }
         #endregion

@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 namespace Cheat.Configs
 {
     class Tiles
-    {
+    { 
+
         public bool Name = true;
         public bool Distance = true;
         public int MaxDistance = 300;
+        public bool[] TypeFilter = new bool[(Enum.GetNames(typeof(TileEntityType)).Length)];
     }
 }
