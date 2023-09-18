@@ -18,9 +18,12 @@ This project consists of a client,server(c++) and then a cheat(c#). The client a
 The cheat itself is very good, able to spawn items, kill off entire servers and all around cause complete caos. I am honestly rather fond of the cheat due to its ability to cause havoc on any server but thats mainly due to the game's poor networking systems. 
 
 ## The Cheat
+[Outdated]<br>
 So firstly lets talk about the anti cheat bypass. As of writing this the cheat is fully undetected on eac and has been for about 4-5 years.
 We use a very simple exploit to access game memory, we utilize a .net 7's update which allows you to load references through the base directory allowing us to take a loaded reference/library and move its location to the base directory and edit it with a few IL calls to our cheat.
-In this case i take the 0.harmony.dll from the managed folder and put it in the base folder and edit it to have the opcodes: call Globals.Auth and then ret
+In this case i take the 0.harmony.dll from the managed folder and put it in the base folder and edit it to have the opcodes: call Globals.Auth and then ret. <br>
+[Update 18/09/23] <br>
+It appears after nearly 5 years of using this bypass it has been patched. It took effectively about 6 months of this project being open source and public to get the bypass patched. Circumventing their patch is trivial but for most people that don't understand how unity handles dll management that wont be the case. I don't exactly feel like spitting out EAC bypasses every few months so i won't be maintaining the EAC bypass. The game only had about 5 servers using EAC and most of them actually don't use EAC but actually just have EAC on the server which gives it an EAC flag so the game expects EAC running to connect to them. Therefore the handshake isn't needed and a heartbeat isn't established. This is an insanely easy thing to bypass. For real EAC servers you can basically just use the cheat on linux using the same method. <br>
 <br>
 With the bypass out of the way the cheat's functionality is efficient with a full set of aimbot and esp and weapon modifiers but mainly you can change your id and become another player (even on the server) as well as spoof your stats and break blocks in many different ways that bypass server sided anti cheats.
 <br>
