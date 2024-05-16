@@ -9,6 +9,8 @@
 </p>
 
 ## What is 7DTD?
+_Releases are outdated_
+<br>
 This is a cheat for the game 7 days to die. An easy anti cheat secured unity game.
 <br>
 In this cheat I utilize mono in order to run the dll into memory and then use the the mono callbacks and mono functionality within the game to execute my code.
